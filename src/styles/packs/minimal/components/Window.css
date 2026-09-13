@@ -3,18 +3,37 @@
              --window-title-fg | --window-control-hover
              --window-close-hover | --window-close-fg | --window-shadow      */
 
-/* La ventana de una aplicación de escritorio: barra de título apenas más
-   oscura que el cuerpo, una línea que las separa y nada más.
+/* La ventana de una aplicación de escritorio.
+
+   ⛔ LA BARRA ES EL MARCO Y EL CUERPO ES LA HOJA, NO AL REVES. VS Code tiene
+   DOS grises y esta es la pieza donde se ven los dos juntos: la barra de
+   titulo es #181818, el mismo gris que la barra lateral y la de estado, y el
+   area de trabajo es #1F1F1F, un escalon MAS CLARA.
+
+   Antes esto estaba invertido en espiritu: el cuerpo en el piso y la barra
+   todavia mas abajo, hundida. Se leia como un cajon. Una ventana de verdad es
+   al reves — el marco es lo oscuro y la hoja es lo que se ilumina.
+
+   Los dos salen de la escalera del pack sin elegir nada: la barra es el piso
+   (--ui-bg) y el cuerpo es el primer escalon (--ui-surface).
 
    ⛔ ESQUINAS CUADRADAS, SIEMPRE — regla del proyecto, no del pack. Acá encima
    cae de maduro: es lo que hace una ventana de verdad. */
 
 .ui-window {
-  --window-bg: var(--ui-bg);
-  --window-bar-bg: var(--ui-bg-subtle);
-  --window-border: var(--ui-border-strong);
-  --window-line: var(--ui-border);
-  --window-title-fg: var(--ui-text-muted);
+  --window-bg: var(--ui-surface);
+  --window-bar-bg: var(--ui-bg);
+  --window-border: var(--ui-border);
+
+  /* La linea de abajo de la barra es un pelo, no un contorno: sale de la tinta
+     al 10%, que sobre el piso da el mismo gris que usa VS Code para separarla
+     del resto. Con --ui-border se leia como un borde dibujado. */
+  --window-line: var(--ui-line);
+
+  /* El titulo va con la tinta ENTERA. VS Code no lo apaga: el gris apagado lo
+     usa para la ventana sin foco, que es otra cosa. */
+  --window-title-fg: var(--ui-text);
+
   --window-control-hover: var(--ui-surface-active);
   --window-shadow: var(--ui-shadow-lg);
 
@@ -31,6 +50,11 @@
   --window-shadow: none;
 }
 
+/* ⚠ CENTRADO, que es la firma de la barra de VS Code en Windows. No queda
+   centrado respecto de la ventana sino del hueco que dejan el icono y los
+   controles —igual que allá—, y eso es a proposito: el titulo acompaña al
+   espacio libre, no a la caja. */
 .ui-window__title {
   font-size: var(--ui-text-sm);
+  text-align: center;
 }

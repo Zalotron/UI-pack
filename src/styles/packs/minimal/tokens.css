@@ -12,7 +12,7 @@
    Las cuatro piezas del pack, y son TODAS las que hay:
 
      1. NADA ES PURO      Ni el fondo es negro ni el texto es blanco. El fondo
-                          vive en 12% de claridad y el texto en 80%, y entre
+                          vive en 9.4% de claridad y el texto en 80%, y entre
                           esos dos extremos entra todo. Un negro puro detras de
                           un blanco puro vibra y cansa, y este pack esta hecho
                           para estar ocho horas abierto.
@@ -67,8 +67,8 @@
      acompaña a la claridad de la base (una pieza clara sube mas que una
      oscura); aca tiene que ser el MISMO en todos los niveles, porque lo que se
      lee es "un paso mas arriba", no "un porcentaje mas claro". Con un factor,
-     el paso entre 12% y 15% quedaria mas chico que el que hay entre 15% y 18%,
-     y la escalera se desfasaria sola.
+     el paso entre 9.4% y 12.2% quedaria mas chico que el que hay entre 12.2% y
+     15%, y la escalera se desfasaria sola.
 
      Se escribe con unidad de porcentaje para que entre directo adonde va: la
      claridad de un `hsl(from ...)`, que es 0-100. */
@@ -211,8 +211,11 @@
   /* El oscurecido detras de una ventana modal. Sale de la marca como
      todo lo demas: un negro puro no pertenece a ningun pack, y menos a este. */
   --ui-window-scrim: hsl(from var(--ui-brand) h calc(s * 0.20) 8% / 0.58);
-  --ui-window-bar-h: calc(32px * var(--ui-density, 1));
-  --ui-window-control-w: calc(44px * var(--ui-density, 1));
+  /* Las dos medidas de la barra de titulo de VS Code en Windows: 35 de alto y
+     46 por control. No son numeros redondos y por eso mismo se notan — una
+     barra de 32 con controles de 44 se lee como "parecido a", no como eso. */
+  --ui-window-bar-h: calc(35px * var(--ui-density, 1));
+  --ui-window-control-w: calc(46px * var(--ui-density, 1));
   --ui-window-glyph: 9px;
 
   /* Progress. Fina: una barra de estado, no un elemento de diseño. */
@@ -480,16 +483,33 @@
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    /* 12% de claridad: el fondo de un editor. No es negro y no tiene por que
-       serlo — un negro puro debajo de texto claro vibra y cansa la vista. */
-    --ui-bg:             hsl(from var(--ui-brand) h calc(s * 0.05) 12%);
-    --ui-bg-subtle:      hsl(from var(--ui-brand) h calc(s * 0.06) calc(12% - var(--ui-mn-step) * 0.9));
-    --ui-surface:        hsl(from var(--ui-brand) h calc(s * 0.05) calc(12% + var(--ui-mn-step)));
-    --ui-surface-hover:  hsl(from var(--ui-brand) h calc(s * 0.06) calc(12% + var(--ui-mn-step) * 2));
-    --ui-surface-active: hsl(from var(--ui-brand) h calc(s * 0.07) calc(12% + var(--ui-mn-step) * 3.4));
+    /* ⛔ EL PISO DE LA ESCALERA, Y EL UNICO NUMERO QUE HAY QUE TOCAR PARA
+       SUBIRLA O BAJARLA ENTERA. Todo lo demas de este bloque sale de acá mas o
+       menos escalones; estaba escrito seis veces y no se podia mover sin ir a
+       buscarlo a mano.
+    
+       ⚠ 9.4% ES EL GRIS DEL MARCO DE VS CODE (#181818): la barra lateral, la de
+       titulo, la de estado, los paneles. Estaba en 12%, que es el gris del
+       EDITOR (#1F1F1F) — y son dos grises distintos. Una libreria de
+       componentes no dibuja la hoja de texto, dibuja el MARCO que la rodea, y
+       el marco es el mas oscuro de los dos.
+    
+       Con el piso acá la escalera cae sola sobre la paleta real: la superficie
+       aterriza en 12.2% (#1F1F1F, el editor y la pestaña activa) y la
+       superficie activa en 18.9% (#313131, el fondo de un input o un
+       desplegable). No estan elegidos: salen de sumarle escalones al piso.
+    
+       Y sigue sin ser negro, que es el punto del pack: un negro puro debajo de
+       texto claro vibra y cansa la vista. */
+    --ui-mn-floor:       9.4%;
+    --ui-bg:             hsl(from var(--ui-brand) h calc(s * 0.05) var(--ui-mn-floor));
+    --ui-bg-subtle:      hsl(from var(--ui-brand) h calc(s * 0.06) calc(var(--ui-mn-floor) - var(--ui-mn-step) * 0.9));
+    --ui-surface:        hsl(from var(--ui-brand) h calc(s * 0.05) calc(var(--ui-mn-floor) + var(--ui-mn-step)));
+    --ui-surface-hover:  hsl(from var(--ui-brand) h calc(s * 0.06) calc(var(--ui-mn-floor) + var(--ui-mn-step) * 2));
+    --ui-surface-active: hsl(from var(--ui-brand) h calc(s * 0.07) calc(var(--ui-mn-floor) + var(--ui-mn-step) * 3.4));
 
-    --ui-border:         hsl(from var(--ui-brand) h calc(s * 0.07) calc(12% + var(--ui-mn-step) * 4.2));
-    --ui-border-strong:  hsl(from var(--ui-brand) h calc(s * 0.08) calc(12% + var(--ui-mn-step) * 7));
+    --ui-border:         hsl(from var(--ui-brand) h calc(s * 0.07) calc(var(--ui-mn-floor) + var(--ui-mn-step) * 4.2));
+    --ui-border-strong:  hsl(from var(--ui-brand) h calc(s * 0.08) calc(var(--ui-mn-floor) + var(--ui-mn-step) * 7));
     --ui-line:           rgb(from var(--ui-text) r g b / 0.10);
     --ui-line-soft:      rgb(from var(--ui-text) r g b / 0.06);
     --ui-scroll-thumb:       rgb(from var(--ui-text) r g b / 0.20);
@@ -529,16 +549,33 @@
 }
 
 :root[data-theme="dark"] {
-  /* 12% de claridad: el fondo de un editor. No es negro y no tiene por que
-     serlo — un negro puro debajo de texto claro vibra y cansa la vista. */
-  --ui-bg:             hsl(from var(--ui-brand) h calc(s * 0.05) 12%);
-  --ui-bg-subtle:      hsl(from var(--ui-brand) h calc(s * 0.06) calc(12% - var(--ui-mn-step) * 0.9));
-  --ui-surface:        hsl(from var(--ui-brand) h calc(s * 0.05) calc(12% + var(--ui-mn-step)));
-  --ui-surface-hover:  hsl(from var(--ui-brand) h calc(s * 0.06) calc(12% + var(--ui-mn-step) * 2));
-  --ui-surface-active: hsl(from var(--ui-brand) h calc(s * 0.07) calc(12% + var(--ui-mn-step) * 3.4));
+  /* ⛔ EL PISO DE LA ESCALERA, Y EL UNICO NUMERO QUE HAY QUE TOCAR PARA
+     SUBIRLA O BAJARLA ENTERA. Todo lo demas de este bloque sale de acá mas o
+     menos escalones; estaba escrito seis veces y no se podia mover sin ir a
+     buscarlo a mano.
+  
+     ⚠ 9.4% ES EL GRIS DEL MARCO DE VS CODE (#181818): la barra lateral, la de
+     titulo, la de estado, los paneles. Estaba en 12%, que es el gris del
+     EDITOR (#1F1F1F) — y son dos grises distintos. Una libreria de
+     componentes no dibuja la hoja de texto, dibuja el MARCO que la rodea, y
+     el marco es el mas oscuro de los dos.
+  
+     Con el piso acá la escalera cae sola sobre la paleta real: la superficie
+     aterriza en 12.2% (#1F1F1F, el editor y la pestaña activa) y la
+     superficie activa en 18.9% (#313131, el fondo de un input o un
+     desplegable). No estan elegidos: salen de sumarle escalones al piso.
+  
+     Y sigue sin ser negro, que es el punto del pack: un negro puro debajo de
+     texto claro vibra y cansa la vista. */
+  --ui-mn-floor:       9.4%;
+  --ui-bg:             hsl(from var(--ui-brand) h calc(s * 0.05) var(--ui-mn-floor));
+  --ui-bg-subtle:      hsl(from var(--ui-brand) h calc(s * 0.06) calc(var(--ui-mn-floor) - var(--ui-mn-step) * 0.9));
+  --ui-surface:        hsl(from var(--ui-brand) h calc(s * 0.05) calc(var(--ui-mn-floor) + var(--ui-mn-step)));
+  --ui-surface-hover:  hsl(from var(--ui-brand) h calc(s * 0.06) calc(var(--ui-mn-floor) + var(--ui-mn-step) * 2));
+  --ui-surface-active: hsl(from var(--ui-brand) h calc(s * 0.07) calc(var(--ui-mn-floor) + var(--ui-mn-step) * 3.4));
 
-  --ui-border:         hsl(from var(--ui-brand) h calc(s * 0.07) calc(12% + var(--ui-mn-step) * 4.2));
-  --ui-border-strong:  hsl(from var(--ui-brand) h calc(s * 0.08) calc(12% + var(--ui-mn-step) * 7));
+  --ui-border:         hsl(from var(--ui-brand) h calc(s * 0.07) calc(var(--ui-mn-floor) + var(--ui-mn-step) * 4.2));
+  --ui-border-strong:  hsl(from var(--ui-brand) h calc(s * 0.08) calc(var(--ui-mn-floor) + var(--ui-mn-step) * 7));
   --ui-line:           rgb(from var(--ui-text) r g b / 0.10);
   --ui-line-soft:      rgb(from var(--ui-text) r g b / 0.06);
   --ui-scroll-thumb:       rgb(from var(--ui-text) r g b / 0.20);
