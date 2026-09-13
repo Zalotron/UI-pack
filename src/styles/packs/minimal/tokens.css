@@ -1,0 +1,577 @@
+/* ===========================================================================
+   PACK "MINIMAL" — tokens
+   ---------------------------------------------------------------------------
+   La interfaz de un editor de codigo. Sobria, apretada y sin una sola cosa
+   que no este ahi para trabajar.
+
+   RIGE LA MISMA REGLA DURA: un solo color declarado (--ui-brand). Todo lo demas
+   sale de el con color relativo. Aca los neutros llevan MENOS marca que en
+   ningun otro pack —un 5% de la saturacion— porque lo que tienen que parecer
+   es gris, no "gris azulado de tal sistema de diseño".
+
+   Las cuatro piezas del pack, y son TODAS las que hay:
+
+     1. NADA ES PURO      Ni el fondo es negro ni el texto es blanco. El fondo
+                          vive en 12% de claridad y el texto en 80%, y entre
+                          esos dos extremos entra todo. Un negro puro detras de
+                          un blanco puro vibra y cansa, y este pack esta hecho
+                          para estar ocho horas abierto.
+     2. LA JERARQUIA ES   No hay sombras que separen ni contornos que encierren.
+        UN ESCALON DE LUZ Lo unico que dice donde termina un panel y empieza
+                          otro son dos o tres puntos de claridad. Es la perilla
+                          CONTRAST, y es de lo que esta hecho el pack.
+     3. DENSO             Controles bajos, aire corto, letra de 13px. Es una
+                          herramienta: lo que importa es el contenido, y la
+                          interfaz tiene que ocupar lo menos posible. Es la
+                          perilla DENSITY.
+     4. EL ACENTO SEÑALA, Aparece en el foco, en lo seleccionado y en lo activo.
+        NO DECORA         En ningun otro lado. Un panel azul porque si es
+                          exactamente lo que este pack no es.
+
+   ⚠ POR QUE NO HAY BLANCO NI NEGRO PUROS, en concreto: `--ui-neutral-0` llega
+   a 97% y `--ui-neutral-950` no baja de 8%. Todo lo demas —sombras incluidas—
+   se deriva de esos dos, asi que ni siquiera una sombra es negra.
+
+   Requiere color relativo (Chrome 119+, Safari 16.4+, Firefox 128+).
+   =========================================================================== */
+
+:root {
+  color-scheme: light dark;
+
+  /* ==================================================================== */
+  /*  =============   EL UNICO COLOR DECLARADO   ======================== */
+  /* ==================================================================== */
+  /* El azul de la barra de estado de un editor. Es el unico color saturado
+     del pack, y aparece poco a proposito. */
+  --ui-brand: #007acc;      /* pack settings -> BRAND_COLOR */
+
+  /* Dos pixeles de esquina. Lo justo para que un boton no corte. */
+  --ui-roundness: 0.5;
+
+  /* ⚠ NI UNO NI OTRO SON PUROS. El claro llega a 97% y el oscuro no baja de
+     12%: es la regla del pack aplicada tambien a la tinta que va sobre el
+     acento. src/config.js elige cual por contraste medido. */
+  --ui-on-brand-light: hsl(from var(--ui-brand) h calc(s * 0.10) 97%);
+  --ui-on-brand-dark:  hsl(from var(--ui-brand) h calc(s * 0.35) 12%);
+  --ui-on-brand: var(--ui-on-brand-light);
+
+  /* ==================================================================== */
+  /*  =========   LAS DOS PERILLAS, CONVERTIDAS EN MEDIDAS   =========== */
+  /* ==================================================================== */
+
+  /* ⛔ EL ESCALON DE LUZ. Es lo unico que separa una superficie de la de
+     abajo, asi que es lo unico que hace legible la jerarquia del pack.
+
+     ⚠ ES UNA SUMA Y NO UN FACTOR, al reves que en `nocturne` —que documenta lo
+     contrario y tiene razon para su caso. La diferencia: alla el escalon
+     acompaña a la claridad de la base (una pieza clara sube mas que una
+     oscura); aca tiene que ser el MISMO en todos los niveles, porque lo que se
+     lee es "un paso mas arriba", no "un porcentaje mas claro". Con un factor,
+     el paso entre 12% y 15% quedaria mas chico que el que hay entre 15% y 18%,
+     y la escalera se desfasaria sola.
+
+     Se escribe con unidad de porcentaje para que entre directo adonde va: la
+     claridad de un `hsl(from ...)`, que es 0-100. */
+  --ui-mn-step: calc(2.8% * var(--ui-contrast, 1));
+
+  /* La densidad multiplica TODO lo que ocupa lugar. Va abajo, en cada medida. */
+
+  /* ------------------------------------------------------ Tipografía ---- */
+  /* ⛔ LA DEL SISTEMA, Y NO ES PEREZA. Un editor de codigo usa la letra del
+     sistema operativo a proposito: es la que el usuario ya sabe leer, la que
+     su pantalla ya sabe dibujar y la unica que no se siente "diseñada". Este
+     es el unico pack que NO nombra una familia propia — y es su firma, igual
+     que nombrar una lo es para los demas. */
+  --ui-font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+                  Arial, sans-serif;
+  /* La mono si es la del editor: Cascadia primero, y detras las de siempre. */
+  --ui-font-mono: "Cascadia Code", "Cascadia Mono", ui-monospace, SFMono-Regular,
+                  Consolas, "Liberation Mono", Menlo, monospace;
+
+  /* 13px de cuerpo. Es la medida de un editor, y con ella se lee todo el dia. */
+  --ui-text-xs:   0.6875rem;  /* 11px */
+  --ui-text-sm:   0.75rem;    /* 12px */
+  --ui-text-md:   0.8125rem;  /* 13px */
+  --ui-text-lg:   0.875rem;   /* 14px */
+  --ui-text-xl:   1.0625rem;  /* 17px */
+  --ui-text-2xl:  1.3125rem;  /* 21px */
+  --ui-text-3xl:  1.75rem;    /* 28px */
+
+  /* ⚠ SIN NEGRITAS FUERTES. En una interfaz densa el peso alto se lee como
+     ruido: lo que destaca una linea es el COLOR del texto, no su grosor. */
+  --ui-weight-regular:  400;
+  --ui-weight-medium:   500;
+  --ui-weight-semibold: 600;
+  --ui-weight-bold:     600;
+
+  --ui-leading-tight:   1.25;
+  --ui-leading-normal:  1.45;
+  --ui-leading-relaxed: 1.6;
+
+  --ui-tracking-tight: 0;
+  --ui-tracking-wide:  0.02em;
+
+  /* -------------------------------------------- Espaciado (escala 4px) -- */
+  --ui-space-0:  0;
+  --ui-space-1:  0.25rem;
+  --ui-space-2:  0.5rem;
+  --ui-space-3:  0.75rem;
+  --ui-space-4:  1rem;
+  --ui-space-5:  1.25rem;
+  --ui-space-6:  1.5rem;
+  --ui-space-8:  2rem;
+  --ui-space-10: 2.5rem;
+  --ui-space-12: 3rem;
+  --ui-space-16: 4rem;
+
+  /* --------------------------------------- Espaciado fluido ------------- */
+  /* ⚠ CORTO, Y MULTIPLICADO POR DENSITY. Es la mitad de lo que usa cualquier
+     otro pack: en una herramienta el aire no es respiro, es espacio que le
+     sacas al contenido. Sin `clamp` creciendo con el viewport, tambien a
+     proposito — un panel lateral de 300px no tiene por que ensancharse su
+     padding porque la pantalla sea grande. */
+  --ui-pad-block-xs:  calc(6px  * var(--ui-density, 1));
+  --ui-pad-inline-xs: calc(8px  * var(--ui-density, 1));
+  --ui-pad-block-sm:  calc(10px * var(--ui-density, 1));
+  --ui-pad-inline-sm: calc(12px * var(--ui-density, 1));
+  --ui-pad-block-md:  calc(14px * var(--ui-density, 1));
+  --ui-pad-inline-md: calc(16px * var(--ui-density, 1));
+  --ui-pad-block-lg:  calc(20px * var(--ui-density, 1));
+  --ui-pad-inline-lg: calc(22px * var(--ui-density, 1));
+  --ui-pad-block-xl:  calc(28px * var(--ui-density, 1));
+  --ui-pad-inline-xl: calc(30px * var(--ui-density, 1));
+
+  --ui-gap-none: 0;
+  --ui-gap-xs:   calc(4px  * var(--ui-density, 1));
+  --ui-gap-sm:   calc(8px  * var(--ui-density, 1));
+  --ui-gap-md:   calc(12px * var(--ui-density, 1));
+  --ui-gap-lg:   calc(18px * var(--ui-density, 1));
+  --ui-gap-xl:   calc(26px * var(--ui-density, 1));
+
+  --ui-col-min: 220px;
+
+  /* ------------------------------------------------ Separadores ---------- */
+  --ui-sep-space-none: 0;
+  --ui-sep-space-xs:   calc(4px  * var(--ui-density, 1));
+  --ui-sep-space-sm:   calc(8px  * var(--ui-density, 1));
+  --ui-sep-space-md:   calc(14px * var(--ui-density, 1));
+  --ui-sep-space-lg:   calc(22px * var(--ui-density, 1));
+  --ui-sep-space-xl:   calc(32px * var(--ui-density, 1));
+
+  /* Una regla de editor no se desvanece: separa y punto. */
+  --ui-sep-fade: 0%;
+
+  /* ------------------------------------------- Controles ----------------- */
+  /* Bajos. Un input de VS Code mide 26px, no 40. */
+  --ui-control-h-sm:    calc(22px * var(--ui-density, 1));
+  --ui-control-h-md:    calc(26px * var(--ui-density, 1));
+  --ui-control-h-lg:    calc(32px * var(--ui-density, 1));
+  --ui-control-pad-sm:  calc(8px  * var(--ui-density, 1));
+  --ui-control-pad-md:  calc(11px * var(--ui-density, 1));
+  --ui-control-pad-lg:  calc(14px * var(--ui-density, 1));
+  --ui-control-font-sm: var(--ui-text-sm);
+  --ui-control-font-md: var(--ui-text-md);
+  --ui-control-font-lg: var(--ui-text-lg);
+  --ui-control-gap-sm:  var(--ui-space-1);
+  --ui-control-gap-md:  var(--ui-space-2);
+  --ui-control-gap-lg:  var(--ui-space-2);
+  --ui-control-radius-sm: var(--ui-radius-xs);
+  --ui-control-radius-md: var(--ui-radius-sm);
+  --ui-control-radius-lg: var(--ui-radius-sm);
+  /* Piso del spinner. NO es su ancho: el ancho lo reserva el propio
+     control segun sus limites. Esto es para que uno de un solo digito
+     siga siendo agarrable. */
+  --ui-spinner-min-w: 3ch;
+  /* Respiro sobre los caracteres reservados: la coma, el signo y el
+     cursor no miden lo que mide un cero, que es lo que mide `ch`. */
+  --ui-spinner-slack: 0.75;
+
+  /* Slider fino, con un tirador chico. La barra de un editor no llama. */
+  --ui-slider-track-ratio: 0.16;
+  --ui-slider-thumb-ratio: 0.62;
+  --ui-slider-thumb-w: 10px;
+  --ui-slider-value-w: 5ch;
+
+  --ui-select-menu-max-h: 260px;
+  --ui-select-arrow: 6px;
+
+  --ui-toggle-track-ratio: 0.56;
+  --ui-toggle-aspect: 1.9;
+  --ui-toggle-knob-inset: 2px;
+  --ui-check-ratio: 0.58;
+
+  /* La barra de scroll de un editor: fina, sin riel y sin forma. */
+  --ui-scroll-size: 10px;
+  --ui-scroll-inset: 2px;
+  --ui-scroll-size-regular: 14px;
+  --ui-scroll-inset-regular: 3px;
+
+  /* Window. ⛔ EL MARCO DE UNA VENTANA ES CUADRADO, SIEMPRE. */
+  --ui-window-radius: 0;
+  /* El oscurecido detras de una ventana modal. Sale de la marca como
+     todo lo demas: un negro puro no pertenece a ningun pack, y menos a este. */
+  --ui-window-scrim: hsl(from var(--ui-brand) h calc(s * 0.20) 8% / 0.58);
+  --ui-window-bar-h: calc(32px * var(--ui-density, 1));
+  --ui-window-control-w: calc(44px * var(--ui-density, 1));
+  --ui-window-glyph: 9px;
+
+  /* Progress. Fina: una barra de estado, no un elemento de diseño. */
+  --ui-progress-h-sm: 2px;
+  --ui-progress-h-md: 4px;
+  --ui-progress-h-lg: 6px;
+  --ui-progress-ring-sm: 28px;
+  --ui-progress-ring-md: 40px;
+  --ui-progress-ring-lg: 56px;
+  /* ⚠ ESTO NO SON PIXELES: es el PORCENTAJE DEL DIAMETRO.
+     El aro se dibuja en un SVG con `viewBox="0 0 100 100"`, asi que una unidad
+     del trazo vale un centesimo del diametro. */
+  --ui-progress-ring-width: 8;
+
+  /* Iconos de trazo fino y parejo, como los de la barra lateral de un editor. */
+  --ui-icon-sm: 14px;
+  --ui-icon-md: 16px;
+  --ui-icon-lg: 20px;
+  --ui-icon-stroke: 1.25px;
+
+  --ui-tabs-indicator-h: 1px;
+  /* Aire arriba y abajo de la fila de pestañas, para que no le recorte las
+     sombras a lo que tenga adentro. Nada sobresale de una pestaña en este
+     pack: no hay relieve, ni halo, ni corrida. */
+  --ui-tabs-bleed: 0px;
+
+  --ui-swatch-w: 2.2em;
+  --ui-picker-w: 220px;
+  --ui-picker-area-h: 120px;
+  --ui-picker-cursor: 10px;
+
+  /* ⛔ NI SE LEVANTA NI SE HUNDE. Un control de editor no se mueve cuando lo
+     tocas: cambia de fondo y listo. Mover una pieza al pasarle el mouse es
+     exactamente el tipo de gesto que este pack no hace. */
+  --ui-press-shift: 0px;
+  --ui-hover-lift: 0px;
+  --ui-disabled-opacity: 0.4;
+
+  /* ==================================================================== */
+  /*  CURSORES                                                            */
+  /*  fino y sin adornos: la flecha de un sistema operativo               */
+  /*  ------------------------------------------------------------------  */
+  /*  Los NUEVE, dibujados. La FORMA la comparten todos los packs —una     */
+  /*  flecha es una flecha y una mano abierta es una mano abierta: son     */
+  /*  convenciones de uso, no lugar para inventar— y lo que cambia es      */
+  /*  COMO ESTA PINTADA. Mismo reparto que el resto del sistema.           */
+  /*                                                                       */
+  /*  ⚠ CADA URL LLEVA SU HOTSPOT Y SU FALLBACK, Y LOS DOS SON             */
+  /*  OBLIGATORIOS. El hotspot es el pixel que apunta —la punta de la      */
+  /*  flecha, el medio de la palma, el centro de la cruz— y sin el el      */
+  /*  navegador usa la esquina de arriba a la izquierda. El fallback es lo */
+  /*  que se ve si el SVG no carga o el tamaño no entra: sin el, el cursor */
+  /*  puede quedar en NINGUNO.                                             */
+  /*                                                                       */
+  /*  ⚠ LOS DOS DEL ARO MIDEN 28px Y NO 24: llevan la insignia al costado  */
+  /*  de la flecha, igual que los nativos, y no entraba en 24. Sigue lejos */
+  /*  del tope de 32, pasado el cual varios navegadores lo ignoran.        */
+  /*                                                                       */
+  /*  ⚠ Y SON DE TINTA NEUTRA, NO DEL COLOR DE MARCA. Un data URI es un    */
+  /*  documento aparte y no ve las variables CSS, asi que un cursor no     */
+  /*  puede seguir a BRAND_COLOR: pintarlo del color de marca seria        */
+  /*  clavarlo y mentir cuando la perilla se mueva. La identidad la lleva  */
+  /*  la forma y el acabado.                                               */
+  /* ==================================================================== */
+  /* el puntero de siempre */
+  --ui-cursor-default:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M3 2 3 17.6 7.3 13.4 10 19.5 12.9 18.2 10.3 12.3 16.2 12.3Z' fill='%231b1d1f' fill-opacity='.7' stroke='%231b1d1f' stroke-opacity='.7' stroke-width='2.6' stroke-linejoin='round'/%3E%3Cpath d='M3 2 3 17.6 7.3 13.4 10 19.5 12.9 18.2 10.3 12.3 16.2 12.3Z' fill='%23e6e6e6' stroke='%23e6e6e6' stroke-width='.5' stroke-linejoin='round'/%3E%3C/svg%3E") 3 2, default;
+  /* lo que se puede apretar */
+  --ui-cursor-pointer:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M8 2.6c0-1 2-1 2 0v6.1h1V6.2c0-1 2-1 2 0v2.5h1V7.4c0-1 2-1 2 0v1.3h1V9c0-1 2-1 2 0v5.6c0 3-2 5.4-5 5.4h-1.6c-1.6 0-3-.8-3.8-2.2L5 13.6c-.5-.9 1.2-2 1.8-1.1L8 14.2Z' fill='%231b1d1f' fill-opacity='.7' stroke='%231b1d1f' stroke-opacity='.7' stroke-width='2.6' stroke-linejoin='round'/%3E%3Cpath d='M8 2.6c0-1 2-1 2 0v6.1h1V6.2c0-1 2-1 2 0v2.5h1V7.4c0-1 2-1 2 0v1.3h1V9c0-1 2-1 2 0v5.6c0 3-2 5.4-5 5.4h-1.6c-1.6 0-3-.8-3.8-2.2L5 13.6c-.5-.9 1.2-2 1.8-1.1L8 14.2Z' fill='%23e6e6e6' stroke='%23e6e6e6' stroke-width='.5' stroke-linejoin='round'/%3E%3C/svg%3E") 9 2, pointer;
+  /* donde se escribe */
+  --ui-cursor-text:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M7 3h6M7 19h6M10 3v16' fill='none' stroke='%231b1d1f' stroke-opacity='.7' stroke-width='3' stroke-linecap='butt'/%3E%3Cpath d='M7 3h6M7 19h6M10 3v16' fill='none' stroke='%23e6e6e6' stroke-width='1.2' stroke-linecap='butt'/%3E%3C/svg%3E") 10 11, text;
+  /* lo que no se puede tocar */
+  --ui-cursor-disabled:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Cpath d='M3 2 3 17.6 7.3 13.4 10 19.5 12.9 18.2 10.3 12.3 16.2 12.3Z' fill='%231b1d1f' fill-opacity='.7' stroke='%231b1d1f' stroke-opacity='.7' stroke-width='2.6' stroke-linejoin='round'/%3E%3Cpath d='M3 2 3 17.6 7.3 13.4 10 19.5 12.9 18.2 10.3 12.3 16.2 12.3Z' fill='%23e6e6e6' stroke='%23e6e6e6' stroke-width='.5' stroke-linejoin='round'/%3E%3Cpath d='M20 13.8a5.4 5.4 0 1 0 0 10.8 5.4 5.4 0 0 1 0-10.8M16.7 15.8l6.6 6.8' fill='none' stroke='%231b1d1f' stroke-opacity='.7' stroke-width='3' stroke-linecap='butt'/%3E%3Cpath d='M20 13.8a5.4 5.4 0 1 0 0 10.8 5.4 5.4 0 0 1 0-10.8M16.7 15.8l6.6 6.8' fill='none' stroke='%23e6e6e6' stroke-width='1.2' stroke-linecap='butt'/%3E%3C/svg%3E") 3 2, not-allowed;
+  /* lo que se puede agarrar */
+  --ui-cursor-grab:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M6.2 13V8.7c0-1.3 2.2-1.3 2.2 0v1.6V4.4c0-1.3 2.2-1.3 2.2 0v5.6V3.7c0-1.3 2.2-1.3 2.2 0v6.3V6c0-1.3 2.2-1.3 2.2 0v8.6c0 3.4-2.1 5.9-5.4 5.9-2 0-3.5-.8-4.6-2.4l-2.7-3.8c-.7-1 1-2.4 1.9-1.4Z' fill='%231b1d1f' fill-opacity='.7' stroke='%231b1d1f' stroke-opacity='.7' stroke-width='2.6' stroke-linejoin='round'/%3E%3Cpath d='M6.2 13V8.7c0-1.3 2.2-1.3 2.2 0v1.6V4.4c0-1.3 2.2-1.3 2.2 0v5.6V3.7c0-1.3 2.2-1.3 2.2 0v6.3V6c0-1.3 2.2-1.3 2.2 0v8.6c0 3.4-2.1 5.9-5.4 5.9-2 0-3.5-.8-4.6-2.4l-2.7-3.8c-.7-1 1-2.4 1.9-1.4Z' fill='%23e6e6e6' stroke='%23e6e6e6' stroke-width='.5' stroke-linejoin='round'/%3E%3C/svg%3E") 12 11, grab;
+  /* mientras se arrastra */
+  --ui-cursor-grabbing:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M6.2 13.6v-2.4c0-1.3 2.2-1.3 2.2 0v.5c0-1.3 2.2-1.3 2.2 0v.2c0-1.3 2.2-1.3 2.2 0v.3c0-1.3 2.2-1.3 2.2 0v2.6c0 3.2-2.1 5.7-5.4 5.7-2 0-3.5-.8-4.6-2.4l-2.3-3.2c-.7-1 1-2.4 1.9-1.4Z' fill='%231b1d1f' fill-opacity='.7' stroke='%231b1d1f' stroke-opacity='.7' stroke-width='2.6' stroke-linejoin='round'/%3E%3Cpath d='M6.2 13.6v-2.4c0-1.3 2.2-1.3 2.2 0v.5c0-1.3 2.2-1.3 2.2 0v.2c0-1.3 2.2-1.3 2.2 0v.3c0-1.3 2.2-1.3 2.2 0v2.6c0 3.2-2.1 5.7-5.4 5.7-2 0-3.5-.8-4.6-2.4l-2.3-3.2c-.7-1 1-2.4 1.9-1.4Z' fill='%23e6e6e6' stroke='%23e6e6e6' stroke-width='.5' stroke-linejoin='round'/%3E%3C/svg%3E") 12 12, grabbing;
+  /* arrastre vertical (el Spinner) */
+  --ui-cursor-resize-ns:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M12 1.6 7.9 7.4h2.6v9.2H7.9L12 22.4l4.1-5.8h-2.6V7.4h2.6Z' fill='%231b1d1f' fill-opacity='.7' stroke='%231b1d1f' stroke-opacity='.7' stroke-width='2.6' stroke-linejoin='round'/%3E%3Cpath d='M12 1.6 7.9 7.4h2.6v9.2H7.9L12 22.4l4.1-5.8h-2.6V7.4h2.6Z' fill='%23e6e6e6' stroke='%23e6e6e6' stroke-width='.5' stroke-linejoin='round'/%3E%3C/svg%3E") 12 12, ns-resize;
+  /* elegir un punto (el area de color) */
+  --ui-cursor-crosshair:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M12 1v9.2M12 13.8V23M1 12h9.2M13.8 12H23' fill='none' stroke='%231b1d1f' stroke-opacity='.7' stroke-width='3' stroke-linecap='butt'/%3E%3Cpath d='M12 1v9.2M12 13.8V23M1 12h9.2M13.8 12H23' fill='none' stroke='%23e6e6e6' stroke-width='1.2' stroke-linecap='butt'/%3E%3C/svg%3E") 12 12, crosshair;
+  /* esperando (un boton en carga) */
+  --ui-cursor-busy:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Cpath d='M3 2 3 17.6 7.3 13.4 10 19.5 12.9 18.2 10.3 12.3 16.2 12.3Z' fill='%231b1d1f' fill-opacity='.7' stroke='%231b1d1f' stroke-opacity='.7' stroke-width='2.6' stroke-linejoin='round'/%3E%3Cpath d='M3 2 3 17.6 7.3 13.4 10 19.5 12.9 18.2 10.3 12.3 16.2 12.3Z' fill='%23e6e6e6' stroke='%23e6e6e6' stroke-width='.5' stroke-linejoin='round'/%3E%3Cpath d='M25.4 19.2a5.4 5.4 0 1 1-2.5-4.6' fill='none' stroke='%231b1d1f' stroke-opacity='.7' stroke-width='3' stroke-linecap='butt'/%3E%3Cpath d='M25.4 19.2a5.4 5.4 0 1 1-2.5-4.6' fill='none' stroke='%23e6e6e6' stroke-width='1.2' stroke-linecap='butt'/%3E%3C/svg%3E") 3 2, progress;
+
+
+  /* ---------------------------------------------------------- Radios ---- */
+  --ui-radius-xs:   calc(4px  * var(--ui-roundness));
+  --ui-radius-sm:   calc(6px  * var(--ui-roundness));
+  --ui-radius-md:   calc(8px  * var(--ui-roundness));
+  --ui-radius-lg:   calc(12px * var(--ui-roundness));
+  --ui-radius-xl:   calc(16px * var(--ui-roundness));
+  --ui-radius-full: calc(999px * min(var(--ui-roundness), 1));
+  --ui-radius-circle: 50%;
+
+  /* -------------------------------------------------------- Bordes ------ */
+  /* Uno. Un contorno mas grueso ya es una decision de diseño. */
+  --ui-border-width: 1px;
+
+  /* ------------------------------------------------------ Movimiento ---- */
+  /* ⚠ CORTO Y SIN CURVA DE CARACTER. Lo mas rapido del sistema entero: en una
+     herramienta la animacion no es un gesto, es el tiempo que tardas en ver el
+     resultado. Cualquier cosa que se note es demasiado. */
+  --ui-duration-fast: 80ms;
+  --ui-duration-base: 130ms;
+  --ui-duration-slow: 200ms;
+  --ui-duration-loader: 1000ms;
+  --ui-loader-width: 1.5px;
+
+  --ui-ease:      cubic-bezier(0.4, 0, 0.2, 1);
+  --ui-ease-out:  cubic-bezier(0.2, 0, 0.1, 1);
+  --ui-ease-in:   cubic-bezier(0.4, 0, 1, 1);
+
+  /* ----------------------------------------------------------- Capas ---- */
+  --ui-z-base:     0;
+  --ui-z-dropdown: 1000;
+  --ui-z-sticky:   1100;
+  --ui-z-overlay:  1200;
+  --ui-z-modal:    1300;
+  --ui-z-toast:    1400;
+  --ui-z-tooltip:  1500;
+
+  /* ==================================================================== */
+  /*  NEUTROS — casi sin marca. Un 5% de la saturacion: lo justo para que  */
+  /*  los grises no sean planos, lo poco para que sigan siendo grises.     */
+  /*  ⚠ NI 0% NI 100% DE CLARIDAD EN NINGUNO: es la regla del pack.        */
+  /* ==================================================================== */
+  --ui-neutral-0:    hsl(from var(--ui-brand) h calc(s * 0.04) 97%);
+  --ui-neutral-50:   hsl(from var(--ui-brand) h calc(s * 0.05) 94%);
+  --ui-neutral-100:  hsl(from var(--ui-brand) h calc(s * 0.05) 90%);
+  --ui-neutral-200:  hsl(from var(--ui-brand) h calc(s * 0.06) 83%);
+  --ui-neutral-300:  hsl(from var(--ui-brand) h calc(s * 0.06) 72%);
+  --ui-neutral-400:  hsl(from var(--ui-brand) h calc(s * 0.07) 58%);
+  --ui-neutral-500:  hsl(from var(--ui-brand) h calc(s * 0.07) 46%);
+  --ui-neutral-600:  hsl(from var(--ui-brand) h calc(s * 0.08) 36%);
+  --ui-neutral-700:  hsl(from var(--ui-brand) h calc(s * 0.08) 27%);
+  --ui-neutral-800:  hsl(from var(--ui-brand) h calc(s * 0.09) 19%);
+  --ui-neutral-900:  hsl(from var(--ui-brand) h calc(s * 0.10) 13%);
+  --ui-neutral-950:  hsl(from var(--ui-brand) h calc(s * 0.12) 8%);
+
+  /* ==================================================================== */
+  /*  FAMILIA DE MARCA                                                   */
+  /* ==================================================================== */
+  --ui-brand-base:   var(--ui-brand);
+  --ui-brand-hover:  hsl(from var(--ui-brand) h s calc(l * 1.14));
+  --ui-brand-active: hsl(from var(--ui-brand) h s calc(l * 0.86));
+  --ui-brand-soft:   hsl(from var(--ui-brand) h calc(s * 0.70) 76%);
+  --ui-brand-subtle: hsl(from var(--ui-brand) h calc(s * 0.45) 92%);
+
+  /* ==================================================================== */
+  /*  ESTADOS — el tono se fija (un error tiene que leerse rojo aunque    */
+  /*  el brand sea azul), pero la saturacion la aporta el brand. Aca van  */
+  /*  apagados: son los colores de un editor, no de un semaforo.          */
+  /* ==================================================================== */
+  --ui-red-100:   hsl(from var(--ui-brand) 5   calc(s * 0.30) 92%);
+  --ui-red-500:   hsl(from var(--ui-brand) 5   calc(s * 0.65) 62%);
+  --ui-red-600:   hsl(from var(--ui-brand) 3   calc(s * 0.70) 46%);
+  --ui-red-700:   hsl(from var(--ui-brand) 2   calc(s * 0.70) 38%);
+
+  --ui-green-100: hsl(from var(--ui-brand) 140 calc(s * 0.28) 91%);
+  --ui-green-500: hsl(from var(--ui-brand) 132 calc(s * 0.50) 52%);
+  --ui-green-600: hsl(from var(--ui-brand) 134 calc(s * 0.55) 34%);
+
+  --ui-amber-100: hsl(from var(--ui-brand) 45  calc(s * 0.35) 92%);
+  --ui-amber-500: hsl(from var(--ui-brand) 40  calc(s * 0.75) 58%);
+  --ui-amber-600: hsl(from var(--ui-brand) 36  calc(s * 0.80) 40%);
+
+  /* -------------------------------------------------------- Sombras ----- */
+  /* ⛔ CASI NO HAY. Solo lo que FLOTA de verdad —un desplegable, un modal—
+     proyecta algo, y lo que esta simplemente apoyado no proyecta nada. Una
+     interfaz densa con sombras en todo se vuelve una pila de tarjetas.
+     Y salen de --ui-neutral-950, que no es negro: ni la sombra es negra. */
+  --ui-shadow-sm: 0 1px 2px rgb(from var(--ui-neutral-950) r g b / 0.18);
+  --ui-shadow-md: 0 2px 8px rgb(from var(--ui-neutral-950) r g b / 0.28);
+  --ui-shadow-lg: 0 6px 18px rgb(from var(--ui-neutral-950) r g b / 0.38);
+
+  /* ------------------------------------------- Semánticos — tema claro -- */
+  /* ⚠ ESTE ES EL TEMA DERIVADO. El pack esta calibrado para el oscuro (ver el
+     final). Aca es el mismo editor con el tema claro puesto: papel de trabajo,
+     no papel blanco — la superficie llega a 99% y el fondo se queda en 96%,
+     porque en claro el escalon va al reves y necesita lugar para bajar. */
+  --ui-bg:             hsl(from var(--ui-brand) h calc(s * 0.05) 96%);
+  --ui-bg-subtle:      hsl(from var(--ui-brand) h calc(s * 0.05) calc(96% - var(--ui-mn-step)));
+  --ui-surface:        hsl(from var(--ui-brand) h calc(s * 0.04) 99%);
+  --ui-surface-hover:  hsl(from var(--ui-brand) h calc(s * 0.05) calc(99% - var(--ui-mn-step)));
+  --ui-surface-active: hsl(from var(--ui-brand) h calc(s * 0.06) calc(99% - var(--ui-mn-step) * 2.2));
+
+  /* El contorno tambien sigue a CONTRAST: es parte de la misma escalera. */
+  --ui-border:         hsl(from var(--ui-brand) h calc(s * 0.07) calc(96% - var(--ui-mn-step) * 2.6));
+  --ui-border-strong:  hsl(from var(--ui-brand) h calc(s * 0.08) calc(96% - var(--ui-mn-step) * 5));
+  --ui-line:           rgb(from var(--ui-text) r g b / 0.12);
+  --ui-line-soft:      rgb(from var(--ui-text) r g b / 0.07);
+  --ui-scroll-thumb:       rgb(from var(--ui-text) r g b / 0.22);
+  --ui-scroll-thumb-hover: rgb(from var(--ui-text) r g b / 0.38);
+
+  --ui-panel-from:     var(--ui-surface);
+  --ui-panel-to:       var(--ui-surface);
+
+  --ui-text:           hsl(from var(--ui-brand) h calc(s * 0.14) 20%);
+  --ui-text-muted:     hsl(from var(--ui-brand) h calc(s * 0.10) 38%);
+  --ui-text-subtle:    hsl(from var(--ui-brand) h calc(s * 0.09) 48%);
+
+  --ui-accent:         hsl(from var(--ui-brand) h s 38%);
+  --ui-accent-hover:   hsl(from var(--ui-brand) h s 32%);
+  --ui-accent-active:  hsl(from var(--ui-brand) h s 28%);
+  --ui-accent-subtle:  rgb(from var(--ui-brand) r g b / 0.12);
+  --ui-accent-soft:    rgb(from var(--ui-brand) r g b / 0.35);
+  /* Como LETRA el azul hay que bajarlo: en su claridad de relleno no llega
+     sobre una superficie clara. */
+  --ui-accent-text:    hsl(from var(--ui-brand) h s 32%);
+  --ui-on-accent:      var(--ui-on-brand-light);
+
+  --ui-danger:         var(--ui-red-600);
+  --ui-danger-hover:   var(--ui-red-700);
+  --ui-danger-subtle:  var(--ui-red-100);
+  --ui-on-danger:      var(--ui-on-brand-light);
+
+  --ui-success:        var(--ui-green-600);
+  --ui-success-subtle: var(--ui-green-100);
+  --ui-warning:        var(--ui-amber-600);
+  --ui-warning-subtle: var(--ui-amber-100);
+
+  /* ⛔ EL FOCO ES UN CONTORNO DE 1px, NO UN HALO. Es la unica señal fuerte que
+     este pack se permite, y es asi porque en un editor el foco de teclado se
+     usa todo el tiempo: tiene que estar siempre visible y no ocupar lugar.
+
+     ⛔ Y SALE DE --ui-accent-text, NO DE --ui-accent. Los dos tokens del acento
+     no son intercambiables: --ui-accent esta calibrado como RELLENO, o sea para
+     que se lea la tinta que va ENCIMA, y por eso en este pack es oscuro. Un
+     contorno de foco no tiene nada encima — se lee contra el FONDO, igual que
+     una letra. Con --ui-accent daba 2.4:1 contra una superficie oscura; con el
+     token que si esta medido contra el fondo, 6.9:1. */
+  --ui-focus-ring:     var(--ui-accent-text);
+  --ui-focus-width:    1px;
+  --ui-focus-offset:   1px;
+
+  --ui-selection-bg:   rgb(from var(--ui-accent) r g b / 0.26);
+  --ui-selection-fg:   var(--ui-text);
+
+  /* El halo casi no existe: lo que marca un control activo es su contorno. */
+  --ui-ring-width:     2px;
+  --ui-ring:           rgb(from var(--ui-accent) r g b / 0.22);
+  --ui-ring-soft:      rgb(from var(--ui-accent) r g b / 0.10);
+}
+
+/* ===========================================================================
+   TEMA OSCURO — el que manda
+   ---------------------------------------------------------------------------
+   No es el tema alternativo: es para el que esta calibrado el pack. Un editor
+   de codigo se mira ocho horas seguidas, y de ahi sale todo lo demas — que el
+   fondo no sea negro, que el texto no sea blanco, y que lo que separa una
+   superficie de otra sea un escalon de luz y no una linea.
+
+   ⚠ EL ESCALON SUBE. El fondo es el nivel mas bajo y cada panel apoyado encima
+   es un paso mas claro. En el tema claro va al reves —sobre papel una capa mas
+   clara no existe— y por eso alla las restas; aca, las sumas.
+   =========================================================================== */
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    /* 12% de claridad: el fondo de un editor. No es negro y no tiene por que
+       serlo — un negro puro debajo de texto claro vibra y cansa la vista. */
+    --ui-bg:             hsl(from var(--ui-brand) h calc(s * 0.05) 12%);
+    --ui-bg-subtle:      hsl(from var(--ui-brand) h calc(s * 0.06) calc(12% - var(--ui-mn-step) * 0.9));
+    --ui-surface:        hsl(from var(--ui-brand) h calc(s * 0.05) calc(12% + var(--ui-mn-step)));
+    --ui-surface-hover:  hsl(from var(--ui-brand) h calc(s * 0.06) calc(12% + var(--ui-mn-step) * 2));
+    --ui-surface-active: hsl(from var(--ui-brand) h calc(s * 0.07) calc(12% + var(--ui-mn-step) * 3.4));
+
+    --ui-border:         hsl(from var(--ui-brand) h calc(s * 0.07) calc(12% + var(--ui-mn-step) * 4.2));
+    --ui-border-strong:  hsl(from var(--ui-brand) h calc(s * 0.08) calc(12% + var(--ui-mn-step) * 7));
+    --ui-line:           rgb(from var(--ui-text) r g b / 0.10);
+    --ui-line-soft:      rgb(from var(--ui-text) r g b / 0.06);
+    --ui-scroll-thumb:       rgb(from var(--ui-text) r g b / 0.20);
+    --ui-scroll-thumb-hover: rgb(from var(--ui-text) r g b / 0.36);
+
+    --ui-panel-from:     var(--ui-surface);
+    --ui-panel-to:       var(--ui-surface);
+
+    /* 80% de claridad: el gris de texto de un editor. Tampoco es blanco. */
+    --ui-text:           hsl(from var(--ui-brand) h calc(s * 0.06) 80%);
+    --ui-text-muted:     hsl(from var(--ui-brand) h calc(s * 0.06) 62%);
+    --ui-text-subtle:    hsl(from var(--ui-brand) h calc(s * 0.07) 50%);
+
+    /* ⚠ MAS OSCURO QUE EL BRAND, Y EL HOVER MAS OSCURO TODAVIA. Encima de un
+       relleno de acento va tinta CLARA, asi que aclararlo le come el contraste
+       en vez de resaltarlo: medido, en 42% el rotulo caia a 3.90:1. */
+    --ui-accent:         hsl(from var(--ui-brand) h s 34%);
+    --ui-accent-hover:   hsl(from var(--ui-brand) h s 29%);
+    --ui-accent-active:  hsl(from var(--ui-brand) h s 25%);
+    --ui-accent-subtle:  rgb(from var(--ui-brand) r g b / 0.22);
+    --ui-accent-soft:    rgb(from var(--ui-brand) r g b / 0.42);
+    --ui-accent-text:    hsl(from var(--ui-brand) h calc(s * 0.90) 66%);
+    --ui-on-accent:      var(--ui-on-brand-light);
+
+    --ui-danger:         var(--ui-red-500);
+    --ui-danger-hover:   hsl(from var(--ui-red-500) h s calc(l * 1.10));
+    --ui-danger-subtle:  rgb(from var(--ui-red-500) r g b / 0.18);
+    --ui-on-danger:      var(--ui-on-brand-dark);
+
+    --ui-success:        var(--ui-green-500);
+    --ui-success-subtle: rgb(from var(--ui-green-500) r g b / 0.18);
+    --ui-warning:        var(--ui-amber-500);
+    --ui-warning-subtle: rgb(from var(--ui-amber-500) r g b / 0.18);
+
+    --ui-selection-bg:   rgb(from var(--ui-accent) r g b / 0.34);
+  }
+}
+
+:root[data-theme="dark"] {
+  /* 12% de claridad: el fondo de un editor. No es negro y no tiene por que
+     serlo — un negro puro debajo de texto claro vibra y cansa la vista. */
+  --ui-bg:             hsl(from var(--ui-brand) h calc(s * 0.05) 12%);
+  --ui-bg-subtle:      hsl(from var(--ui-brand) h calc(s * 0.06) calc(12% - var(--ui-mn-step) * 0.9));
+  --ui-surface:        hsl(from var(--ui-brand) h calc(s * 0.05) calc(12% + var(--ui-mn-step)));
+  --ui-surface-hover:  hsl(from var(--ui-brand) h calc(s * 0.06) calc(12% + var(--ui-mn-step) * 2));
+  --ui-surface-active: hsl(from var(--ui-brand) h calc(s * 0.07) calc(12% + var(--ui-mn-step) * 3.4));
+
+  --ui-border:         hsl(from var(--ui-brand) h calc(s * 0.07) calc(12% + var(--ui-mn-step) * 4.2));
+  --ui-border-strong:  hsl(from var(--ui-brand) h calc(s * 0.08) calc(12% + var(--ui-mn-step) * 7));
+  --ui-line:           rgb(from var(--ui-text) r g b / 0.10);
+  --ui-line-soft:      rgb(from var(--ui-text) r g b / 0.06);
+  --ui-scroll-thumb:       rgb(from var(--ui-text) r g b / 0.20);
+  --ui-scroll-thumb-hover: rgb(from var(--ui-text) r g b / 0.36);
+
+  --ui-panel-from:     var(--ui-surface);
+  --ui-panel-to:       var(--ui-surface);
+
+  /* 80% de claridad: el gris de texto de un editor. Tampoco es blanco. */
+  --ui-text:           hsl(from var(--ui-brand) h calc(s * 0.06) 80%);
+  --ui-text-muted:     hsl(from var(--ui-brand) h calc(s * 0.06) 62%);
+  --ui-text-subtle:    hsl(from var(--ui-brand) h calc(s * 0.07) 50%);
+
+  /* ⚠ MAS OSCURO QUE EL BRAND, Y EL HOVER MAS OSCURO TODAVIA. Encima de un
+     relleno de acento va tinta CLARA, asi que aclararlo le come el contraste
+     en vez de resaltarlo: medido, en 42% el rotulo caia a 3.90:1. */
+  --ui-accent:         hsl(from var(--ui-brand) h s 34%);
+  --ui-accent-hover:   hsl(from var(--ui-brand) h s 29%);
+  --ui-accent-active:  hsl(from var(--ui-brand) h s 25%);
+  --ui-accent-subtle:  rgb(from var(--ui-brand) r g b / 0.22);
+  --ui-accent-soft:    rgb(from var(--ui-brand) r g b / 0.42);
+  --ui-accent-text:    hsl(from var(--ui-brand) h calc(s * 0.90) 66%);
+  --ui-on-accent:      var(--ui-on-brand-light);
+
+  --ui-danger:         var(--ui-red-500);
+  --ui-danger-hover:   hsl(from var(--ui-red-500) h s calc(l * 1.10));
+  --ui-danger-subtle:  rgb(from var(--ui-red-500) r g b / 0.18);
+  --ui-on-danger:      var(--ui-on-brand-dark);
+
+  --ui-success:        var(--ui-green-500);
+  --ui-success-subtle: rgb(from var(--ui-green-500) r g b / 0.18);
+  --ui-warning:        var(--ui-amber-500);
+  --ui-warning-subtle: rgb(from var(--ui-amber-500) r g b / 0.18);
+
+  --ui-selection-bg:   rgb(from var(--ui-accent) r g b / 0.34);
+}

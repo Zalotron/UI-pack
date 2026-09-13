@@ -1,0 +1,36 @@
+/* ------------------------------------------- Window — PIEL del pack MINIMAL */
+/* Interfaz: --window-bg | --window-bar-bg | --window-border | --window-line
+             --window-title-fg | --window-control-hover
+             --window-close-hover | --window-close-fg | --window-shadow      */
+
+/* La ventana de una aplicación de escritorio: barra de título apenas más
+   oscura que el cuerpo, una línea que las separa y nada más.
+
+   ⛔ ESQUINAS CUADRADAS, SIEMPRE — regla del proyecto, no del pack. Acá encima
+   cae de maduro: es lo que hace una ventana de verdad. */
+
+.ui-window {
+  --window-bg: var(--ui-bg);
+  --window-bar-bg: var(--ui-bg-subtle);
+  --window-border: var(--ui-border-strong);
+  --window-line: var(--ui-border);
+  --window-title-fg: var(--ui-text-muted);
+  --window-control-hover: var(--ui-surface-active);
+  --window-shadow: var(--ui-shadow-lg);
+
+  --window-close-hover: var(--ui-danger);
+  --window-close-fg: var(--ui-on-danger);
+}
+
+.ui-window--elev-sm { --window-shadow: var(--ui-shadow-md); }
+.ui-window--elev-md { --window-shadow: var(--ui-shadow-lg); }
+.ui-window--elev-lg { --window-shadow: var(--ui-shadow-lg); }
+
+/* Maximizada está pegada a la pantalla: no hay nada debajo que sombrear. */
+.ui-window.is-maximized {
+  --window-shadow: none;
+}
+
+.ui-window__title {
+  font-size: var(--ui-text-sm);
+}

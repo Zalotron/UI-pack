@@ -1,0 +1,85 @@
+/* ------------------------------------------ TextField — PIEL del pack GRUNGE */
+/* Interfaz: --field-bg | --field-fg | --field-border | --field-ring
+             --field-placeholder                                              */
+
+/* Un campo es un HUECO PICADO en el material, no una placa apoyada encima. La
+   diferencia es una sola y es la del canto: en una pieza la luz está arriba y
+   la sombra adentro del canto de abajo; acá va al revés (--ui-gr-edge-sunken).
+   Con eso solo, "acá se escribe" y "acá se aprieta" se distinguen sin cambiar
+   un color.
+
+   Se arma como todas: el elemento transparente, la lámina en el ::before, la
+   costra en el ::after. La explicación entera está arriba de
+   components/Container.css.
+
+   El halo de foco lo pinta la mecánica en el ELEMENTO, que no está
+   enmascarado, así que se ve entero — que es justamente por lo que la máscara
+   nunca va ahí. */
+
+.ui-textfield {
+  --field-bg: transparent;
+  --field-border: transparent;
+  --field-placeholder: var(--ui-text-subtle);
+  --gr-fill: var(--ui-bg-subtle);
+
+  position: relative;
+  isolation: isolate;
+}
+
+/* LA LAMINA, hundida. */
+.ui-textfield::before {
+  content: "";
+  position: absolute;
+  inset: calc(var(--ui-border-width) * -1);
+  z-index: -2;
+  border-radius: inherit;
+  pointer-events: none;
+
+  background-color: var(--gr-fill);
+  box-shadow: var(--ui-gr-edge-sunken);
+
+  /* EL CANTO COMIDO. Con longhands a proposito — ver tokens.css. */
+  -webkit-mask-image: var(--ui-gr-tear-image);
+          mask-image: var(--ui-gr-tear-image);
+  -webkit-mask-position: var(--ui-gr-tear-position);
+          mask-position: var(--ui-gr-tear-position);
+  -webkit-mask-size: var(--ui-gr-tear-size);
+          mask-size: var(--ui-gr-tear-size);
+  -webkit-mask-repeat: var(--ui-gr-tear-repeat);
+          mask-repeat: var(--ui-gr-tear-repeat);
+
+  transition:
+    background-color var(--ui-duration-fast) var(--ui-ease),
+    box-shadow var(--ui-duration-fast) var(--ui-ease);
+}
+
+/* LA COSTRA. */
+.ui-textfield::after {
+  content: "";
+  position: absolute;
+  inset: var(--ui-gr-bite);
+  z-index: -1;
+  pointer-events: none;
+
+  background: var(--ui-gr-soot);
+  -webkit-mask-image: var(--ui-gr-grit);
+          mask-image: var(--ui-gr-grit);
+  -webkit-mask-size: var(--ui-gr-grit-size);
+          mask-size: var(--ui-gr-grit-size);
+}
+
+.ui-textfield:hover:not(.is-disabled) {
+  --gr-fill: var(--ui-surface);
+}
+
+/* Enfocado, el hueco se forra: el contorno pasa a acento y aparece el
+   halo. No se ilumina el relleno — el material no cambia porque lo mires. */
+.ui-textfield:focus-within:not(.is-disabled) {
+  --ui-gr-contour: var(--ui-accent);
+  --field-ring: var(--ui-ring);
+  --gr-fill: var(--ui-surface);
+}
+
+.ui-textfield__input {
+  letter-spacing: var(--ui-tracking-tight);
+}

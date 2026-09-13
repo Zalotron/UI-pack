@@ -45,7 +45,7 @@
   color: var(--cp-fg);
   box-shadow: 0 0 0 var(--ui-ring-width) var(--cp-ring);
 
-  cursor: pointer;
+  cursor: var(--ui-cursor-pointer, pointer);
   transition:
     border-color var(--ui-duration-fast) var(--ui-ease),
     box-shadow var(--ui-duration-fast) var(--ui-ease),
@@ -150,7 +150,7 @@
   position: relative;
   height: var(--ui-picker-area-h);
   border-radius: calc(var(--cp-radius) - var(--ui-border-width));
-  cursor: crosshair;
+  cursor: var(--ui-cursor-crosshair, crosshair);
   touch-action: none;
   overflow: hidden;
 
@@ -268,4 +268,4 @@
 /* -- Estados --------------------------------------------------------------- */
 
 .ui-colorpicker.is-disabled { opacity: var(--ui-disabled-opacity); }
-.ui-colorpicker.is-disabled .ui-colorpicker__trigger { cursor: not-allowed; }
+.ui-colorpicker.is-disabled .ui-colorpicker__trigger { cursor: var(--ui-cursor-disabled, not-allowed); }

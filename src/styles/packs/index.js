@@ -25,6 +25,8 @@ import editorialPack from './editorial/pack.js';
 import clayPack from './clay/pack.js';
 import risoPack from './riso/pack.js';
 import nocturnePack from './nocturne/pack.js';
+import grungePack from './grunge/pack.js';
+import minimalPack from './minimal/pack.js';
 
 /** Pack activo si no se configura otro. */
 export const DEFAULT_PACK = 'default';
@@ -111,7 +113,7 @@ export function packControls(id) {
 }
 
 const registry = [defaultPack, glassPack, cyberPack, softPack, blueprintPack,
-  editorialPack, clayPack, risoPack, nocturnePack];
+  editorialPack, clayPack, risoPack, nocturnePack, grungePack, minimalPack];
 
 export const packs = Object.fromEntries(registry.map((pack) => [pack.id, pack]));
 

@@ -1,0 +1,904 @@
+/* ===========================================================================
+   PACK "GRUNGE" — tokens
+   ---------------------------------------------------------------------------
+   Hormigon, hollin y una capa de laca roja. Grunge de alta costura: el
+   material esta arruinado, el acabado no.
+
+   RIGE LA MISMA REGLA DURA: un solo color declarado (--ui-brand). Todo lo demas
+   sale de el con color relativo. Los neutros no son grises: son hormigon
+   TEÑIDO de rojo, o sea el mismo tono con casi nada de saturacion.
+
+   Las cuatro piezas del pack, y son TODAS las que hay:
+
+     1. EL CANTO ESTA    Nada esta cortado a maquina. La banda de afuera de
+        COMIDO           cada pieza la come una mascara de ruido, asi que el
+                         borde sale roto y distinto en cada elemento. Es la
+                         perilla WEAR, es lo que anima la entrada y es lo que
+                         se hunde al apretar: una sola idea haciendo tres
+                         trabajos.
+     2. TODO TIENE       Una nube de puntos finos sobre cada superficie: el
+        COSTRA           arido del hormigon. Es la perilla GRAIN. Es lo que
+                         evita que una pieza oscura se lea como un rectangulo
+                         pintado.
+     3. EL CANTO         Un filete de luz en el borde de ARRIBA de cada pieza,
+        GASTADO TOMA     y sombra adentro del de abajo. Es lo que le da espesor
+        LUZ              a la lamina y —mas importante— es de donde sale la
+                         sensacion de que la pieza esta GASTADA y no sucia. Un
+                         material viejo se lustra solo donde lo tocan.
+     4. EL ACENTO ES     Nunca un color liso: una superficie LACADA, con vetas
+        LACA             y una franja de reflejo cruzada. Es la perilla FOIL y
+                         es la mitad "cheta" del pack.
+                         ⛔ Y LA LACA VA SOLO EN EL ACENTO. Lo que avisa de algo
+                         irreversible no se lustra: va en crudo. El motivo
+                         completo —uno de sentido y uno medido— esta al pie de
+                         components/Button.css.
+
+   ⛔ ACA NADA SE PINTA EN EL ELEMENTO: TODO SE PINTA EN LA LAMINA.
+   Es LA regla de construccion del pack y esta explicada entera arriba de
+   components/Container.css. En dos lineas: el canto comido es una `mask`, una
+   `mask` en el elemento le RECORTA el anillo de foco y le recorta cualquier
+   desplegable que se salga de su caja, asi que la mascara nunca va en el
+   elemento — va en un ::before que hace de material. El elemento queda
+   transparente y sin contorno; la lamina lleva el relleno, el contorno, la luz
+   del canto y el desgaste.
+
+   ⚠ NADA DE SOMBRAS CORTAS. Una sombra con forma reconocible delata el
+   rectangulo que hay debajo del canto roto y arruina el efecto entero. Las
+   sombras de este pack son hollin: muy difusas, corridas hacia abajo y con
+   `spread` negativo, para que se vea el peso y no el contorno.
+
+   Requiere color relativo (Chrome 119+, Safari 16.4+, Firefox 128+) y
+   `mask-image` con varias capas — la union es el valor INICIAL de
+   `mask-composite`, asi que no hace falta declararlo en ningun lado.
+   =========================================================================== */
+
+/* Cuanto se comio el canto, en multiplos del desgaste de reposo. En 1 es la
+   pieza tal como vive; mas alto, todavia se esta deshaciendo. Es lo que anima
+   el ciclo de vida (ver lifecycle.css) y lo que se hunde al apretar.
+
+   Hace falta @property: una custom property sin registrar no interpola, y sin
+   interpolar no hay ni entrada ni transicion al apretar. */
+@property --ui-gr-erode {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+
+/* ===========================================================================
+   ⛔ LAS MEDIDAS DEL DESGASTE VAN EN `*` Y NO EN `:root`. NO ES UN DESCUIDO
+      NI UNA CUESTION DE ESTILO: ES LO UNICO QUE HACE QUE EL PACK SE MUEVA.
+   ---------------------------------------------------------------------------
+   El valor COMPUTADO de una custom property es su valor con los `var()` YA
+   SUSTITUIDOS, y esa sustitucion ocurre en el elemento DONDE SE DECLARA. Lo
+   que se hereda despues es el resultado, no la formula.
+
+   O sea que esto, que es lo que uno escribe primero, no funciona:
+
+     :root           { --bite: calc(2.5px * var(--erode)); }   <- se congela
+     .ui-btn:active  { --erode: 1.7; }                         <- no hace nada
+
+   El boton cambia `--erode`, pero `--bite` no esta declarada en el boton: le
+   baja heredada de `:root`, ya resuelta con el erode de `:root`. La mordida no
+   se movia ni al apretar ni durante la entrada, y lo peor es que NO SE NOTA —
+   la animacion corre, la opacidad cambia, y uno da por hecho que el resto
+   tambien. Se ve un fundido y se cree que se ve una pieza rehaciendose.
+
+   Declaradas en `*`, cada elemento las recalcula con el `--ui-gr-erode` que le
+   llega: el suyo si lo redeclaro (`:active`), o el que hereda del contenedor
+   que se esta animando. Por eso `--ui-gr-erode` NO esta en este bloque — ver
+   el comentario donde se declara.
+
+   ⚠ Y NO ES SOLO EL DESGASTE. Le pasa a TODA variable de este pack que otra
+   variable arme por composicion y que un estado cambie por abajo: el canto
+   (--ui-gr-edge) se compone de tres colores, y `:hover` cambia el filete de
+   luz, `:focus-within` cambia el contorno y el boton fantasma apaga los tres.
+   Declarado en `:root` no se habria movido ninguno. La regla practica es
+   simple: si un ESTADO puede cambiar una de sus partes, la variable compuesta
+   va aca abajo y no en `:root`.
+
+   El precio son seis custom properties heredadas en cada elemento del
+   documento. Es real, y se paga: sin esto no hay ni entrada, ni salida, ni
+   gesto al apretar, ni canto que reaccione. Los pseudo-elementos no los toca
+   `*`, pero heredan de su originante, que ya las tiene recalculadas — que es
+   justo lo que necesitan las laminas, porque ahi es donde vive la mascara.
+   =========================================================================== */
+* {
+  /* LA BANDA COMIDA. Cuantos pixeles de borde quedan a merced del ruido.
+     WEAR la gradua; --ui-gr-erode la multiplica en la entrada y al apretar. */
+  --ui-gr-bite: calc(2.5px * var(--ui-wear, 1) * var(--ui-gr-erode));
+  /* La version para piezas chicas. Una casilla de 18px con la banda entera no
+     queda comida: queda deshecha. */
+  --ui-gr-nick: calc(var(--ui-gr-bite) * 0.42);
+
+  /* Los dos tamaños de mascara. El resto del juego (imagen, posicion y
+     repeticion) no depende del desgaste, asi que vive en :root. */
+  --ui-gr-tear-size:
+    var(--ui-gr-noise-size),
+    calc(100% - var(--ui-gr-bite) * 2) calc(100% - var(--ui-gr-bite) * 2);
+  --ui-gr-chip-size:
+    var(--ui-gr-noise-size),
+    calc(100% - var(--ui-gr-nick) * 2) calc(100% - var(--ui-gr-nick) * 2);
+
+  /* EL CANTO GASTADO: filete de luz arriba, contorno, y sombra adentro del
+     canto de abajo. SIEMPRE las tres, SIEMPRE `inset` y SIEMPRE en este orden
+     — CSS no interpola entre listas de sombras que cambian de forma, asi que
+     los estados de este pack cambian los tres COLORES y nunca la lista.
+     (Misma leccion que packs/soft/tokens.css.) */
+  --ui-gr-edge:
+    inset 0 var(--ui-border-width) 0 0 var(--ui-gr-sheen),
+    inset 0 0 0 var(--ui-border-width) var(--ui-gr-contour),
+    inset 0 calc(var(--ui-gr-depth) * -1) var(--ui-gr-depth) 0 var(--ui-gr-deep);
+
+  /* La version HUNDIDA: la luz se va al canto de abajo y la sombra sube. Para
+     lo que es un hueco y no una pieza — un canal, un campo donde se escribe. */
+  --ui-gr-edge-sunken:
+    inset 0 calc(var(--ui-border-width) * -1) 0 0 var(--ui-gr-sheen),
+    inset 0 0 0 var(--ui-border-width) var(--ui-gr-contour),
+    inset 0 var(--ui-gr-depth) var(--ui-gr-depth) 0 var(--ui-gr-deep);
+}
+
+:root {
+  color-scheme: light dark;
+
+  /* ⛔ SIN NEGRITA FABRICADA. Es la unica propiedad que no es un token en todo
+     el archivo, y esta por la tipografia: Protest Revolution viene en UN SOLO peso, asi
+     que cualquier pedido de negrita el navegador lo RESUELVE ENGORDANDO EL
+     TRAZO. Sobre una letra de brocha eso no la resalta — le tapa el trazo, que
+     es lo unico que la hace de este pack.
+
+     Apagar la sintesis no apaga los pesos de verdad: si Protest Revolution no cargo y
+     manda el fallback, su negrita real se sigue usando. Solo desaparece la
+     inventada. */
+  font-synthesis-weight: none;
+
+  /* ==================================================================== */
+  /*  =============   EL UNICO COLOR DECLARADO   ======================== */
+  /* ==================================================================== */
+  /* Laca roja. Lo unico que en este pack tiene permitido brillar. */
+  --ui-brand: #c92e2e;      /* pack settings -> BRAND_COLOR */
+
+  /* Nada cortado a maquina. */
+  --ui-roundness: 0;
+
+  /* Texto sobre el brand. ⚠ SOBRE LACA ROJA GANA LA TINTA CLARA (5.37:1
+     contra 3.33:1), al reves de lo que pasa con un brand amarillo: un rojo pleno tiene
+     mucha menos luminancia que un amarillo de la misma claridad HSL, porque
+     casi todo el peso de la luminancia lo lleva el canal verde. Eso da vuelta
+     el pack entero — con tinta clara encima, el punto donde un rotulo puede
+     perder contraste ya no es la veta oscura de la laca sino su REFLEJO, y por
+     eso el tope de abajo esta puesto sobre la luz y no sobre la sombra.
+     src/config.js lo vuelve a medir con el BRAND_COLOR que haya. */
+  --ui-on-brand-light: hsl(from var(--ui-brand) h calc(s * 0.12) 97%);
+  --ui-on-brand-dark:  hsl(from var(--ui-brand) h calc(s * 0.55) 10%);
+  --ui-on-brand: var(--ui-on-brand-light);
+
+  /* ==================================================================== */
+  /*  ========   LAS TRES PERILLAS, CONVERTIDAS EN MEDIDAS   =========== */
+  /* ==================================================================== */
+
+  /* El calibre del desgaste. El @property de arriba registra el tipo para que
+     interpole; el valor de reposo va aca, en :root, como cualquier otro token.
+
+     ⛔ Y VA SOLO ACA. Se HEREDA, y esa herencia es la que hace que lo de
+     adentro se rehaga junto con su padre. Si tambien se declarara en el `*` de
+     abajo, cada elemento se pondria su propio 1 y pisaria el valor que le baja
+     del contenedor que se esta animando: la casilla de un checkbox entraria
+     sola en vez de entrar con su panel. */
+  --ui-gr-erode: 1;
+
+  /* ==================================================================== */
+  /*  EL CANTO COMIDO                                                    */
+  /*  Dos capas de mascara unidas: una nube de ruido que cubre toda la    */
+  /*  pieza, y un rectangulo macizo metido --ui-gr-bite para adentro.     */
+  /*  El centro queda entero SIEMPRE —lo garantiza el rectangulo— y lo    */
+  /*  unico que el ruido puede comerse es la banda del borde.             */
+  /*                                                                      */
+  /*  ⚠ NO HACE FALTA `mask-composite`: la union es su valor inicial.     */
+  /*                                                                      */
+  /*  ⚠ SE APLICA CON LONGHANDS, no metiendo `posicion / tamaño` adentro   */
+  /*  de una variable que despues entra en el shorthand `mask`. Eso        */
+  /*  ultimo es valido en el papel pero es fragil: cualquier detalle en la */
+  /*  sustitucion tira la declaracion ENTERA en silencio y el canto sale   */
+  /*  recto sin que nada avise. Con longhands falla una sola propiedad y   */
+  /*  se ve. (Es la misma leccion anotada en packs/riso/tokens.css.)       */
+  /*                                                                      */
+  /*  ⚠ EL TAMAÑO DEL RECTANGULO PUEDE DAR NEGATIVO, y esta bien: en una   */
+  /*  pieza chica con el desgaste alto `calc()` lo recorta a 0, la capa    */
+  /*  maciza desaparece y lo unico que queda es el ruido. O sea: la pieza  */
+  /*  se deshace. Es exactamente lo que tiene que pasar cuando se va.      */
+  /* ==================================================================== */
+
+  /* La nube. Ruido fractal UMBRALADO con `discrete`, no difuminado: un canto
+     roto tiene filo, no degrade.
+
+     ⚠ Los numeros viven adentro de la cadena y no pueden salir a un token: un
+     data URI es un documento aparte y no ve las variables CSS. Por eso el
+     ancho de la banda se gradua desde la mascara y no desde el dibujo. */
+  --ui-gr-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Cfilter id='t' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.06' numOctaves='4' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 1 0 0 0 -0.10'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='discrete' tableValues='0 1 1 1 1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='150' height='150' filter='url(%23t)'/%3E%3C/svg%3E");
+  --ui-gr-noise-size: 150px 150px;
+
+  /* El juego completo, listo para las cuatro longhands. PIEZAS GRANDES.
+
+     ⚠ EL NEGRO DE LA CAPA MACIZA NO ES UN COLOR: es ALFA PURA. Una mascara
+     mira el canal alfa, no el tono — ese `#000` podria ser cualquier cosa
+     opaca y se veria igual. Por eso no cuenta como color declarado, que es la
+     regla dura del proyecto. (Lo mismo hace el desvanecido del Separator en
+     src/components/Separator/Separator.css.) */
+  --ui-gr-tear-image:    var(--ui-gr-noise), linear-gradient(#000, #000);
+  --ui-gr-tear-position: 0 0, center;
+  --ui-gr-tear-repeat:   repeat, no-repeat;
+
+  /* Lo mismo con la mordida chica. PIEZAS DE CONTROL. */
+  --ui-gr-chip-image:    var(--ui-gr-noise), linear-gradient(#000, #000);
+  --ui-gr-chip-position: 0 0, center;
+  --ui-gr-chip-repeat:   repeat, no-repeat;
+
+  /* Los DOS TAMAÑOS no estan aca: estan en el `*` que sigue al bloque. */
+
+  /* ==================================================================== */
+  /*  LA COSTRA                                                          */
+  /*  El arido del hormigon: puntos finos sobre cada superficie. Se       */
+  /*  aplica como MASCARA de una capa de color plano, y no como imagen    */
+  /*  de fondo, justamente para que GRAIN pueda graduar su alfa — un      */
+  /*  data URI no ve las variables CSS, pero el color al que le sirve de  */
+  /*  mascara si.                                                         */
+  /* ==================================================================== */
+  --ui-gr-grit: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='130' height='130'%3E%3Cfilter id='g' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' seed='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 1 0 0 0 -0.42'/%3E%3C/filter%3E%3Crect width='130' height='130' filter='url(%23g)'/%3E%3C/svg%3E");
+  --ui-gr-grit-size: 130px 130px;
+
+  /* El manchon: la tinta no se deposito pareja. Va en las superficies grandes
+     nada mas — en un boton no hay lugar para que se note. */
+  --ui-gr-mottle:
+    radial-gradient(120% 90% at 14% 6%,
+      rgb(from var(--ui-neutral-0) r g b / 0.05), transparent 62%),
+    radial-gradient(100% 80% at 92% 96%,
+      rgb(from var(--ui-neutral-950) r g b / 0.22), transparent 66%);
+
+  /* ==================================================================== */
+  /*  LA LACA                                                            */
+  /*  Vetas oscuras y una franja de reflejo cruzada. Va como capa de      */
+  /*  IMAGEN encima del relleno, asi que el degrade no sabe de que color  */
+  /*  es lo que tiene debajo — pero se usa SOLO en el acento: ver el      */
+  /*  motivo al pie de components/Button.css.                             */
+  /*                                                                      */
+  /*  ⛔ EL TOPE ESTA CALIBRADO CONTRA EL CONTRASTE, Y SE MIDIO.           */
+  /*  Un rotulo sobre un boton primario no se mide contra --ui-accent: se   */
+  /*  mide contra el PEOR PUNTO del degrade, con FOIL en su maximo. Y cual  */
+  /*  es el peor punto depende de la tinta — una tinta oscura pierde en la  */
+  /*  VETA, una clara pierde en la FRANJA DE LUZ.                           */
+  /*                                                                        */
+  /*  Sobre laca roja la tinta es CLARA (ver --ui-on-brand), asi que el     */
+  /*  unico tope que hace falta es el del reflejo:                          */
+  /*                                                                        */
+  /*    luz  <= 0.18   Con 0.34 y FOIL en 2 el reflejo llega a 0.68 de alfa */
+  /*                   y el peor punto del primario cae a 1.9:1: el rotulo  */
+  /*                   desaparece adentro del brillo. Con 0.18 da 4.62:1.   */
+  /*    veta <= 0.22   Sin tope real: la veta OSCURECE, y con tinta clara    */
+  /*                   encima eso solo puede mejorar el contraste. El limite */
+  /*                   aca es de gusto, no de medicion.                      */
+  /*                                                                        */
+  /*  ⚠ Y POR ESO EL REFLEJO NO ES BLANCO SINO UN ROSA APAGADO (70%): un    */
+  /*  blanco puro sobre laca roja no se lee como brillo, se lee como una    */
+  /*  franja despintada. Subirlo vuelve a romper el contraste del rotulo    */
+  /*  aunque las alfas queden iguales.                                      */
+  /* ==================================================================== */
+  --ui-gr-lit: hsl(from var(--ui-brand) calc(h + 8) calc(s * 0.60) 70%);
+  --ui-gr-dim: hsl(from var(--ui-brand) calc(h - 10) calc(s * 0.90) 38%);
+
+  --ui-gr-foil: linear-gradient(
+    100deg,
+    rgb(from var(--ui-gr-dim) r g b / calc(0.20 * var(--ui-foil, 1))) 0%,
+    rgb(from var(--ui-gr-lit) r g b / calc(0.11 * var(--ui-foil, 1))) 16%,
+    rgb(from var(--ui-gr-dim) r g b / calc(0.16 * var(--ui-foil, 1))) 30%,
+    rgb(from var(--ui-gr-lit) r g b / calc(0.18 * var(--ui-foil, 1))) 46%,
+    rgb(from var(--ui-gr-dim) r g b / calc(0.22 * var(--ui-foil, 1))) 58%,
+    rgb(from var(--ui-gr-lit) r g b / calc(0.09 * var(--ui-foil, 1))) 74%,
+    rgb(from var(--ui-gr-dim) r g b / calc(0.20 * var(--ui-foil, 1))) 100%
+  );
+  /* La lamina se pinta MAS ANCHA que la pieza para que tenga a donde correrse
+     cuando le pasa la luz por encima. Sin esto el `hover` no tiene efecto:
+     un degrade del ancho exacto no se puede desplazar. */
+  --ui-gr-foil-span: 260% 100%;
+
+  /* ==================================================================== */
+  /*  EL CANTO GASTADO                                                   */
+  /*  Cuanto espesor tiene la lamina. Las dos listas de sombra que lo     */
+  /*  dibujan —--ui-gr-edge y --ui-gr-edge-sunken— NO estan aca: estan    */
+  /*  en el `*` de arriba, porque los estados les cambian los colores por */
+  /*  abajo y en :root se congelarian. El motivo completo esta ahi.       */
+  /* ==================================================================== */
+  --ui-gr-depth: 7px;
+
+  /* ------------------------------------------------------ Tipografía ---- */
+  /* PROTEST REVOLUTION: una display de cartel, de trazo de brocha y contorno
+     irregular. Es la letra del afiche pegado en la pared, no la del formulario — y es a proposito: en este pack el
+     material esta arruinado y la tipografia acompaña en vez de contrastar.
+
+     ⚠ ES UNA FAMILIA QUE `src/` NO CARGA. La regla del proyecto es que la
+     carpeta se pueda copiar a cualquier lado y funcione sola, asi que el pack
+     NOMBRA la familia y la baja el VISOR (ver index.html). Por eso hace falta
+     que atras haya una escalera de verdad: quien importe la libreria y no la
+     cargue tiene que ver algo parecido —una slab gorda, y en ultima instancia
+     una palo grueso— y no una tipografia de sistema al azar. Es el mismo
+     reparto que ya usa `blueprint` con Handlee.
+
+     ⛔ Y POR ESO --ui-weight-* SE APLANA MAS ABAJO: Protest Revolution tiene UN SOLO peso.
+     Ver el comentario de los pesos. */
+  --ui-font-sans: "Protest Revolution", Impact, "Haettenschweiler",
+                  "Franklin Gothic Medium", "Arial Black", system-ui,
+                  -apple-system, "Segoe UI", sans-serif;
+  /* El mono NO es Protest Revolution: aca van numeros que hay que leer de un vistazo —el
+     valor de un slider, un hex, un porcentaje— y una display tallada los vuelve
+     adivinanza. Es el unico lugar del pack donde gana la legibilidad. */
+  --ui-font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo,
+                  Consolas, monospace;
+
+  --ui-text-xs:   0.6875rem;
+  --ui-text-sm:   0.8125rem;
+  --ui-text-md:   0.875rem;
+  --ui-text-lg:   1rem;
+  --ui-text-xl:   1.25rem;
+  --ui-text-2xl:  1.75rem;
+  --ui-text-3xl:  2.5rem;
+
+  /* ⛔ LA ESCALA DE PESOS ESTA CASI PLANA, Y ES POR LA TIPOGRAFIA.
+     Protest Revolution viene en UN SOLO peso. Pedirle 650 u 800 no trae otra variante:
+     hace que el navegador FABRIQUE la negrita engordando el trazo, y sobre una
+     letra que ya es gruesa y de contorno irregular eso no la resalta, la
+     emborrona — se pierde la brocha, que es lo unico que la hace de este pack.
+
+     Los dos escalones que quedan son para el FALLBACK, que si tiene negrita de
+     verdad. Y la sintesis se apaga abajo, asi que con Protest Revolution cargada los
+     cuatro valores dan el mismo trazo limpio. El enfasis, en este pack, no lo
+     lleva el peso: lo llevan las versalitas y el espaciado. */
+  --ui-weight-regular:  400;
+  --ui-weight-medium:   400;
+  --ui-weight-semibold: 700;
+  --ui-weight-bold:     700;
+
+  --ui-leading-tight:   1.1;
+  --ui-leading-normal:  1.5;
+  --ui-leading-relaxed: 1.65;
+
+  /* ⚠ NI APRETADO NI MUY SUELTO, Y LAS DOS COSAS POR LA MISMA RAZON: Protest Revolution
+     es ancha y de formas complejas. Apretarla —el -0.025em que llevaba con una
+     grotesca— le pega los trazos entre si y se vuelve una mancha; soltarla
+     demasiado parte las palabras. El contraste tipografico del pack lo dan las
+     versalitas, no el espaciado. */
+  --ui-tracking-tight: 0em;
+  --ui-tracking-wide:  0.06em;
+
+  /* -------------------------------------------- Espaciado (escala 4px) -- */
+  --ui-space-0:  0;
+  --ui-space-1:  0.25rem;
+  --ui-space-2:  0.5rem;
+  --ui-space-3:  0.75rem;
+  --ui-space-4:  1rem;
+  --ui-space-5:  1.25rem;
+  --ui-space-6:  1.5rem;
+  --ui-space-8:  2rem;
+  --ui-space-10: 2.5rem;
+  --ui-space-12: 3rem;
+  --ui-space-16: 4rem;
+
+  /* --------------------------------------- Espaciado fluido ------------- */
+  /* Generoso. El canto comido necesita aire para leerse: si dos piezas se
+     tocan, los dos bordes rotos se mezclan y se ve una sola mancha. */
+  --ui-pad-block-xs:  clamp(11px, 1.3vw, 15px);
+  --ui-pad-inline-xs: clamp(13px, 1.5vw, 17px);
+  --ui-pad-block-sm:  clamp(17px, 2.1vw, 23px);
+  --ui-pad-inline-sm: clamp(19px, 2.3vw, 25px);
+  --ui-pad-block-md:  clamp(26px, 3.2vw, 36px);
+  --ui-pad-inline-md: clamp(28px, 3.4vw, 40px);
+  --ui-pad-block-lg:  clamp(36px, 4.4vw, 50px);
+  --ui-pad-inline-lg: clamp(38px, 4.6vw, 54px);
+  --ui-pad-block-xl:  clamp(48px, 5.8vw, 70px);
+  --ui-pad-inline-xl: clamp(50px, 6vw, 74px);
+
+  --ui-gap-none: 0;
+  --ui-gap-xs:   var(--ui-space-2);
+  --ui-gap-sm:   clamp(13px, 1.6vw, 17px);
+  --ui-gap-md:   clamp(19px, 2.3vw, 27px);
+  --ui-gap-lg:   clamp(27px, 3.3vw, 40px);
+  --ui-gap-xl:   clamp(38px, 4.6vw, 56px);
+
+  --ui-col-min: 240px;
+
+  /* ------------------------------------------------ Separadores ---------- */
+  --ui-sep-space-none: 0;
+  --ui-sep-space-xs:   var(--ui-space-2);
+  --ui-sep-space-sm:   var(--ui-space-4);
+  --ui-sep-space-md:   clamp(19px, 2.8vh, 28px);
+  --ui-sep-space-lg:   clamp(30px, 4.2vh, 44px);
+  --ui-sep-space-xl:   clamp(40px, 5.6vh, 60px);
+
+  /* Una rotura no se desvanece: se corta. Lo que despunta las dos cabeceras
+     de una regla es la mascara del canto, que es otra cosa. */
+  --ui-sep-fade: 0%;
+
+  /* ------------------------------------------- Controles ----------------- */
+  --ui-control-h-sm:    32px;
+  --ui-control-h-md:    40px;
+  --ui-control-h-lg:    50px;
+  --ui-control-pad-sm:  var(--ui-space-3);
+  --ui-control-pad-md:  var(--ui-space-5);
+  --ui-control-pad-lg:  var(--ui-space-6);
+  --ui-control-font-sm: var(--ui-text-sm);
+  --ui-control-font-md: var(--ui-text-md);
+  --ui-control-font-lg: var(--ui-text-lg);
+  --ui-control-gap-sm:  var(--ui-space-2);
+  --ui-control-gap-md:  var(--ui-space-2);
+  --ui-control-gap-lg:  var(--ui-space-3);
+  --ui-control-radius-sm: var(--ui-radius-sm);
+  --ui-control-radius-md: var(--ui-radius-sm);
+  --ui-control-radius-lg: var(--ui-radius-md);
+  /* Piso del spinner. NO es su ancho: el ancho lo reserva el propio
+     control segun sus limites. Esto es para que uno de un solo digito
+     siga siendo agarrable. */
+  --ui-spinner-min-w: 3ch;
+  /* Respiro sobre los caracteres reservados: la coma, el signo y el
+     cursor no miden lo que mide un cero, que es lo que mide `ch`. */
+  --ui-spinner-slack: 0.75;
+
+  /* Slider. El tirador es una PLAQUETA ancha y lacada, no una bolita. Es la
+     pieza donde mejor se ve la laca a tamaño chico. */
+  --ui-slider-track-ratio: 0.26;
+  --ui-slider-thumb-ratio: 0.88;
+  --ui-slider-thumb-w: 14px;
+  --ui-slider-value-w: 5ch;
+
+  --ui-select-menu-max-h: 264px;
+  --ui-select-arrow: 7px;
+
+  --ui-toggle-track-ratio: 0.60;
+  --ui-toggle-aspect: 1.9;
+  --ui-toggle-knob-inset: 3px;
+  --ui-check-ratio: 0.52;
+
+  --ui-scroll-size: 12px;
+  --ui-scroll-inset: 3px;
+  --ui-scroll-size-regular: 16px;
+  --ui-scroll-inset-regular: 4px;
+
+  /* Window. ⛔ EL MARCO DE UNA VENTANA ES CUADRADO, SIEMPRE. */
+  --ui-window-radius: 0;
+  /* El oscurecido detras de una ventana modal. Sale de la marca como
+     todo lo demas: un negro puro no pertenece a ningun pack. */
+  --ui-window-scrim: hsl(from var(--ui-brand) h calc(s * 0.30) 4% / 0.74);
+  --ui-window-bar-h: 42px;
+  --ui-window-control-w: 46px;
+  --ui-window-glyph: 10px;
+
+  /* Progress. Gorda: una barra fina no tiene donde mostrar ni costra ni canto. */
+  --ui-progress-h-sm: 6px;
+  --ui-progress-h-md: 10px;
+  --ui-progress-h-lg: 16px;
+  --ui-progress-ring-sm: 34px;
+  --ui-progress-ring-md: 48px;
+  --ui-progress-ring-lg: 68px;
+  /* ⚠ ESTO NO SON PIXELES: es el PORCENTAJE DEL DIAMETRO.
+     El aro se dibuja en un SVG con `viewBox="0 0 100 100"`, asi que una unidad
+     del trazo vale un centesimo del diametro. */
+  --ui-progress-ring-width: 16;
+
+  /* Iconos. Son de TRAZO, asi que lo que los hace de este pack es el grosor:
+     el mismo dibujo con otro calibre ya es otro icono. Aca van gordos y con
+     el remate cuadrado — un trazo fino no convive con una superficie picada. */
+  --ui-icon-sm: 16px;
+  --ui-icon-md: 20px;
+  --ui-icon-lg: 25px;
+  --ui-icon-stroke: 2px;
+
+  --ui-tabs-indicator-h: 3px;
+
+  /* Aire arriba y abajo de la fila de pestañas, para que no le recorte las
+
+     sombras a lo que tenga adentro. El canto comido es una MASCARA, no una sombra: no se sale
+     de la caja, y lo que la recorta es la mascara misma. */
+
+  --ui-tabs-bleed: 0px;
+
+  --ui-swatch-w: 2.6em;
+  --ui-picker-w: 240px;
+  --ui-picker-area-h: 138px;
+  --ui-picker-cursor: 12px;
+
+  /* Apretar HUNDE la pieza contra la pared y el canto se come un poco mas.
+     Lo segundo no esta aca: esta en cada piel, subiendo --ui-gr-erode. */
+  --ui-press-shift: 1px;
+  --ui-hover-lift: -1px;
+  --ui-disabled-opacity: 0.34;
+
+  /* ==================================================================== */
+  /*  CURSORES                                                            */
+  /*  el canto tambien esta comido: el contorno va con trazo discontinuo  */
+  /*  ------------------------------------------------------------------  */
+  /*  Los NUEVE, dibujados. La FORMA la comparten todos los packs —una     */
+  /*  flecha es una flecha y una mano abierta es una mano abierta: son     */
+  /*  convenciones de uso, no lugar para inventar— y lo que cambia es      */
+  /*  COMO ESTA PINTADA. Mismo reparto que el resto del sistema.           */
+  /*                                                                       */
+  /*  ⚠ CADA URL LLEVA SU HOTSPOT Y SU FALLBACK, Y LOS DOS SON             */
+  /*  OBLIGATORIOS. El hotspot es el pixel que apunta —la punta de la      */
+  /*  flecha, el medio de la palma, el centro de la cruz— y sin el el      */
+  /*  navegador usa la esquina de arriba a la izquierda. El fallback es lo */
+  /*  que se ve si el SVG no carga o el tamaño no entra: sin el, el cursor */
+  /*  puede quedar en NINGUNO.                                             */
+  /*                                                                       */
+  /*  ⚠ LOS DOS DEL ARO MIDEN 28px Y NO 24: llevan la insignia al costado  */
+  /*  de la flecha, igual que los nativos, y no entraba en 24. Sigue lejos */
+  /*  del tope de 32, pasado el cual varios navegadores lo ignoran.        */
+  /*                                                                       */
+  /*  ⚠ Y SON DE TINTA NEUTRA, NO DEL COLOR DE MARCA. Un data URI es un    */
+  /*  documento aparte y no ve las variables CSS, asi que un cursor no     */
+  /*  puede seguir a BRAND_COLOR: pintarlo del color de marca seria        */
+  /*  clavarlo y mentir cuando la perilla se mueva. La identidad la lleva  */
+  /*  la forma y el acabado.                                               */
+  /* ==================================================================== */
+  /* el puntero de siempre */
+  --ui-cursor-default:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M3 2 3 17.6 7.3 13.4 10 19.5 12.9 18.2 10.3 12.3 16.2 12.3Z' fill='%23100d0c' fill-opacity='.8' stroke='%23100d0c' stroke-opacity='.8' stroke-width='3.2' stroke-linejoin='miter'/%3E%3Cpath d='M3 2 3 17.6 7.3 13.4 10 19.5 12.9 18.2 10.3 12.3 16.2 12.3Z' fill='%23e8e2d9' stroke='%23e8e2d9' stroke-width='.8' stroke-linejoin='miter'/%3E%3Cpath d='M3 2 3 17.6 7.3 13.4 10 19.5 12.9 18.2 10.3 12.3 16.2 12.3Z' fill='none' stroke='%23100d0c' stroke-opacity='.55' stroke-width='1.6' stroke-dasharray='2.5 2' stroke-linejoin='miter'/%3E%3C/svg%3E") 3 2, default;
+  /* lo que se puede apretar */
+  --ui-cursor-pointer:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M8 2.6c0-1 2-1 2 0v6.1h1V6.2c0-1 2-1 2 0v2.5h1V7.4c0-1 2-1 2 0v1.3h1V9c0-1 2-1 2 0v5.6c0 3-2 5.4-5 5.4h-1.6c-1.6 0-3-.8-3.8-2.2L5 13.6c-.5-.9 1.2-2 1.8-1.1L8 14.2Z' fill='%23100d0c' fill-opacity='.8' stroke='%23100d0c' stroke-opacity='.8' stroke-width='3.2' stroke-linejoin='miter'/%3E%3Cpath d='M8 2.6c0-1 2-1 2 0v6.1h1V6.2c0-1 2-1 2 0v2.5h1V7.4c0-1 2-1 2 0v1.3h1V9c0-1 2-1 2 0v5.6c0 3-2 5.4-5 5.4h-1.6c-1.6 0-3-.8-3.8-2.2L5 13.6c-.5-.9 1.2-2 1.8-1.1L8 14.2Z' fill='%23e8e2d9' stroke='%23e8e2d9' stroke-width='.8' stroke-linejoin='miter'/%3E%3Cpath d='M8 2.6c0-1 2-1 2 0v6.1h1V6.2c0-1 2-1 2 0v2.5h1V7.4c0-1 2-1 2 0v1.3h1V9c0-1 2-1 2 0v5.6c0 3-2 5.4-5 5.4h-1.6c-1.6 0-3-.8-3.8-2.2L5 13.6c-.5-.9 1.2-2 1.8-1.1L8 14.2Z' fill='none' stroke='%23100d0c' stroke-opacity='.55' stroke-width='1.6' stroke-dasharray='2.5 2' stroke-linejoin='miter'/%3E%3C/svg%3E") 9 2, pointer;
+  /* donde se escribe */
+  --ui-cursor-text:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M7 3h6M7 19h6M10 3v16' fill='none' stroke='%23100d0c' stroke-opacity='.8' stroke-width='3.6'/%3E%3Cpath d='M7 3h6M7 19h6M10 3v16' fill='none' stroke='%23e8e2d9' stroke-width='1.8' stroke-dasharray='3 1.6'/%3E%3C/svg%3E") 10 11, text;
+  /* lo que no se puede tocar */
+  --ui-cursor-disabled:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Cpath d='M3 2 3 17.6 7.3 13.4 10 19.5 12.9 18.2 10.3 12.3 16.2 12.3Z' fill='%23100d0c' fill-opacity='.8' stroke='%23100d0c' stroke-opacity='.8' stroke-width='3.2' stroke-linejoin='miter'/%3E%3Cpath d='M3 2 3 17.6 7.3 13.4 10 19.5 12.9 18.2 10.3 12.3 16.2 12.3Z' fill='%23e8e2d9' stroke='%23e8e2d9' stroke-width='.8' stroke-linejoin='miter'/%3E%3Cpath d='M3 2 3 17.6 7.3 13.4 10 19.5 12.9 18.2 10.3 12.3 16.2 12.3Z' fill='none' stroke='%23100d0c' stroke-opacity='.55' stroke-width='1.6' stroke-dasharray='2.5 2' stroke-linejoin='miter'/%3E%3Cpath d='M20 13.8a5.4 5.4 0 1 0 0 10.8 5.4 5.4 0 0 1 0-10.8M16.7 15.8l6.6 6.8' fill='none' stroke='%23100d0c' stroke-opacity='.8' stroke-width='3.6'/%3E%3Cpath d='M20 13.8a5.4 5.4 0 1 0 0 10.8 5.4 5.4 0 0 1 0-10.8M16.7 15.8l6.6 6.8' fill='none' stroke='%23e8e2d9' stroke-width='1.8' stroke-dasharray='3 1.6'/%3E%3C/svg%3E") 3 2, not-allowed;
+  /* lo que se puede agarrar */
+  --ui-cursor-grab:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M6.2 13V8.7c0-1.3 2.2-1.3 2.2 0v1.6V4.4c0-1.3 2.2-1.3 2.2 0v5.6V3.7c0-1.3 2.2-1.3 2.2 0v6.3V6c0-1.3 2.2-1.3 2.2 0v8.6c0 3.4-2.1 5.9-5.4 5.9-2 0-3.5-.8-4.6-2.4l-2.7-3.8c-.7-1 1-2.4 1.9-1.4Z' fill='%23100d0c' fill-opacity='.8' stroke='%23100d0c' stroke-opacity='.8' stroke-width='3.2' stroke-linejoin='miter'/%3E%3Cpath d='M6.2 13V8.7c0-1.3 2.2-1.3 2.2 0v1.6V4.4c0-1.3 2.2-1.3 2.2 0v5.6V3.7c0-1.3 2.2-1.3 2.2 0v6.3V6c0-1.3 2.2-1.3 2.2 0v8.6c0 3.4-2.1 5.9-5.4 5.9-2 0-3.5-.8-4.6-2.4l-2.7-3.8c-.7-1 1-2.4 1.9-1.4Z' fill='%23e8e2d9' stroke='%23e8e2d9' stroke-width='.8' stroke-linejoin='miter'/%3E%3Cpath d='M6.2 13V8.7c0-1.3 2.2-1.3 2.2 0v1.6V4.4c0-1.3 2.2-1.3 2.2 0v5.6V3.7c0-1.3 2.2-1.3 2.2 0v6.3V6c0-1.3 2.2-1.3 2.2 0v8.6c0 3.4-2.1 5.9-5.4 5.9-2 0-3.5-.8-4.6-2.4l-2.7-3.8c-.7-1 1-2.4 1.9-1.4Z' fill='none' stroke='%23100d0c' stroke-opacity='.55' stroke-width='1.6' stroke-dasharray='2.5 2' stroke-linejoin='miter'/%3E%3C/svg%3E") 12 11, grab;
+  /* mientras se arrastra */
+  --ui-cursor-grabbing:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M6.2 13.6v-2.4c0-1.3 2.2-1.3 2.2 0v.5c0-1.3 2.2-1.3 2.2 0v.2c0-1.3 2.2-1.3 2.2 0v.3c0-1.3 2.2-1.3 2.2 0v2.6c0 3.2-2.1 5.7-5.4 5.7-2 0-3.5-.8-4.6-2.4l-2.3-3.2c-.7-1 1-2.4 1.9-1.4Z' fill='%23100d0c' fill-opacity='.8' stroke='%23100d0c' stroke-opacity='.8' stroke-width='3.2' stroke-linejoin='miter'/%3E%3Cpath d='M6.2 13.6v-2.4c0-1.3 2.2-1.3 2.2 0v.5c0-1.3 2.2-1.3 2.2 0v.2c0-1.3 2.2-1.3 2.2 0v.3c0-1.3 2.2-1.3 2.2 0v2.6c0 3.2-2.1 5.7-5.4 5.7-2 0-3.5-.8-4.6-2.4l-2.3-3.2c-.7-1 1-2.4 1.9-1.4Z' fill='%23e8e2d9' stroke='%23e8e2d9' stroke-width='.8' stroke-linejoin='miter'/%3E%3Cpath d='M6.2 13.6v-2.4c0-1.3 2.2-1.3 2.2 0v.5c0-1.3 2.2-1.3 2.2 0v.2c0-1.3 2.2-1.3 2.2 0v.3c0-1.3 2.2-1.3 2.2 0v2.6c0 3.2-2.1 5.7-5.4 5.7-2 0-3.5-.8-4.6-2.4l-2.3-3.2c-.7-1 1-2.4 1.9-1.4Z' fill='none' stroke='%23100d0c' stroke-opacity='.55' stroke-width='1.6' stroke-dasharray='2.5 2' stroke-linejoin='miter'/%3E%3C/svg%3E") 12 12, grabbing;
+  /* arrastre vertical (el Spinner) */
+  --ui-cursor-resize-ns:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M12 1.6 7.9 7.4h2.6v9.2H7.9L12 22.4l4.1-5.8h-2.6V7.4h2.6Z' fill='%23100d0c' fill-opacity='.8' stroke='%23100d0c' stroke-opacity='.8' stroke-width='3.2' stroke-linejoin='miter'/%3E%3Cpath d='M12 1.6 7.9 7.4h2.6v9.2H7.9L12 22.4l4.1-5.8h-2.6V7.4h2.6Z' fill='%23e8e2d9' stroke='%23e8e2d9' stroke-width='.8' stroke-linejoin='miter'/%3E%3Cpath d='M12 1.6 7.9 7.4h2.6v9.2H7.9L12 22.4l4.1-5.8h-2.6V7.4h2.6Z' fill='none' stroke='%23100d0c' stroke-opacity='.55' stroke-width='1.6' stroke-dasharray='2.5 2' stroke-linejoin='miter'/%3E%3C/svg%3E") 12 12, ns-resize;
+  /* elegir un punto (el area de color) */
+  --ui-cursor-crosshair:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M12 1v9.2M12 13.8V23M1 12h9.2M13.8 12H23' fill='none' stroke='%23100d0c' stroke-opacity='.8' stroke-width='3.6'/%3E%3Cpath d='M12 1v9.2M12 13.8V23M1 12h9.2M13.8 12H23' fill='none' stroke='%23e8e2d9' stroke-width='1.8' stroke-dasharray='3 1.6'/%3E%3C/svg%3E") 12 12, crosshair;
+  /* esperando (un boton en carga) */
+  --ui-cursor-busy:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Cpath d='M3 2 3 17.6 7.3 13.4 10 19.5 12.9 18.2 10.3 12.3 16.2 12.3Z' fill='%23100d0c' fill-opacity='.8' stroke='%23100d0c' stroke-opacity='.8' stroke-width='3.2' stroke-linejoin='miter'/%3E%3Cpath d='M3 2 3 17.6 7.3 13.4 10 19.5 12.9 18.2 10.3 12.3 16.2 12.3Z' fill='%23e8e2d9' stroke='%23e8e2d9' stroke-width='.8' stroke-linejoin='miter'/%3E%3Cpath d='M3 2 3 17.6 7.3 13.4 10 19.5 12.9 18.2 10.3 12.3 16.2 12.3Z' fill='none' stroke='%23100d0c' stroke-opacity='.55' stroke-width='1.6' stroke-dasharray='2.5 2' stroke-linejoin='miter'/%3E%3Cpath d='M25.4 19.2a5.4 5.4 0 1 1-2.5-4.6' fill='none' stroke='%23100d0c' stroke-opacity='.8' stroke-width='3.6'/%3E%3Cpath d='M25.4 19.2a5.4 5.4 0 1 1-2.5-4.6' fill='none' stroke='%23e8e2d9' stroke-width='1.8' stroke-dasharray='3 1.6'/%3E%3C/svg%3E") 3 2, progress;
+
+
+
+
+
+
+
+
+
+
+  /* ---------------------------------------------------------- Radios ---- */
+  --ui-radius-xs:   calc(3px  * var(--ui-roundness));
+  --ui-radius-sm:   calc(5px  * var(--ui-roundness));
+  --ui-radius-md:   calc(8px  * var(--ui-roundness));
+  --ui-radius-lg:   calc(12px * var(--ui-roundness));
+  --ui-radius-xl:   calc(18px * var(--ui-roundness));
+  --ui-radius-full: calc(999px * min(var(--ui-roundness), 1));
+  --ui-radius-circle: 50%;
+
+  /* -------------------------------------------------------- Bordes ------ */
+  /* Fino. El contorno sigue siendo lo que sostiene la forma cuando el canto
+     esta roto, pero no hace falta que grite para hacerlo: a 2px y opacidad
+     plena el pack se leia como una coleccion de cajas dibujadas, y lo que tiene
+     que verse primero es el MATERIAL.
+
+     ⚠ A 1px queda casi entero adentro de la banda comida —que mide 2.5px— asi
+     que la mascara se lo come a mordiscos y el contorno sale punteado. Eso es
+     deliberado: un canto roto no tiene un filete parejo alrededor. Si hiciera
+     falta mas definicion, lo que hay que bajar es WEAR, no subir esto. */
+  --ui-border-width: 1px;
+
+  /* ------------------------------------------------------ Movimiento ---- */
+  /* Seco y corto. Nada de este pack rebota ni flota: se apoya. */
+  --ui-duration-fast: 120ms;
+  --ui-duration-base: 210ms;
+  --ui-duration-slow: 340ms;
+  --ui-duration-loader: 900ms;
+  --ui-loader-width: 3px;
+
+  --ui-ease:      cubic-bezier(0.2, 0.8, 0.25, 1);
+  --ui-ease-out:  cubic-bezier(0.14, 0.9, 0.24, 1);
+  --ui-ease-in:   cubic-bezier(0.66, 0, 0.9, 0.3);
+
+  /* ----------------------------------------------------------- Capas ---- */
+  --ui-z-base:     0;
+  --ui-z-dropdown: 1000;
+  --ui-z-sticky:   1100;
+  --ui-z-overlay:  1200;
+  --ui-z-modal:    1300;
+  --ui-z-toast:    1400;
+  --ui-z-tooltip:  1500;
+
+  /* ==================================================================== */
+  /*  NEUTROS — HORMIGON. El tono de la laca con casi nada de saturacion, */
+  /*  asi que los grises salen calidos y sucios en vez de neutros de      */
+  /*  laboratorio. Un brand frio los enfria a todos juntos.               */
+  /* ==================================================================== */
+  --ui-neutral-0:    hsl(from var(--ui-brand) h calc(s * 0.06) 99%);
+  --ui-neutral-50:   hsl(from var(--ui-brand) h calc(s * 0.08) 96%);
+  --ui-neutral-100:  hsl(from var(--ui-brand) h calc(s * 0.10) 92%);
+  --ui-neutral-200:  hsl(from var(--ui-brand) h calc(s * 0.12) 85%);
+  --ui-neutral-300:  hsl(from var(--ui-brand) h calc(s * 0.13) 74%);
+  --ui-neutral-400:  hsl(from var(--ui-brand) h calc(s * 0.14) 58%);
+  --ui-neutral-500:  hsl(from var(--ui-brand) h calc(s * 0.15) 44%);
+  --ui-neutral-600:  hsl(from var(--ui-brand) h calc(s * 0.17) 33%);
+  --ui-neutral-700:  hsl(from var(--ui-brand) h calc(s * 0.19) 24%);
+  --ui-neutral-800:  hsl(from var(--ui-brand) h calc(s * 0.22) 16%);
+  --ui-neutral-900:  hsl(from var(--ui-brand) h calc(s * 0.26) 10%);
+  --ui-neutral-950:  hsl(from var(--ui-brand) h calc(s * 0.32) 5%);
+
+  /* ==================================================================== */
+  /*  FAMILIA DE MARCA                                                   */
+  /* ==================================================================== */
+  --ui-brand-base:   var(--ui-brand);
+  --ui-brand-hover:  hsl(from var(--ui-brand) h s calc(l * 1.10));
+  --ui-brand-active: hsl(from var(--ui-brand) h s calc(l * 0.86));
+  --ui-brand-soft:   hsl(from var(--ui-brand) h calc(s * 0.75) 78%);
+  --ui-brand-subtle: hsl(from var(--ui-brand) h calc(s * 0.50) 93%);
+
+  /* ==================================================================== */
+  /*  ESTADOS — el tono se fija, pero la saturacion la aporta el brand.   */
+  /*  Aca ademas se corren hacia la tierra: oxido en vez de rojo de señal.*/
+  /* ==================================================================== */
+  /* ⚠ CON UN BRAND ROJO, EL PELIGRO NO SE DISTINGUE POR EL TONO — Y ESTA
+     BIEN. La regla del sistema es que el tono de un estado se FIJA, asi que un
+     pack de marca roja tiene el acento y el peligro en la misma familia. Lo
+     que los separa aca es el MATERIAL: el acento va lacado y el peligro va en
+     crudo, sin reflejo ni veta. Es la misma distincion que usa el pack para
+     todo lo demas, y se lee mejor que media vuelta de tono.
+
+     ⚠ Y LAS CLARIDADES SON LAS QUE SON PORQUE SE MIDIERON. Un rojo saturado en
+     52% cae en zona muerta: no pasa 4.5:1 ni con tinta clara (3.80) ni con
+     tinta oscura (4.11). Hay que irse para un lado. El 500 se fue para arriba
+     (62%, tinta oscura encima) y el 600 para abajo (44%, tinta clara), que es
+     lo que usa cada tema segun contra que fondo tiene que leerse. */
+  --ui-red-100:   hsl(from var(--ui-brand) 4   calc(s * 0.40) 92%);
+  --ui-red-500:   hsl(from var(--ui-brand) 2   calc(s * 1.00) 62%);
+  --ui-red-600:   hsl(from var(--ui-brand) 0   calc(s * 1.00) 44%);
+  --ui-red-700:   hsl(from var(--ui-brand) 358 calc(s * 1.00) 36%);
+
+  --ui-green-100: hsl(from var(--ui-brand) 128 calc(s * 0.35) 91%);
+  --ui-green-500: hsl(from var(--ui-brand) 124 calc(s * 0.70) 44%);
+  --ui-green-600: hsl(from var(--ui-brand) 124 calc(s * 0.70) 33%);
+
+  --ui-amber-100: hsl(from var(--ui-brand) 44  calc(s * 0.45) 92%);
+  --ui-amber-500: hsl(from var(--ui-brand) 40  calc(s * 1.00) 50%);
+  --ui-amber-600: hsl(from var(--ui-brand) 36  calc(s * 1.00) 40%);
+
+  /* -------------------------------------------------------- Sombras ----- */
+  /* HOLLIN, no sombra. Blur grande y `spread` negativo para que se vea el
+     peso y no el contorno: lo que hay debajo del canto roto sigue siendo un
+     rectangulo, y una sombra con forma lo delataria. */
+  --ui-shadow-sm:
+    0 2px 10px -4px var(--ui-gr-cast);
+  --ui-shadow-md:
+    0 10px 26px -10px var(--ui-gr-cast),
+    0 2px 8px -6px var(--ui-gr-cast);
+  --ui-shadow-lg:
+    0 24px 60px -22px var(--ui-gr-cast),
+    0 6px 18px -12px var(--ui-gr-cast);
+
+  /* ------------------------------------------- Semánticos — tema claro -- */
+  /* ⚠ ESTE ES EL TEMA DERIVADO. El pack esta calibrado para el oscuro (ver
+     los dos bloques del final). Aca es el MISMO material a la luz del dia:
+     carton, papel de obra, hormigon curado. Nada es blanco — un blanco de
+     pantalla al lado de un canto roto se ve como un error de render. */
+  --ui-bg:             hsl(from var(--ui-brand) h calc(s * 0.16) 88%);
+  --ui-bg-subtle:      hsl(from var(--ui-brand) h calc(s * 0.18) 83%);
+  --ui-surface:        hsl(from var(--ui-brand) h calc(s * 0.13) 93%);
+  --ui-surface-hover:  hsl(from var(--ui-brand) h calc(s * 0.14) 89%);
+  --ui-surface-active: hsl(from var(--ui-brand) h calc(s * 0.16) 85%);
+
+  /* El contorno es TINTA, no una linea de baja opacidad: es lo unico que
+     sostiene la forma de una pieza con el canto roto. */
+  --ui-border:         hsl(from var(--ui-brand) h calc(s * 0.24) 36% / 0.50);
+  --ui-border-strong:  hsl(from var(--ui-brand) h calc(s * 0.28) 22% / 0.65);
+  --ui-line:           rgb(from var(--ui-text) r g b / 0.15);
+  --ui-line-soft:      rgb(from var(--ui-text) r g b / 0.07);
+  --ui-scroll-thumb:       rgb(from var(--ui-text) r g b / 0.30);
+  --ui-scroll-thumb-hover: rgb(from var(--ui-text) r g b / 0.50);
+
+  --ui-panel-from:     var(--ui-surface);
+  --ui-panel-to:       var(--ui-surface);
+
+  --ui-text:           hsl(from var(--ui-brand) h calc(s * 0.30) 13%);
+  --ui-text-muted:     hsl(from var(--ui-brand) h calc(s * 0.22) 34%);
+  --ui-text-subtle:    hsl(from var(--ui-brand) h calc(s * 0.20) 44%);
+
+  /* ⛔ EL ACENTO SE OSCURECE AL TOCARLO, Y EL ENFASIS NO LO PONE EL COLOR.
+     Encima del acento va la laca, y sobre laca roja el rotulo es de tinta
+     CLARA: aclarar el relleno le come el contraste en vez de resaltarlo.
+     Medido, con el hover yendo para arriba el peor punto caia a 3.95:1; yendo
+     para abajo queda en 5.35:1.
+     Lo que responde al mouse no es el tono sino el REFLEJO, que barre la pieza
+     de punta a punta — ver components/Button.css. Una laca no cambia de color
+     porque la toques: cambia de donde le pega la luz. */
+  --ui-accent:         hsl(from var(--ui-brand) h s 38%);
+  --ui-accent-hover:   hsl(from var(--ui-brand) h s 33%);
+  --ui-accent-active:  hsl(from var(--ui-brand) h s 30%);
+  --ui-accent-subtle:  rgb(from var(--ui-brand) r g b / 0.18);
+  --ui-accent-soft:    rgb(from var(--ui-brand) r g b / 0.45);
+  /* Como LETRA el rojo hay que bajarlo: en su claridad de relleno no llega
+     sobre carton. Medido, 32% da 7.11:1 sobre el fondo y 8.12:1 sobre una
+     superficie. Como RELLENO es --ui-accent, que es otra cosa — y por eso son
+     dos tokens. */
+  --ui-accent-text:    hsl(from var(--ui-brand) h s 32%);
+  /* Medido: sobre la laca gana la tinta clara, y su peor punto —el reflejo,
+     con FOIL al maximo— da 4.79:1. */
+  --ui-on-accent:      var(--ui-on-brand-light);
+
+  --ui-danger:         var(--ui-red-600);
+  --ui-danger-hover:   var(--ui-red-700);
+  --ui-danger-subtle:  var(--ui-red-100);
+  --ui-on-danger:      var(--ui-on-brand-light);
+
+  --ui-success:        var(--ui-green-600);
+  --ui-success-subtle: var(--ui-green-100);
+  --ui-warning:        var(--ui-amber-600);
+  --ui-warning-subtle: var(--ui-amber-100);
+
+  /* Las tres tintas del canto, el hollin que proyecta y el arido. */
+  --ui-gr-sheen:   rgb(from var(--ui-neutral-0) r g b / 0.60);
+  --ui-gr-contour: var(--ui-border);
+  --ui-gr-deep:    rgb(from var(--ui-neutral-950) r g b / 0.20);
+  --ui-gr-cast:    rgb(from var(--ui-neutral-950) r g b / 0.40);
+  /* La costra: sobre material claro son puntos OSCUROS. */
+  --ui-gr-soot:    rgb(from var(--ui-neutral-950) r g b / calc(0.30 * var(--ui-grain, 1)));
+
+  /* ⛔ EL ANILLO DE FOCO SALE DE --ui-accent-text Y NO DE --ui-accent, Y NO ES
+     UNA PREFERENCIA: ES LA DIFERENCIA ENTRE PASAR Y NO PASAR.
+
+     Los dos tokens del acento no son intercambiables. --ui-accent esta
+     calibrado como RELLENO, o sea para que se lea la tinta que va ENCIMA; en
+     este pack eso lo empujo a un rojo oscuro (40%). Pero un `outline` no tiene
+     nada encima: se lee contra el FONDO, que es lo mismo que hace una letra.
+     Apuntando a --ui-accent daba 2.40:1 contra una superficie —por debajo del
+     3:1 que pide WCAG 2.2 para un indicador de foco— y encima empeoraba al
+     bajarle opacidad. Con --ui-accent-text, que es el token que SI esta medido
+     contra el fondo, el mismo anillo da 5.56:1.
+
+     La opacidad esta al tope de lo que aguanta: 0.75 deja el peor caso en
+     3.6:1. A 0.60 ya cae a 2.8:1 y deja de ser un indicador valido. */
+  --ui-focus-ring:     rgb(from var(--ui-accent-text) r g b / 0.75);
+  --ui-focus-width:    2px;
+  --ui-focus-offset:   2px;
+
+  --ui-selection-bg:   rgb(from var(--ui-accent) r g b / 0.30);
+  --ui-selection-fg:   var(--ui-text);
+
+  /* El halo es decoracion, no señal: no lo alcanza el minimo del foco y puede
+     ser tan tenue como haga falta. */
+  --ui-ring-width:     2px;
+  --ui-ring:           rgb(from var(--ui-accent) r g b / 0.16);
+  --ui-ring-soft:      rgb(from var(--ui-accent) r g b / 0.08);
+}
+
+/* ===========================================================================
+   TEMA OSCURO — el que manda
+   ---------------------------------------------------------------------------
+   No es el tema alternativo: es para el que esta calibrado el pack. Hormigon
+   sin luz, hollin encima y una capa de laca que es lo unico que brilla.
+
+   ⚠ LO QUE CAMBIA DE VERDAD NO SON LOS FONDOS: ES QUE LA COSTRA SE DA VUELTA.
+   Sobre material claro el arido se ve como puntos OSCUROS; sobre material
+   oscuro se ve como puntos CLAROS, porque lo que se ve de un arido es lo que
+   refleja. Pintarla oscura en los dos temas la hacia desaparecer justo en el
+   tema para el que el pack existe.
+   =========================================================================== */
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ui-bg:             hsl(from var(--ui-brand) h calc(s * 0.24) 7%);
+    --ui-bg-subtle:      hsl(from var(--ui-brand) h calc(s * 0.26) 5%);
+    --ui-surface:        hsl(from var(--ui-brand) h calc(s * 0.24) 11.5%);
+    --ui-surface-hover:  hsl(from var(--ui-brand) h calc(s * 0.24) 15%);
+    --ui-surface-active: hsl(from var(--ui-brand) h calc(s * 0.24) 19%);
+
+    --ui-border:         hsl(from var(--ui-brand) h calc(s * 0.22) 26% / 0.55);
+    --ui-border-strong:  hsl(from var(--ui-brand) h calc(s * 0.24) 38% / 0.70);
+    --ui-line:           rgb(from var(--ui-text) r g b / 0.10);
+    --ui-line-soft:      rgb(from var(--ui-text) r g b / 0.05);
+    --ui-scroll-thumb:       rgb(from var(--ui-text) r g b / 0.22);
+    --ui-scroll-thumb-hover: rgb(from var(--ui-text) r g b / 0.42);
+
+    --ui-panel-from:     var(--ui-surface);
+    --ui-panel-to:       var(--ui-surface);
+
+    --ui-text:           hsl(from var(--ui-brand) h calc(s * 0.14) 93%);
+    --ui-text-muted:     hsl(from var(--ui-brand) h calc(s * 0.12) 68%);
+    --ui-text-subtle:    hsl(from var(--ui-brand) h calc(s * 0.11) 52%);
+
+    /* Se oscurece al tocarlo, por lo mismo que en claro: la tinta de encima es
+       clara y el enfasis lo pone el reflejo, no el tono. */
+    --ui-accent:         hsl(from var(--ui-brand) h s 40%);
+    --ui-accent-hover:   hsl(from var(--ui-brand) h s 35%);
+    --ui-accent-active:  hsl(from var(--ui-brand) h s 32%);
+    --ui-accent-subtle:  rgb(from var(--ui-brand) r g b / 0.20);
+    --ui-accent-soft:    rgb(from var(--ui-brand) r g b / 0.48);
+    /* Medido: 66% da 6.13:1 sobre el fondo del pack. */
+    --ui-accent-text:    hsl(from var(--ui-brand) h s 66%);
+    --ui-on-accent:      var(--ui-on-brand-light);
+
+    --ui-danger:         var(--ui-red-500);
+    --ui-danger-hover:   hsl(from var(--ui-red-500) h s calc(l * 1.12));
+    --ui-danger-subtle:  rgb(from var(--ui-red-500) r g b / 0.20);
+    /* ⚠ ACA LA TINTA DEL PELIGRO SE DA VUELTA. En oscuro el rojo tiene que ser
+       CLARO para leerse como texto contra el fondo del pack (5.34:1), y encima
+       de un rojo claro la tinta legible es la oscura (4.83:1), no la blanca. En
+       claro pasa justo al reves. Es el mismo token haciendo dos trabajos. */
+    --ui-on-danger:      var(--ui-on-brand-dark);
+
+    --ui-success:        var(--ui-green-500);
+    --ui-success-subtle: rgb(from var(--ui-green-500) r g b / 0.20);
+    --ui-warning:        var(--ui-amber-500);
+    --ui-warning-subtle: rgb(from var(--ui-amber-500) r g b / 0.20);
+
+    /* ⚠ ACA LA COSTRA SE DA VUELTA: puntos CLAROS. */
+    --ui-gr-sheen:   rgb(from var(--ui-neutral-0) r g b / 0.16);
+    --ui-gr-deep:    rgb(from var(--ui-neutral-950) r g b / 0.55);
+    --ui-gr-cast:    rgb(from var(--ui-neutral-950) r g b / 0.80);
+    --ui-gr-soot:    rgb(from var(--ui-neutral-0) r g b / calc(0.085 * var(--ui-grain, 1)));
+
+    --ui-selection-bg: rgb(from var(--ui-accent) r g b / 0.34);
+  }
+}
+
+:root[data-theme="dark"] {
+  --ui-bg:             hsl(from var(--ui-brand) h calc(s * 0.24) 7%);
+  --ui-bg-subtle:      hsl(from var(--ui-brand) h calc(s * 0.26) 5%);
+  --ui-surface:        hsl(from var(--ui-brand) h calc(s * 0.24) 11.5%);
+  --ui-surface-hover:  hsl(from var(--ui-brand) h calc(s * 0.24) 15%);
+  --ui-surface-active: hsl(from var(--ui-brand) h calc(s * 0.24) 19%);
+
+  --ui-border:         hsl(from var(--ui-brand) h calc(s * 0.22) 26% / 0.55);
+  --ui-border-strong:  hsl(from var(--ui-brand) h calc(s * 0.24) 38% / 0.70);
+  --ui-line:           rgb(from var(--ui-text) r g b / 0.10);
+  --ui-line-soft:      rgb(from var(--ui-text) r g b / 0.05);
+  --ui-scroll-thumb:       rgb(from var(--ui-text) r g b / 0.22);
+  --ui-scroll-thumb-hover: rgb(from var(--ui-text) r g b / 0.42);
+
+  --ui-panel-from:     var(--ui-surface);
+  --ui-panel-to:       var(--ui-surface);
+
+  --ui-text:           hsl(from var(--ui-brand) h calc(s * 0.14) 93%);
+  --ui-text-muted:     hsl(from var(--ui-brand) h calc(s * 0.12) 68%);
+  --ui-text-subtle:    hsl(from var(--ui-brand) h calc(s * 0.11) 52%);
+
+  /* Se oscurece al tocarlo, por lo mismo que en claro: la tinta de encima es
+     clara y el enfasis lo pone el reflejo, no el tono. */
+  --ui-accent:         hsl(from var(--ui-brand) h s 40%);
+  --ui-accent-hover:   hsl(from var(--ui-brand) h s 35%);
+  --ui-accent-active:  hsl(from var(--ui-brand) h s 32%);
+  --ui-accent-subtle:  rgb(from var(--ui-brand) r g b / 0.20);
+  --ui-accent-soft:    rgb(from var(--ui-brand) r g b / 0.48);
+  /* Medido: 66% da 6.13:1 sobre el fondo del pack. */
+  --ui-accent-text:    hsl(from var(--ui-brand) h s 66%);
+  --ui-on-accent:      var(--ui-on-brand-light);
+
+  --ui-danger:         var(--ui-red-500);
+  --ui-danger-hover:   hsl(from var(--ui-red-500) h s calc(l * 1.12));
+  --ui-danger-subtle:  rgb(from var(--ui-red-500) r g b / 0.20);
+  /* ⚠ ACA LA TINTA DEL PELIGRO SE DA VUELTA. En oscuro el rojo tiene que ser
+     CLARO para leerse como texto contra el fondo del pack (5.34:1), y encima
+     de un rojo claro la tinta legible es la oscura (4.83:1), no la blanca. En
+     claro pasa justo al reves. Es el mismo token haciendo dos trabajos. */
+  --ui-on-danger:      var(--ui-on-brand-dark);
+
+  --ui-success:        var(--ui-green-500);
+  --ui-success-subtle: rgb(from var(--ui-green-500) r g b / 0.20);
+  --ui-warning:        var(--ui-amber-500);
+  --ui-warning-subtle: rgb(from var(--ui-amber-500) r g b / 0.20);
+
+  /* ⚠ ACA LA COSTRA SE DA VUELTA: puntos CLAROS. */
+  --ui-gr-sheen:   rgb(from var(--ui-neutral-0) r g b / 0.16);
+  --ui-gr-deep:    rgb(from var(--ui-neutral-950) r g b / 0.55);
+  --ui-gr-cast:    rgb(from var(--ui-neutral-950) r g b / 0.80);
+  --ui-gr-soot:    rgb(from var(--ui-neutral-0) r g b / calc(0.085 * var(--ui-grain, 1)));
+
+  --ui-selection-bg: rgb(from var(--ui-accent) r g b / 0.34);
+}

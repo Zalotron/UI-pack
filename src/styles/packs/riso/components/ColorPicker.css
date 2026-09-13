@@ -49,3 +49,34 @@
 .ui-colorpicker__hue {
   border: var(--ui-border-width) solid var(--ui-border);
 }
+
+/* -- La rueda de matices --------------------------------------------------- */
+/* Es DOMINIO DEL COMPONENTE, no una decisión de estilo: un selector de color
+   tiene que mostrar el espectro entero, en todos los packs. Por eso es el único
+   lugar del sistema donde se declaran colores que no salen de --ui-brand — ni
+   siquiera las dos tintas del pack alcanzan para dibujar una rueda de matices.
+
+   ⚠ VA EN LA PISTA VISIBLE (--slider-track) Y NO EN EL PSEUDO NATIVO DEL
+   <input>, que es donde la ponen los packs más viejos. El pseudo se dibuja
+   ENCIMA de la pista, así que le tapaba el contorno de tinta y la plancha
+   corrida: quedaba un arcoíris flotando sin pieza abajo. En la pista visible
+   queda impreso como cualquier otro canal del pack.
+
+   Y el relleno se apaga: es hijo de la pista y taparía la mitad izquierda de
+   la rueda con la tinta del acento. */
+.ui-colorpicker__hue {
+  --slider-track: linear-gradient(
+    to right,
+    hsl(0 100% 50%), hsl(60 100% 50%), hsl(120 100% 50%),
+    hsl(180 100% 50%), hsl(240 100% 50%), hsl(300 100% 50%), hsl(360 100% 50%)
+  );
+  --slider-fill: transparent;
+}
+
+/* ⛔ Y ACA NO VA LA TRAMA, por lo mismo que no va en la muestra: es el color
+   que el usuario está eligiendo y tiene que verse tal cual. Una nube de puntos
+   de la segunda tinta encima corre todos los matices. El relleno del hue hereda
+   la trama del Slider, así que hay que apagarla a mano. */
+.ui-colorpicker__hue .ui-slider__fill {
+  background-image: none;
+}

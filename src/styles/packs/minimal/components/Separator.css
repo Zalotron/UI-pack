@@ -1,0 +1,29 @@
+/* ---------------------------------------- Separator — PIEL del pack MINIMAL */
+/* Interfaz: --separator-color, --separator-thickness.
+   --separator-color se usa como `background`, así que acepta un degradé.     */
+
+/* Una línea de un píxel. No hay nada más que decir, y esa es la idea: en una
+   interfaz densa un separador tiene que ORDENAR sin pesar. Sin desvanecido en
+   las puntas —--ui-sep-fade está en 0— porque una regla de editor separa y
+   punto. */
+
+.ui-separator--soft   { --separator-color: var(--ui-line-soft); }
+.ui-separator--base   { --separator-color: var(--ui-line); }
+.ui-separator--strong { --separator-color: var(--ui-border-strong); }
+
+/* Incluso el de acento es una línea de un píxel: lo que lo distingue es que
+   está encendida, no que sea más gorda. */
+.ui-separator--accent { --separator-color: var(--ui-accent); }
+
+.ui-separator--soft,
+.ui-separator--base,
+.ui-separator--strong,
+.ui-separator--accent {
+  --separator-thickness: var(--ui-border-width);
+}
+
+.ui-separator__label {
+  color: var(--ui-text-subtle);
+  text-transform: none;
+  letter-spacing: var(--ui-tracking-tight);
+}

@@ -114,6 +114,7 @@ function staggerDelay(n, step, max) {
   return max * (1 - Math.exp((-step * n) / max));
 }
 
+
 /**
  * Clase base de todos los componentes.
  *
@@ -208,10 +209,18 @@ export class UIComponent extends EventEmitter {
     const node = this.el;
     if (!node?.classList) return this;
 
+    /* ⚠ SOLO HAY QUE REINICIAR SI LA CLASE YA ESTABA. Forzar el recálculo es
+       lo que hace que sacar y volver a poner la clase en el mismo cuadro
+       reinicie la animación — pero en el montaje inicial no hay nada que
+       reiniciar, y ese `void offsetWidth` costaba un reflow SINCRONICO por
+       componente. En una página con cien piezas eso bloquea el hilo principal
+       justo mientras arrancan las primeras animaciones, que es parte de por qué
+       la entrada se veía a los tirones. */
+    const reiniciando = node.classList.contains(ENTER_CLASS)
+                     || node.classList.contains(LEAVE_CLASS);
     node.classList.remove(LEAVE_CLASS, ENTER_CLASS);
-    // Reinicia la animación si la clase ya estaba: sin forzar un recálculo,
-    // sacarla y volver a ponerla en el mismo cuadro no reinicia nada.
-    void node.offsetWidth;
+
+    if (reiniciando) void node.offsetWidth;
 
     const { enterStagger, enterStaggerMax } = this.constructor;
     const delay = staggerDelay(slot, enterStagger, enterStaggerMax);

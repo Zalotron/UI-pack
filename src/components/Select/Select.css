@@ -45,7 +45,7 @@
   line-height: 1;
   text-align: start;
 
-  cursor: pointer;
+  cursor: var(--ui-cursor-pointer, pointer);
   transition:
     border-color var(--ui-duration-fast) var(--ui-ease),
     background var(--ui-duration-fast) var(--ui-ease);
@@ -128,7 +128,7 @@
   font-family: var(--ui-font-sans);
   font-size: var(--select-font);
   line-height: 1.3;
-  cursor: pointer;
+  cursor: var(--ui-cursor-pointer, pointer);
   transition: background var(--ui-duration-fast) var(--ui-ease);
 }
 
@@ -141,7 +141,7 @@
 
 .ui-select__option.is-disabled {
   opacity: var(--ui-disabled-opacity);
-  cursor: not-allowed;
+  cursor: var(--ui-cursor-disabled, not-allowed);
 }
 
 /* -- Tamaños --------------------------------------------------------------- */
@@ -168,4 +168,4 @@
 /* -- Estados --------------------------------------------------------------- */
 
 .ui-select.is-disabled { opacity: var(--ui-disabled-opacity); }
-.ui-select.is-disabled .ui-select__trigger { cursor: not-allowed; }
+.ui-select.is-disabled .ui-select__trigger { cursor: var(--ui-cursor-disabled, not-allowed); }

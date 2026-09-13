@@ -1,0 +1,54 @@
+/* ------------------------------------------- Button — PIEL del pack MINIMAL */
+/* Interfaz: --btn-bg / --btn-bg-hover | --btn-gloss | --btn-fg
+             --btn-border / -hover | --btn-shadow                            */
+
+/* El botón de una barra de herramientas: un rectángulo de color plano, sin
+   brillo, sin sombra y sin relieve. Lo único que cambia al tocarlo es el
+   fondo — que es exactamente lo que hace un editor. */
+
+.ui-btn {
+  --btn-gloss: none;
+  --btn-shadow: none;
+  --btn-border: transparent;
+  --btn-border-hover: transparent;
+  font-weight: var(--ui-weight-regular);
+}
+
+/* -- Variantes ------------------------------------------------------------ */
+
+/* El primario es el único lugar donde el acento ocupa una superficie entera. */
+.ui-btn--primary {
+  --btn-bg: var(--ui-accent);
+  --btn-bg-hover: var(--ui-accent-hover);
+  --btn-fg: var(--ui-on-accent);
+}
+
+/* El de todos los días: una superficie con su contorno. */
+.ui-btn--secondary {
+  --btn-bg: var(--ui-surface-hover);
+  --btn-bg-hover: var(--ui-surface-active);
+  --btn-fg: var(--ui-text);
+  --btn-border: var(--ui-border);
+  --btn-border-hover: var(--ui-border-strong);
+}
+
+/* Un rótulo y nada más, hasta que lo tocás. Es el de los iconos de barra. */
+.ui-btn--ghost {
+  --btn-bg: transparent;
+  --btn-bg-hover: var(--ui-surface-hover);
+  --btn-fg: var(--ui-text-muted);
+}
+.ui-btn--ghost:hover:not(.is-disabled) {
+  color: var(--ui-text);
+}
+
+.ui-btn--danger {
+  --btn-bg: var(--ui-danger);
+  --btn-bg-hover: var(--ui-danger-hover);
+  --btn-fg: var(--ui-on-danger);
+}
+
+.ui-btn:hover:not(.is-disabled) {
+  --btn-bg: var(--btn-bg-hover);
+  border-color: var(--btn-border-hover);
+}

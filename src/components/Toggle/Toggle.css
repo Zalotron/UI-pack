@@ -21,7 +21,7 @@
   align-items: center;
   gap: var(--ui-space-3);
   min-height: var(--toggle-h);
-  cursor: pointer;
+  cursor: var(--ui-cursor-pointer, pointer);
 }
 
 .ui-toggle--label-start { flex-direction: row-reverse; }
@@ -94,7 +94,7 @@
 
 .ui-toggle.is-disabled {
   opacity: var(--ui-disabled-opacity);
-  cursor: not-allowed;
+  cursor: var(--ui-cursor-disabled, not-allowed);
 }
 
 .ui-toggle__input:focus-visible + .ui-toggle__track {

@@ -1,0 +1,82 @@
+/* ----------------------------------------------- Tabs — PIEL del pack GRUNGE */
+/* Interfaz: --tabs-fg | --tabs-fg-active | --tabs-bg-hover
+             --tabs-line | --tabs-indicator                                  */
+
+/* Rótulos de etiqueta —versalitas muy separadas— y una TIRA DE LAMINA debajo
+   del activo. La tira es la misma pieza lacada que marca la opción elegida de
+   un Select y que llena una barra de progreso: en este pack la laca siempre
+   significa lo mismo. */
+
+.ui-tabs {
+  --tabs-fg: var(--ui-text-subtle);
+  --tabs-fg-active: var(--ui-accent-text);
+  /* El fondo de hover lo pinta una lámina, no el elemento: ver abajo. */
+  --tabs-bg-hover: transparent;
+  --tabs-line: var(--ui-line);
+  --tabs-indicator: var(--ui-accent);
+}
+
+.ui-tabs__tab {
+  position: relative;
+  isolation: isolate;
+
+  font-weight: var(--ui-weight-semibold);
+  font-size: var(--ui-text-xs);
+  letter-spacing: var(--ui-tracking-wide);
+  text-transform: uppercase;
+}
+
+/* LA LAMINA de la pestaña: una chapa que aparece al pasar el mouse, con el
+   canto comido como todo lo demás. Si el fondo lo pintara el elemento sería un
+   rectángulo perfecto, que es lo único que este pack no puede tener. */
+.ui-tabs__tab::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+
+  background-color: var(--ui-surface-hover);
+  opacity: 0;
+
+  /* EL CANTO COMIDO. Con longhands a proposito — ver tokens.css. */
+  -webkit-mask-image: var(--ui-gr-tear-image);
+          mask-image: var(--ui-gr-tear-image);
+  -webkit-mask-position: var(--ui-gr-tear-position);
+          mask-position: var(--ui-gr-tear-position);
+  -webkit-mask-size: var(--ui-gr-tear-size);
+          mask-size: var(--ui-gr-tear-size);
+  -webkit-mask-repeat: var(--ui-gr-tear-repeat);
+          mask-repeat: var(--ui-gr-tear-repeat);
+
+  transition: opacity var(--ui-duration-fast) var(--ui-ease);
+}
+
+.ui-tabs__tab:hover:not(.is-disabled):not(.is-active)::before {
+  opacity: 1;
+}
+
+/* La activa no necesita chapa: ya tiene la tira lacada y el color del rótulo. */
+.ui-tabs__tab.is-active {
+  font-weight: var(--ui-weight-bold);
+}
+
+/* -- La tira --------------------------------------------------------------- */
+/* Lámina de verdad, con el canto picado. Va enmascarada en el elemento: no se
+   enfoca, no tiene hijos y no proyecta nada. */
+
+.ui-tabs__indicator {
+  background-image: var(--ui-gr-foil);
+  background-size: var(--ui-gr-foil-span);
+  border-radius: 0;
+
+  -webkit-mask-image: var(--ui-gr-chip-image);
+          mask-image: var(--ui-gr-chip-image);
+  -webkit-mask-position: var(--ui-gr-chip-position);
+          mask-position: var(--ui-gr-chip-position);
+  -webkit-mask-size: var(--ui-gr-chip-size);
+          mask-size: var(--ui-gr-chip-size);
+  -webkit-mask-repeat: var(--ui-gr-chip-repeat);
+          mask-repeat: var(--ui-gr-chip-repeat);
+}

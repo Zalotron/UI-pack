@@ -1,0 +1,120 @@
+/* --------------------------------------------- Toggle — PIEL del pack GRUNGE */
+/* Interfaz: --toggle-track | --toggle-track-on | --toggle-knob-bg
+             --toggle-border | --toggle-ring                                  */
+
+/* Un canal picado en el material y una PLAQUETA lacada que corre por adentro.
+   Apagado el canal es hueco; encendido se llena de laca y la plaqueta queda
+   apoyada sobre ella.
+
+   ⚠ LA LAMINA VA EN UN ::before Y NO EN LA PISTA, aunque la pista no tenga
+   hijos que se salgan: el anillo de foco de este componente se dibuja sobre
+   `.ui-toggle__track`, y una máscara ahí se lo comería. Es exactamente el caso
+   que la regla del pack existe para evitar — ver components/Container.css. */
+
+.ui-toggle {
+  --toggle-track: transparent;
+  --toggle-track-on: transparent;
+  --toggle-border: transparent;
+  --toggle-knob-bg: transparent;
+
+  --gr-track-fill: var(--ui-bg-subtle);
+  --gr-knob-fill: var(--ui-neutral-400);
+  --gr-knob-sheet: none;
+}
+
+/* -- El canal -------------------------------------------------------------- */
+
+.ui-toggle__track {
+  position: relative;
+  isolation: isolate;
+}
+
+/* LA LAMINA del canal: hundida, porque es un hueco. */
+.ui-toggle__track::before {
+  content: "";
+  position: absolute;
+  inset: calc(var(--ui-border-width) * -1);
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+
+  background-color: var(--gr-track-fill);
+  background-image: var(--gr-track-sheet, none);
+  background-size: var(--ui-gr-foil-span);
+  box-shadow: var(--ui-gr-edge-sunken);
+
+  /* EL CANTO COMIDO, mordida chica: la pista mide unos 24px de alto y con la
+     banda entera no quedaría canal. Con longhands a proposito — ver tokens.css. */
+  -webkit-mask-image: var(--ui-gr-chip-image);
+          mask-image: var(--ui-gr-chip-image);
+  -webkit-mask-position: var(--ui-gr-chip-position);
+          mask-position: var(--ui-gr-chip-position);
+  -webkit-mask-size: var(--ui-gr-chip-size);
+          mask-size: var(--ui-gr-chip-size);
+  -webkit-mask-repeat: var(--ui-gr-chip-repeat);
+          mask-repeat: var(--ui-gr-chip-repeat);
+
+  transition: background-color var(--ui-duration-base) var(--ui-ease);
+}
+
+/* Encendido el canal se llena de laca: es la misma del botón primario,
+   recortada a la forma del canal. */
+.ui-toggle.is-checked {
+  --gr-track-fill: var(--ui-accent);
+  --gr-track-sheet: var(--ui-gr-foil);
+  --gr-knob-fill: var(--ui-on-accent);
+  --gr-knob-sheet: none;
+}
+
+/* -- La plaqueta ----------------------------------------------------------- */
+
+.ui-toggle__knob {
+  isolation: isolate;
+  background: transparent;
+}
+
+.ui-toggle__knob::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+
+  background-color: var(--gr-knob-fill);
+  background-image: var(--gr-knob-sheet);
+  background-size: var(--ui-gr-foil-span);
+  box-shadow: var(--ui-gr-edge);
+
+  /* EL CANTO COMIDO, mordida chica. */
+  -webkit-mask-image: var(--ui-gr-chip-image);
+          mask-image: var(--ui-gr-chip-image);
+  -webkit-mask-position: var(--ui-gr-chip-position);
+          mask-position: var(--ui-gr-chip-position);
+  -webkit-mask-size: var(--ui-gr-chip-size);
+          mask-size: var(--ui-gr-chip-size);
+  -webkit-mask-repeat: var(--ui-gr-chip-repeat);
+          mask-repeat: var(--ui-gr-chip-repeat);
+
+  transition: background-color var(--ui-duration-base) var(--ui-ease);
+}
+
+/* -- Estados --------------------------------------------------------------- */
+
+.ui-toggle:hover:not(.is-disabled) {
+  --gr-track-fill: var(--ui-surface);
+  --ui-gr-sheen: rgb(from var(--ui-neutral-0) r g b / 0.30);
+}
+
+/* :not(.is-disabled) para empatarle la especificidad al hover de arriba. */
+.ui-toggle.is-checked:hover:not(.is-disabled) {
+  --gr-track-fill: var(--ui-accent-hover);
+}
+
+.ui-toggle:active:not(.is-disabled) {
+  --ui-gr-erode: 1.7;
+}
+
+.ui-toggle__label {
+  letter-spacing: var(--ui-tracking-tight);
+}

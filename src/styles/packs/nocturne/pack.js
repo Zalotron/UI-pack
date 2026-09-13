@@ -16,16 +16,20 @@ export default {
    * este estilo. Los valores de aca son la firma del pack.
    * Deben coincidir con los fallbacks declarados en su tokens.css.
    *
-   * ROUNDNESS 1.7: todo es una TARJETA. Sin contornos que sostengan la forma,
-   * la esquina redonda es lo que dice donde termina una pieza.
+   * ⚠ ROUNDNESS 0.25 — Y ES UNA ESQUINA APENAS INSINUADA, NO UNA TARJETA.
+   * Este pack no dibuja NI UN CONTORNO: una pieza existe solo por ser mas
+   * clara que lo de abajo y por su sombra. La esquina redonda era el tercer
+   * recurso, y a 0.25 practicamente no esta. Lo que queda sosteniendo la forma
+   * son el escalon de luz y la sombra, asi que si en algun lado una pieza se
+   * confunde con el fondo, la perilla que hay que subir es DEPTH.
    *
-   * El brand es amatista. Es el tono libre mas cercano al violeta del tablero
-   * que inspiro el pack: el periwinkle exacto se lo lleva `glass`, y dos packs
-   * con el mismo tono se confunden aunque no se parezcan en nada mas.
+   * El brand es indigo. Comparte familia con el periwinkle de `glass`, asi que
+   * los dos packs se parecen mas de lo que se parecian: lo que los separa ahora
+   * es el material —vidrio contra tablero opaco— y no el tono.
    */
   settings: {
-    BRAND_COLOR: '#9b5ce6',
-    ROUNDNESS: 1.7,
+    BRAND_COLOR: '#5c61e6',
+    ROUNDNESS: 0.25,
 
     /* El tema en el que este pack NACE.
        Nace oscuro. */

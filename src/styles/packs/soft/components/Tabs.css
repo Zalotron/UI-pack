@@ -20,17 +20,18 @@
   --tabs-indicator: transparent;
 }
 
-/* ⚠ LA FILA NECESITA AIRE O RECORTA LAS SOMBRAS.
-   La mecánica fija `overflow-y: hidden` en la lista (sin eso, la rayita
-   apoyada abajo generaba una barra de scroll vertical). El recorte ocurre en
-   la caja de PADDING, y la lista no tenía padding: la sombra de la pestaña
-   levantada se cortaba en seco arriba y abajo.
+/* ⚠ EL AIRE DE ARRIBA Y ABAJO YA NO ESTA ACA: es `--ui-tabs-bleed`, y lo pone
+   la mecánica. Este pack fue el que descubrió el problema —la fila recorta y la
+   sombra de la pestaña levantada se cortaba en seco— pero lo resolvía a mano, y
+   entonces cada pack con relieve tenía que volver a descubrirlo. Ahora el
+   parámetro existe y este pack solo declara CUÁNTO. Ver src/components/Tabs.
 
-   El aire se calcula con las mismas perillas del relieve, así que si se
-   cambia el calibre de la sombra, el lugar que ocupa acompaña solo. */
+   Lo que sí sigue siendo de acá es el aire de los COSTADOS: no lleva margen
+   negativo que lo compense, así que mete la fila hacia adentro — que es lo que
+   este pack quiere, para que el relieve de la primera y la última pestaña no
+   toquen el canto del contenedor. */
 .ui-tabs__list {
-  padding: calc(var(--ui-soft-distance-sm) + var(--ui-soft-blur-sm))
-           var(--ui-soft-distance-sm);
+  padding-inline: var(--ui-soft-distance-sm);
 }
 
 .ui-tabs__tab {

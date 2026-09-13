@@ -1,0 +1,22 @@
+/* ---------------------------------------- TextField — PIEL del pack MINIMAL */
+/* Interfaz: --field-bg | --field-fg | --field-border | --field-ring
+             --field-placeholder                                              */
+
+/* El campo de una caja de búsqueda: fondo hundido un escalón, contorno de un
+   píxel, y al enfocarse ese contorno se enciende. Sin halo: el foco de este
+   pack es un contorno, no un resplandor. */
+
+.ui-textfield {
+  --field-bg: var(--ui-bg-subtle);
+  --field-border: var(--ui-border);
+  --field-placeholder: var(--ui-text-subtle);
+}
+
+.ui-textfield:hover:not(.is-disabled) {
+  --field-border: var(--ui-border-strong);
+}
+
+.ui-textfield:focus-within:not(.is-disabled) {
+  --field-border: var(--ui-accent);
+  --field-bg: var(--ui-surface);
+}

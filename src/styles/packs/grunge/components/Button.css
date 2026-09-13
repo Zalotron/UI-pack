@@ -1,0 +1,184 @@
+/* --------------------------------------------- Button — PIEL del pack GRUNGE */
+/* Interfaz: --btn-bg / --btn-bg-hover | --btn-gloss | --btn-fg
+             --btn-border / -hover | --btn-shadow                            */
+
+/* El botón es LA pieza del pack: una placa recortada a mano, con el canto
+   comido, costra encima y —si es primaria— la laca roja cruzada por una franja
+   de reflejo.
+
+   Se arma como TODAS las piezas de grunge: el elemento transparente, la
+   lámina en el ::before y la costra en el ::after. La explicación entera está
+   arriba de components/Container.css y hay que leerla antes de tocar esto.
+
+   ⛔ POR ESO --btn-gloss VA EN `none`. Es la capa de brillo que la mecánica
+   pinta sobre el relleno del ELEMENTO, y acá el elemento no pinta nada: la
+   lámina no puede vivir ahí porque se la comería la máscara junto con el
+   anillo de foco. El brillo existe igual —es --ui-gr-foil— pero vive en el
+   ::before, que es el que está enmascarado. */
+
+.ui-btn {
+  --btn-bg: transparent;
+  --btn-gloss: none;
+  --btn-border: transparent;
+  --btn-border-hover: transparent;
+  --btn-shadow: none;
+
+  /* Lo que sí es del elemento: la letra. Rótulo de etiqueta de ropa —
+     versalitas, muy separadas, peso alto. Es la mitad "cheta" que no cuesta
+     ningún píxel de material. */
+  --gr-fill: var(--ui-surface);
+  --gr-sheet: none;
+
+  position: relative;
+  isolation: isolate;
+
+  font-weight: var(--ui-weight-semibold);
+  letter-spacing: var(--ui-tracking-wide);
+  text-transform: uppercase;
+
+  transition:
+    color var(--ui-duration-fast) var(--ui-ease),
+    transform var(--ui-duration-fast) var(--ui-ease),
+    --ui-gr-erode var(--ui-duration-fast) var(--ui-ease);
+}
+
+/* LA LAMINA. */
+.ui-btn::before {
+  content: "";
+  position: absolute;
+  inset: calc(var(--ui-border-width) * -1);
+  z-index: -2;
+  border-radius: inherit;
+  pointer-events: none;
+
+  background-color: var(--gr-fill);
+  background-image: var(--gr-sheet);
+  /* Más ancha que la pieza: si midiera lo mismo, la franja de luz no tendría
+     a dónde correrse al pasar el mouse. */
+  background-size: var(--ui-gr-foil-span);
+  background-position: 0% 0;
+  box-shadow: var(--ui-gr-edge);
+
+  /* EL CANTO COMIDO. Con longhands a proposito — ver tokens.css. */
+  -webkit-mask-image: var(--ui-gr-tear-image);
+          mask-image: var(--ui-gr-tear-image);
+  -webkit-mask-position: var(--ui-gr-tear-position);
+          mask-position: var(--ui-gr-tear-position);
+  -webkit-mask-size: var(--ui-gr-tear-size);
+          mask-size: var(--ui-gr-tear-size);
+  -webkit-mask-repeat: var(--ui-gr-tear-repeat);
+          mask-repeat: var(--ui-gr-tear-repeat);
+
+  transition:
+    background-color var(--ui-duration-fast) var(--ui-ease),
+    background-position var(--ui-duration-slow) var(--ui-ease-out),
+    box-shadow var(--ui-duration-fast) var(--ui-ease);
+}
+
+/* LA COSTRA. */
+.ui-btn::after {
+  content: "";
+  position: absolute;
+  inset: var(--ui-gr-bite);
+  z-index: -1;
+  pointer-events: none;
+
+  background: var(--ui-gr-soot);
+  -webkit-mask-image: var(--ui-gr-grit);
+          mask-image: var(--ui-gr-grit);
+  -webkit-mask-size: var(--ui-gr-grit-size);
+          mask-size: var(--ui-gr-grit-size);
+}
+
+/* -- Reacción al mouse ----------------------------------------------------- */
+/* ⚠ EL GESTO DEL PACK: pasar el mouse PULE y apretar DESGASTA.
+   Al pasar, la franja de luz recorre la lámina de punta a punta y el filete
+   del canto de arriba se enciende: el material se lustra donde lo tocan. Al
+   apretar, la pieza se hunde contra la pared y el canto se come más — que es
+   exactamente lo mismo que hace la entrada, nada más que al revés y corto. */
+
+.ui-btn:hover:not(.is-disabled) {
+  --gr-fill: var(--btn-bg-hover);
+  --ui-gr-sheen: rgb(from var(--ui-neutral-0) r g b / 0.34);
+}
+.ui-btn:hover:not(.is-disabled)::before {
+  background-position: 100% 0;
+}
+
+.ui-btn:active:not(.is-disabled) {
+  --ui-gr-erode: 1.7;
+  transform: translateY(var(--ui-press-shift));
+}
+/* Hundido, la luz se va al canto de abajo: la pieza deja de sobresalir. */
+.ui-btn:active:not(.is-disabled)::before {
+  box-shadow: var(--ui-gr-edge-sunken);
+}
+
+/* Sin material que pulir. */
+.ui-btn.is-disabled {
+  --ui-gr-sheen: transparent;
+}
+
+/* -- Variantes ------------------------------------------------------------ */
+
+/* La laca roja. Es la única pieza del sistema donde el acabado se ve entero,
+   así que es la que define al pack de un vistazo. */
+.ui-btn--primary {
+  --gr-fill: var(--ui-accent);
+  --btn-bg-hover: var(--ui-accent-hover);
+  --gr-sheet: var(--ui-gr-foil);
+  --btn-fg: var(--ui-on-accent);
+}
+
+/* Chapa de obra: el material desnudo, con su contorno y su costra. */
+.ui-btn--secondary {
+  --gr-fill: var(--ui-surface);
+  --btn-bg-hover: var(--ui-surface-hover);
+  --btn-fg: var(--ui-text);
+}
+
+/* Nada pegado a la pared: solo el rótulo. Al tocarlo aparece la chapa. */
+.ui-btn--ghost {
+  --gr-fill: transparent;
+  --btn-bg-hover: var(--ui-surface-hover);
+  --btn-fg: var(--ui-text-muted);
+  --ui-gr-contour: transparent;
+  --ui-gr-sheen: transparent;
+  --ui-gr-deep: transparent;
+}
+.ui-btn--ghost:hover:not(.is-disabled) {
+  --ui-gr-contour: var(--ui-border);
+  --ui-gr-sheen: rgb(from var(--ui-neutral-0) r g b / 0.20);
+  color: var(--ui-text);
+}
+/* Sin material tampoco hay costra. */
+.ui-btn--ghost::after { content: none; }
+.ui-btn--ghost:hover:not(.is-disabled)::after { content: ""; }
+
+/* ⛔ EL PELIGRO NO LLEVA LAMINA, Y NO ES UN OLVIDO.
+   Dos razones, una de sentido y otra medida:
+
+     · La laca es lo noble del pack: el acabado que se le pone a la pieza que
+       uno QUIERE que se apriete. Lustrar el botón que avisa de algo
+       irreversible manda exactamente el mensaje contrario. Acá el peligro no
+       se lustra — va en crudo.
+     · Y aunque uno quisiera: el degradé mueve la claridad del relleno para los
+       dos lados, así que una tinta clara pierde en la franja de luz y una
+       oscura pierde en la veta. Sobre el acento eso se resuelve topeando el
+       reflejo; sobre el rojo de peligro no alcanza, porque su claridad ya está
+       puesta al límite para que la tinta se lea. Sin laca, el mismo botón da
+       5.23:1 en oscuro y 5.81:1 en claro.
+
+   Lo que sí conserva es todo lo demás: canto comido, costra, luz en el canto.
+   Es la misma pieza de material, sin el acabado caro. */
+.ui-btn--danger {
+  --gr-fill: var(--ui-danger);
+  --btn-bg-hover: var(--ui-danger-hover);
+  --btn-fg: var(--ui-on-danger);
+}
+
+/* -- El aro de carga ------------------------------------------------------- */
+/* Gordo y cuadrado, como todo lo demás. */
+.ui-btn__loader {
+  opacity: 1;
+}

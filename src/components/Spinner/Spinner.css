@@ -52,7 +52,7 @@
 
   /* Arrastre vertical: el cursor lo anuncia y touch-action deja pasar el
      gesto al componente en vez de scrollear la página. */
-  cursor: ns-resize;
+  cursor: var(--ui-cursor-resize-ns, ns-resize);
   user-select: none;
   touch-action: none;
 
@@ -123,19 +123,19 @@
 /* -- Estados --------------------------------------------------------------- */
 
 /* Durante el arrastre el cursor no debe cambiar al pasar sobre otras cosas. */
-.ui-spinner.is-dragging { cursor: ns-resize; }
+.ui-spinner.is-dragging { cursor: var(--ui-cursor-resize-ns, ns-resize); }
 
 /* Al editar vuelve a comportarse como un campo de texto normal. */
 .ui-spinner.is-editing,
 .ui-spinner.is-editing .ui-spinner__input {
-  cursor: text;
+  cursor: var(--ui-cursor-text, text);
   user-select: text;
 }
 .ui-spinner.is-disabled {
   opacity: var(--ui-disabled-opacity);
-  cursor: not-allowed;
+  cursor: var(--ui-cursor-disabled, not-allowed);
 }
-.ui-spinner.is-disabled .ui-spinner__input { cursor: not-allowed; }
+.ui-spinner.is-disabled .ui-spinner__input { cursor: var(--ui-cursor-disabled, not-allowed); }
 
 .ui-spinner:focus-within:not(.is-editing) {
   outline: var(--ui-focus-width) solid var(--ui-focus-ring);

@@ -117,8 +117,8 @@ export const SECTIONS = [
     title: { es: 'Estilos (packs)', en: 'Styles (packs)' },
     blocks: [
       { p: {
-        es: 'Un pack es una estética completa: un CSS más sus valores. Hoy hay nueve.',
-        en: 'A pack is a complete aesthetic: one CSS file plus its values. There are nine today.',
+        es: 'Un pack es una estética completa: un CSS más sus valores. Hoy hay once.',
+        en: 'A pack is a complete aesthetic: one CSS file plus its values. There are eleven today.',
       } },
       { ul: {
         es: [
@@ -131,6 +131,8 @@ export const SECTIONS = [
           '<b>clay</b> — plastilina: piezas blandas que se achatan al apretarlas.',
           '<b>riso</b> — risografía: tintas fluo desalineadas y trama de puntos.',
           '<b>nocturne</b> — tablero oscuro, amatista, sin bordes.',
+          '<b>grunge</b> — hormigón y laca roja: el canto de cada pieza, comido.',
+          '<b>minimal</b> — la interfaz de un editor de código: sobria, densa, sin blancos ni negros puros.',
         ],
         en: [
           '<b>default</b> — sober, general purpose interface.',
@@ -142,6 +144,8 @@ export const SECTIONS = [
           '<b>clay</b> — modelling clay: soft pieces that squash when pressed.',
           '<b>riso</b> — risograph: misregistered fluo inks and halftone.',
           '<b>nocturne</b> — dark dashboard, amethyst, borderless.',
+          '<b>grunge</b> — concrete and red lacquer: every piece with its edge eaten away.',
+          '<b>minimal</b> — a code editor UI: sober, dense, no pure black or white.',
         ],
       } },
       { h: { es: 'Cambiar de pack en vivo', en: 'Switching packs live' } },
@@ -177,8 +181,8 @@ export const SECTIONS = [
         ],
       } },
       { p: {
-        es: 'Un pack puede además declarar perillas propias: <code>blueprint</code> tiene <code>GRID_OPACITY</code> y <code>GRID_SCALE</code>; <code>riso</code> tiene <code>MISREGISTER</code>, <code>INK_SHIFT</code> y <code>HALFTONE</code>. También puede FIJAR una: blueprint clava <code>ROUNDNESS</code> en 0, porque un plano con las esquinas redondeadas deja de leerse como un plano.',
-        en: 'A pack may also declare its own knobs: <code>blueprint</code> has <code>GRID_OPACITY</code> and <code>GRID_SCALE</code>; <code>riso</code> has <code>MISREGISTER</code>, <code>INK_SHIFT</code> and <code>HALFTONE</code>. It can also PIN one: blueprint fixes <code>ROUNDNESS</code> at 0, because a plan with rounded corners stops reading as a plan.',
+        es: 'Un pack puede además declarar perillas propias: <code>blueprint</code> tiene <code>GRID_OPACITY</code> y <code>GRID_SCALE</code>; <code>riso</code> tiene <code>MISREGISTER</code>, <code>INK_SHIFT</code> y <code>HALFTONE</code>; <code>grunge</code> tiene <code>WEAR</code>, <code>GRAIN</code> y <code>FOIL</code>; <code>minimal</code> tiene <code>CONTRAST</code> y <code>DENSITY</code>. También puede FIJAR una: blueprint clava <code>ROUNDNESS</code> en 0, porque un plano con las esquinas redondeadas deja de leerse como un plano.',
+        en: 'A pack may also declare its own knobs: <code>blueprint</code> has <code>GRID_OPACITY</code> and <code>GRID_SCALE</code>; <code>riso</code> has <code>MISREGISTER</code>, <code>INK_SHIFT</code> and <code>HALFTONE</code>; <code>grunge</code> has <code>WEAR</code>, <code>GRAIN</code> and <code>FOIL</code>; <code>minimal</code> has <code>CONTRAST</code> and <code>DENSITY</code>. It can also PIN one: blueprint fixes <code>ROUNDNESS</code> at 0, because a plan with rounded corners stops reading as a plan.',
       } },
       { code: [
         "import { configurePack, packSettings, resetConfig } from './src/index.js';",

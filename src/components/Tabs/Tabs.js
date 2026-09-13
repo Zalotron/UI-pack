@@ -104,6 +104,7 @@ export class Tabs extends UIComponent {
       class: 'ui-tabs__rail',
       role: 'none',
     }, [...tabs, this.indicator]);
+    this.rail = rail;
 
     const list = el('div', {
       class: 'ui-tabs__list',
@@ -136,7 +137,43 @@ export class Tabs extends UIComponent {
     }, [list, el('div', { class: 'ui-tabs__panels' }, panels)]);
 
     this._bind(list);
+    this._watchSize();
     return node;
+  }
+
+  /**
+   * ⛔ LA RAYITA SE MIDE CUANDO HAY LAYOUT, Y ESO NO PASA EN `onMount()`.
+   *
+   * `onMount()` lo llama `mount()`, o sea SOLO el componente raiz. Un Tabs
+   * adentro de un Container no se monta: se ADOPTA, y su elemento lo inserta
+   * el padre. Nunca pasa por `mount()`, asi que nunca recibia `onMount()` y la
+   * rayita se quedaba en ancho 0. Aparecia recien al clickear otra pestaña,
+   * porque ahi `_commit()` vuelve a medir y para entonces ya hay layout.
+   *
+   * Y no alcanza con medir mas tarde una sola vez: el ancho de un boton
+   * tambien cambia DESPUES, cuando termina de bajar la tipografia del pack.
+   * Un `ResizeObserver` cubre los tres momentos con el mismo codigo — cuando
+   * el elemento entra al documento y estrena caja, cuando cambia la fuente y
+   * cuando cambia el tamaño de la ventana.
+   *
+   * Se observan los botones ademas del carril: si las pestañas entran holgadas,
+   * el carril mide 100% y no cambia de ancho aunque los rotulos si.
+   */
+  _watchSize() {
+    this._unwatchSize();
+    if (typeof ResizeObserver === 'undefined' || !this.rail) return;
+    this._resizeObserver = new ResizeObserver(() => this._placeIndicator());
+    this._resizeObserver.observe(this.rail);
+    for (const button of this.buttons) this._resizeObserver.observe(button);
+  }
+
+  _unwatchSize() {
+    this._resizeObserver?.disconnect();
+    this._resizeObserver = null;
+  }
+
+  onDestroy() {
+    this._unwatchSize();
   }
 
   _track(content) {
@@ -224,7 +261,10 @@ export class Tabs extends UIComponent {
   }
 
   onMount() {
-    // Recien montado ya hay layout: ahora si se puede medir.
+    /* Recien montado ya hay layout: ahora si se puede medir.
+       Redundante con el ResizeObserver de `_watchSize()` en cualquier navegador
+       —y es ESE el que arregla el caso del Tabs adoptado— pero se queda para
+       los entornos que no lo tienen, donde vuelve a ser el unico camino. */
     this._placeIndicator();
   }
 

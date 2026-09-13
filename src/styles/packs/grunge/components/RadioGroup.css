@@ -1,0 +1,78 @@
+/* ----------------------------------------- RadioGroup — PIEL del pack GRUNGE */
+/* Interfaz: --radio-bg | --radio-border | --radio-fill | --radio-ring         */
+
+/* Mismo gesto que el Checkbox, porque significan lo mismo: hueco apagado,
+   laca encendida. Lo único que cambia es la forma — el punto es REDONDO, y
+   eso no lo decide el pack: es lo que distingue "elegí uno" de "marcá varios".
+
+   ⚠ LA LAMINA VA EN UN ::before: el anillo de foco se dibuja sobre
+   `.ui-radio__dot` y una máscara ahí se lo comería. Y el ::after ya está
+   tomado por la mecánica, que lo usa para el punto. Ver
+   components/Container.css. */
+
+.ui-radiogroup {
+  --radio-bg: transparent;
+  --radio-border: transparent;
+  --radio-fill: var(--ui-accent);
+
+  --gr-fill: var(--ui-bg-subtle);
+  --gr-edge: var(--ui-gr-edge-sunken);
+}
+
+.ui-radio__dot {
+  isolation: isolate;
+}
+
+/* LA LAMINA. */
+.ui-radio__dot::before {
+  content: "";
+  position: absolute;
+  inset: calc(var(--ui-border-width) * -1);
+  z-index: -1;
+  border-radius: var(--ui-radius-circle);
+  pointer-events: none;
+
+  background-color: var(--gr-fill);
+  box-shadow: var(--gr-edge);
+
+  /* EL CANTO COMIDO, mordida chica. El rectángulo de la máscara no le saca lo
+     redondo: la forma la sigue dando el `border-radius` del propio fondo, y lo
+     único que hace el ruido es picarle el borde. Ver tokens.css. */
+  -webkit-mask-image: var(--ui-gr-chip-image);
+          mask-image: var(--ui-gr-chip-image);
+  -webkit-mask-position: var(--ui-gr-chip-position);
+          mask-position: var(--ui-gr-chip-position);
+  -webkit-mask-size: var(--ui-gr-chip-size);
+          mask-size: var(--ui-gr-chip-size);
+  -webkit-mask-repeat: var(--ui-gr-chip-repeat);
+          mask-repeat: var(--ui-gr-chip-repeat);
+
+  transition: background-color var(--ui-duration-fast) var(--ui-ease);
+}
+
+.ui-radio:hover:not(.is-disabled) {
+  --gr-fill: var(--ui-surface);
+  --ui-gr-sheen: rgb(from var(--ui-neutral-0) r g b / 0.30);
+}
+
+/* Elegido, el hueco deja de serlo: el canto se da vuelta y la luz sube.
+   :not(.is-disabled) para empatarle la especificidad al hover de arriba. */
+.ui-radio.is-checked:not(.is-disabled) {
+  --gr-edge: var(--ui-gr-edge);
+}
+
+.ui-radio:active:not(.is-disabled) {
+  --ui-gr-erode: 1.8;
+}
+
+/* El punto es una gota de laca: el mismo degradé que el botón primario, en
+   miniatura. Que sea la lámina y no un color plano es lo que lo hace parte de
+   este pack y no de cualquiera. */
+.ui-radio.is-checked .ui-radio__dot::after {
+  background-image: var(--ui-gr-foil);
+  background-size: var(--ui-gr-foil-span);
+}
+
+.ui-radio__label {
+  letter-spacing: var(--ui-tracking-tight);
+}

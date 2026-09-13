@@ -1,0 +1,13 @@
+/* --------------------------------------------- Icon — PIEL del pack MINIMAL */
+/* Interfaz: --icon-color | --icon-stroke | --icon-cap | --icon-join
+             --icon-halo | --icon-halo-stroke                                */
+
+/* Trazo fino y parejo, del grosor de los iconos de la barra lateral de un
+   editor: 1.25px sobre 16. El remate redondo es lo único blando del pack, y
+   está porque a este calibre un remate cuadrado se ve astillado. */
+
+.ui-icon {
+  --icon-color: currentColor;
+  --icon-cap: round;
+  --icon-join: round;
+}

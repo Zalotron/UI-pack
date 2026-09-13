@@ -1,0 +1,77 @@
+/* ------------------------------------------ Separator — PIEL del pack GRUNGE */
+/* Interfaz: --separator-color, --separator-thickness.
+   --separator-color se usa como `background`, así que acepta un degradé.     */
+
+/* Una raya RASPADA: gorda, recta y con mordidas. No se desvanece en las
+   puntas —para eso está --ui-sep-fade en 0— se rompe a lo largo.
+
+   ⚠ ACA LA MASCARA VA EN EL ELEMENTO, Y ES LA UNICA EXCEPCION DEL PACK.
+   La regla (components/Container.css) manda pintar en un ::before porque una
+   máscara en el elemento le come el anillo de foco y le recorta lo que se
+   salga de su caja. Un separador no tiene ninguna de las dos cosas: no se
+   enfoca y no tiene hijos que se salgan. Montarle una lámina encima sería
+   armar dos capas para dibujar una línea de 2px.
+
+   ⚠ Y POR ESO LA LINEA SALE ENTERA MORDIDA, no solo en el canto: la capa
+   maciza de la máscara mide `alto - mordida * 2`, que en una línea de 2px da
+   negativo y `calc()` lo recorta a 0. O sea que de la máscara solo queda el
+   ruido. Es a propósito: lo que se busca acá es una raya raspada, y una línea
+   fina no tiene lugar para tener "canto" y "centro" por separado. */
+
+.ui-separator--soft,
+.ui-separator--base,
+.ui-separator--strong,
+.ui-separator--accent {
+  -webkit-mask-image: var(--ui-gr-chip-image);
+          mask-image: var(--ui-gr-chip-image);
+  -webkit-mask-position: var(--ui-gr-chip-position);
+          mask-position: var(--ui-gr-chip-position);
+  -webkit-mask-size: var(--ui-gr-chip-size);
+          mask-size: var(--ui-gr-chip-size);
+  -webkit-mask-repeat: var(--ui-gr-chip-repeat);
+          mask-repeat: var(--ui-gr-chip-repeat);
+}
+
+.ui-separator--soft {
+  --separator-thickness: var(--ui-border-width);
+  --separator-color: var(--ui-line-soft);
+}
+
+.ui-separator--base {
+  --separator-thickness: var(--ui-border-width);
+  --separator-color: var(--ui-line);
+}
+
+/* La fuerte es una barra de material, no una línea: el doble de gorda y del
+   color del contorno, que es lo que sostiene las formas en este pack. */
+.ui-separator--strong {
+  --separator-thickness: calc(var(--ui-border-width) * 2);
+  --separator-color: var(--ui-border-strong);
+}
+
+/* La de acento es una TIRA DE LAMINA: la misma de los botones, recortada a
+   4px de alto. Es el único separador del sistema que brilla, así que se usa
+   para cortar de verdad, no para ordenar. */
+.ui-separator--accent {
+  --separator-thickness: calc(var(--ui-border-width) * 2);
+  --separator-color: var(--ui-accent);
+  background-image: var(--ui-gr-foil);
+  background-size: var(--ui-gr-foil-span);
+}
+
+/* Con texto al medio el elemento deja de ser la línea: lo son sus dos mitades.
+   La lámina y el raspado tienen que pasarles a ellas. */
+.ui-separator--accent.ui-separator--labeled {
+  background-image: none;
+}
+.ui-separator--accent.ui-separator--labeled::before,
+.ui-separator--accent.ui-separator--labeled::after {
+  background-image: var(--ui-gr-foil);
+  background-size: var(--ui-gr-foil-span);
+}
+
+/* El rótulo del medio: mismo tratamiento que el de un botón. */
+.ui-separator__label {
+  font-weight: var(--ui-weight-semibold);
+  letter-spacing: var(--ui-tracking-wide);
+}

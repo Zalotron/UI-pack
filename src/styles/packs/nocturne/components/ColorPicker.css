@@ -29,3 +29,29 @@
 .ui-colorpicker__swatch {
   box-shadow: var(--ui-shadow-sm);
 }
+
+/* -- La rueda de matices --------------------------------------------------- */
+/* Es DOMINIO DEL COMPONENTE, no una decisión de estilo: un selector de color
+   tiene que mostrar el espectro entero, en todos los packs. Por eso es el único
+   lugar del sistema donde se declaran colores que no salen de --ui-brand.
+
+   ⚠ VA EN LA PISTA VISIBLE (--slider-track) Y NO EN EL PSEUDO NATIVO DEL
+   <input>, que es donde la ponen los packs más viejos. El pseudo se dibuja
+   ENCIMA de la pista y sin saber nada de su forma: acá la pista es una píldora
+   —ROUNDNESS 1.7— así que el arcoíris salía como un rectángulo recto
+   sobresaliendo de la curva. En la pista visible se recorta a la forma del
+   pack, que es lo que tiene que pasar.
+
+   Y el relleno se apaga: es hijo de la pista y taparía la mitad izquierda de
+   la rueda con el degradé de la marca. */
+.ui-colorpicker__hue {
+  --slider-track: linear-gradient(
+    to right,
+    hsl(0 100% 50%), hsl(60 100% 50%), hsl(120 100% 50%),
+    hsl(180 100% 50%), hsl(240 100% 50%), hsl(300 100% 50%), hsl(360 100% 50%)
+  );
+  --slider-fill: transparent;
+  /* Sobre la rueda el tirador va neutro: con el degradé de la marca encima de
+     los matices no se sabría cuál de los dos colores hay que mirar. */
+  --slider-thumb: var(--ui-neutral-0);
+}

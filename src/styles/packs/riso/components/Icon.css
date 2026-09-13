@@ -6,7 +6,12 @@
 
    Va con `drop-shadow` y no con `box-shadow`: un SVG de trazo no tiene caja
    que correr, tiene forma. Y sin desenfoque —los dos ceros no estan de adorno:
-   una plancha no difumina, se corre. */
+   una plancha no difumina, se corre.
+
+   ⚠ ESTO VALE PARA EL ICONO SUELTO, QUE ES UNA PIEZA POR DERECHO PROPIO.
+   Adentro de un boton se apaga: ahi el icono no es una pieza, es parte de una,
+   y la plancha ya corrio el boton entero. Esa regla vive en
+   components/Button.css, que es donde esta el contexto que la causa. */
 .ui-icon {
   --icon-color: currentColor;
   --icon-cap: butt;

@@ -132,6 +132,62 @@ body { background: var(--ui-bg); }
       rgb(from var(--ui-neutral-950) r g b / 0) 1px 3px);
 }
 
+/* -- Fondo de demostración del pack GRUNGE --------------------------------- */
+/* Un muro de hormigón. Misma idea y mismo motivo que los de arriba:
+   ambientación del catálogo, no de la librería.
+
+   Acá hace falta por algo concreto. Las piezas de ese pack están ARRANCADAS —
+   el canto de cada una está comido— y una pieza arrancada sobre un fondo liso
+   no se lee como arrancada: se lee como un borde mal dibujado. Hace falta que
+   haya un muro del que se hayan despegado.
+
+   ⚠ LA ARENILLA SALE DEL MISMO RUIDO QUE LA COSTRA DE LAS PIEZAS
+   (--ui-gr-grit) y del mismo color (--ui-gr-soot, que ya viene graduado por la
+   perilla GRAIN). Con otra textura se vería que el fondo y las piezas no son el
+   mismo material, que es justo lo que hay que evitar.
+
+   Las dos capas van DETRÁS del contenido (z-index -1), nunca encima. */
+
+:root[data-ui-pack="grunge"] body::before,
+:root[data-ui-pack="grunge"] body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Las manchas del muro: una luz rasante que entra de arriba a la izquierda,
+   mugre acumulada en dos esquinas y un reflejo apagado de la laca en el medio.
+   Grandes y pocas — un muro tiene manchas de metros, no de centímetros. */
+:root[data-ui-pack="grunge"] body::before {
+  background:
+    radial-gradient(70rem 50rem at 12% -10%,
+      rgb(from var(--ui-neutral-0) r g b / 0.07) 0%,
+      rgb(from var(--ui-neutral-0) r g b / 0) 68%),
+    radial-gradient(40rem 55rem at 88% 6%,
+      rgb(from var(--ui-neutral-950) r g b / 0.50) 0%,
+      rgb(from var(--ui-neutral-950) r g b / 0) 70%),
+    radial-gradient(50rem 40rem at 20% 98%,
+      rgb(from var(--ui-neutral-950) r g b / 0.42) 0%,
+      rgb(from var(--ui-neutral-950) r g b / 0) 72%),
+    radial-gradient(32rem 32rem at 66% 54%,
+      rgb(from var(--ui-accent) r g b / 0.05) 0%,
+      rgb(from var(--ui-accent) r g b / 0) 70%);
+}
+
+/* La arenilla. El grano va más suelto que el de una pieza: mirado de lejos, un
+   muro tiene el árido más grande que una placa que tenés en la mano. */
+:root[data-ui-pack="grunge"] body::after {
+  --cat-grunge-grit: 260px;
+
+  background: var(--ui-gr-soot);
+  -webkit-mask-image: var(--ui-gr-grit);
+          mask-image: var(--ui-gr-grit);
+  -webkit-mask-size: var(--cat-grunge-grit) var(--cat-grunge-grit);
+          mask-size: var(--cat-grunge-grit) var(--cat-grunge-grit);
+}
+
 /* -- Tipografía (futura clase Text / Heading) ------------------------------ */
 
 .cat-title {

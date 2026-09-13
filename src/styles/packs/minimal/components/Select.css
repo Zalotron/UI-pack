@@ -1,0 +1,36 @@
+/* ------------------------------------------- Select — PIEL del pack MINIMAL */
+/* Interfaz: --select-bg | --select-border | --select-menu-bg
+             --select-menu-border | --select-menu-shadow
+             --select-option-hover / -selected                                */
+
+/* El disparador es una superficie con contorno; la lista es lo único de este
+   pack que FLOTA, así que es de las pocas cosas que proyectan sombra. */
+
+.ui-select {
+  --select-bg: var(--ui-surface-hover);
+  --select-border: var(--ui-border);
+  --select-menu-bg: var(--ui-surface-hover);
+  --select-menu-border: var(--ui-border-strong);
+  --select-menu-shadow: var(--ui-shadow-md);
+  --select-option-hover: var(--ui-surface-active);
+  --select-option-selected: var(--ui-accent-subtle);
+}
+
+.ui-select:hover:not(.is-disabled) {
+  --select-bg: var(--ui-surface-active);
+  --select-border: var(--ui-border-strong);
+}
+
+/* Los estados activos llevan :not(.is-disabled) para empatarle la
+   especificidad al :hover de arriba. */
+.ui-select.is-open:not(.is-disabled) {
+  --select-border: var(--ui-accent);
+}
+
+/* La opción activa se marca con el acento PLENO, como la línea seleccionada de
+   una lista de archivos. Es de los pocos lugares donde el color ocupa espacio,
+   y se lo gana: hay que poder ver de un vistazo dónde estás. */
+.ui-select__option.is-active {
+  background: var(--ui-accent);
+  color: var(--ui-on-accent);
+}

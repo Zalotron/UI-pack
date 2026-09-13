@@ -1,0 +1,31 @@
+/* ----------------------------------------- Checkbox — PIEL del pack MINIMAL */
+/* Interfaz: --check-bg | --check-bg-on | --check-border | --check-mark
+             --check-ring                                                     */
+
+/* Una casilla de un panel de ajustes: hueco con contorno, y marcada se llena
+   de acento. El tilde va fino, como todo lo demás del pack. */
+
+.ui-checkbox {
+  --check-bg: var(--ui-bg-subtle);
+  --check-bg-on: var(--ui-accent);
+  --check-border: var(--ui-border-strong);
+  --check-mark: var(--ui-on-accent);
+}
+
+.ui-checkbox:hover:not(.is-disabled) {
+  --check-border: var(--ui-accent);
+}
+
+/* :not(.is-disabled) para empatarle la especificidad al hover de arriba. */
+.ui-checkbox.is-checked:not(.is-disabled),
+.ui-checkbox.is-indeterminate:not(.is-disabled) {
+  --check-border: var(--ui-accent);
+}
+
+/* El tilde de 2px que trae la mecánica es grueso para este pack. */
+.ui-checkbox__mark {
+  border-width: 0 1.5px 1.5px 0;
+}
+.ui-checkbox.is-indeterminate .ui-checkbox__mark {
+  border-width: 0 0 1.5px 0;
+}

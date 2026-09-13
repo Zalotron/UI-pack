@@ -1,0 +1,35 @@
+/* ===========================================================================
+   PACK "GRUNGE" — hormigón, hollín y una capa de laca roja.
+
+   Grunge de alta costura: el material está arruinado, el acabado no. El canto
+   de cada pieza está COMIDO por una máscara de ruido, cada superficie tiene
+   COSTRA, el canto gastado TOMA LUZ y el acento es LACA, nunca un color liso.
+
+   La estética entera vive en tokens.css; la regla de construcción del pack
+   está explicada arriba de components/Container.css y hay que leerla antes de
+   tocar cualquier piel.
+
+   NO tocar src/components/ ni src/styles/structure.css: eso es mecánica
+   compartida entre todos los packs.
+   =========================================================================== */
+
+@import url("./tokens.css");
+/* OBLIGATORIO: entradas y salidas de ciclo de vida. Ver el archivo. */
+@import url("./lifecycle.css");
+
+@import url("./components/Container.css");
+@import url("./components/Separator.css");
+@import url("./components/Spinner.css");
+@import url("./components/Slider.css");
+@import url("./components/Select.css");
+@import url("./components/ColorPicker.css");
+@import url("./components/Toggle.css");
+@import url("./components/Checkbox.css");
+@import url("./components/RadioGroup.css");
+@import url("./components/TextField.css");
+@import url("./components/Window.css");
+@import url("./components/Tabs.css");
+@import url("./components/Scroll.css");
+@import url("./components/Button.css");
+@import url("./components/Progress.css");
+@import url("./components/Icon.css");

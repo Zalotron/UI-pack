@@ -1,0 +1,83 @@
+/* ------------------------------------------- Progress — PIEL del pack GRUNGE */
+/* Interfaz: --progress-track | --progress-fill | --progress-ring-fill
+             --progress-ring-from / -mid / -to
+             --progress-ring-track-from / -to
+             --progress-label-fg | --progress-value-fg
+             --progress-radius | --progress-cap | --progress-track-shadow    */
+
+/* Un canal picado en el material que se va llenando de LACA. Es la misma
+   pieza lacada del botón primario y del tirador del slider: en este pack la
+   laca siempre significa lo mismo, y por eso no hay un segundo color de
+   "progreso".
+
+   Puntas rectas y remate `butt`: una medida con las puntas redondeadas miente
+   sobre dónde termina. */
+
+.ui-progress {
+  --progress-track: var(--ui-bg-subtle);
+  --progress-fill: var(--ui-accent);
+  --progress-ring-fill: var(--ui-accent);
+  --progress-label-fg: var(--ui-text-muted);
+  --progress-value-fg: var(--ui-accent-text);
+  --progress-radius: 0;
+  --progress-fill-radius: 0;
+  --progress-cap: butt;
+  /* El surco, POR ENCIMA del relleno: sombra adentro del canto de arriba. Un
+     canal excavado tiene que seguir viéndose excavado cuando está lleno. */
+  --progress-track-shadow:
+    inset 0 var(--ui-border-width) calc(var(--ui-gr-depth) * 0.6) 0 var(--ui-gr-deep);
+
+  /* ==================================================================== */
+  /*  EL ARO TAMBIEN VA LACADO                                            */
+  /*  Un `stroke` no acepta imagen de fondo, asi que la laca del aro no    */
+  /*  puede ser el mismo degrade de --ui-gr-foil. Lo que si acepta es un   */
+  /*  degrade SVG, y la mecanica lo expone con tres topes: claro en un     */
+  /*  borde, el acento en el medio y oscuro en el otro. Eso es un bisel de */
+  /*  laca, que es exactamente lo que hace falta.                          */
+  /*                                                                       */
+  /*  ⛔ Y POR ESO NO SE DECLARA `stroke` EN NINGUN LADO: una regla de CSS  */
+  /*  le gana al atributo del elemento, y el atributo es el que apunta al   */
+  /*  degrade. Declararlo aca dejaria el aro plano.                         */
+  /* ==================================================================== */
+  --progress-ring-from: var(--ui-gr-lit);
+  --progress-ring-mid:  var(--ui-accent);
+  --progress-ring-to:   var(--ui-gr-dim);
+
+  /* El canal vacío del aro: tinta de contorno, como todos los huecos. */
+  --progress-ring-track-from: var(--ui-border);
+  --progress-ring-track-to:   var(--ui-border);
+}
+
+/* -- La barra -------------------------------------------------------------- */
+
+/* El canal se enmascara en el elemento: no se enfoca y ya tiene
+   `overflow: hidden` porque el relleno corre adentro. Mordida chica — mide
+   entre 6 y 16px de alto. Con longhands a proposito — ver tokens.css. */
+.ui-progress--linear .ui-progress__track {
+  box-shadow: inset 0 0 0 var(--ui-border-width) var(--ui-gr-contour);
+
+  -webkit-mask-image: var(--ui-gr-chip-image);
+          mask-image: var(--ui-gr-chip-image);
+  -webkit-mask-position: var(--ui-gr-chip-position);
+          mask-position: var(--ui-gr-chip-position);
+  -webkit-mask-size: var(--ui-gr-chip-size);
+          mask-size: var(--ui-gr-chip-size);
+  -webkit-mask-repeat: var(--ui-gr-chip-repeat);
+          mask-repeat: var(--ui-gr-chip-repeat);
+}
+
+/* LA LAMINA sobre el relleno. */
+.ui-progress--linear .ui-progress__fill {
+  background-image: var(--ui-gr-foil);
+  background-size: var(--ui-gr-foil-span);
+}
+
+/* -- Los rótulos ----------------------------------------------------------- */
+
+.ui-progress__label {
+  letter-spacing: var(--ui-tracking-tight);
+}
+
+.ui-progress__value {
+  letter-spacing: var(--ui-tracking-wide);
+}

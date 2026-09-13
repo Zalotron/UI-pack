@@ -45,7 +45,7 @@
   white-space: nowrap;
   text-decoration: none;
 
-  cursor: pointer;
+  cursor: var(--ui-cursor-pointer, pointer);
   user-select: none;
   transition:
     background var(--ui-duration-fast) var(--ui-ease),
@@ -61,10 +61,10 @@
 
 .ui-btn.is-disabled {
   opacity: var(--ui-disabled-opacity);
-  cursor: not-allowed;
+  cursor: var(--ui-cursor-disabled, not-allowed);
 }
 
-.ui-btn.is-loading { cursor: progress; }
+.ui-btn.is-loading { cursor: var(--ui-cursor-busy, progress); }
 
 /* -- Tamaños -------------------------------------------------------------- */
 

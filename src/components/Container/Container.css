@@ -148,7 +148,7 @@ a.ui-container {
 /* Solo la mecánica. El tratamiento visual del hover lo pone el pack. */
 
 .ui-container.is-interactive {
-  cursor: pointer;
+  cursor: var(--ui-cursor-pointer, pointer);
   user-select: none;
 }
 

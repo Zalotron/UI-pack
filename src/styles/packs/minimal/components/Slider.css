@@ -1,0 +1,27 @@
+/* ------------------------------------------- Slider — PIEL del pack MINIMAL */
+/* Interfaz: --slider-track | --slider-track-border | --slider-fill
+             --slider-thumb | --slider-ring | --slider-track-shadow          */
+
+/* Un canal muy fino y un tirador chico. Es la barra de un panel de ajustes: lo
+   que importa es el VALOR, no el control. */
+
+.ui-slider {
+  --slider-track: var(--ui-bg-subtle);
+  --slider-track-border: var(--ui-border);
+  --slider-fill: var(--ui-accent);
+  --slider-thumb: var(--ui-text-muted);
+  --slider-ring: var(--ui-ring);
+}
+
+.ui-slider:hover:not(.is-disabled) {
+  --slider-thumb: var(--ui-text);
+}
+
+.ui-slider.is-dragging {
+  --slider-thumb: var(--ui-accent);
+}
+
+/* El número, en mono y tabular: así no baila mientras se arrastra. */
+.ui-slider__value {
+  font-variant-numeric: tabular-nums;
+}

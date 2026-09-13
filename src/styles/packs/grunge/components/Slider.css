@@ -1,0 +1,97 @@
+/* --------------------------------------------- Slider — PIEL del pack GRUNGE */
+/* Interfaz: --slider-track | --slider-track-border | --slider-fill
+             --slider-thumb | --slider-ring | --slider-track-shadow          */
+
+/* Un canal picado en el material, la parte recorrida llena de laca, y una
+   PLAQUETA lacada como tirador. Nada de bolitas: una barra apoyada sobre el
+   canal.
+
+   ⚠ ACA EL CANAL SI SE ENMASCARA EN EL ELEMENTO. La regla del pack manda
+   pintar en un ::before por el anillo de foco y por lo que se sale de la caja,
+   y el canal no tiene ninguna de las dos cosas: el foco vive en el <input>, y
+   el canal ya tiene `overflow: hidden` porque el relleno corre adentro. El
+   TIRADOR sí lleva lámina, pero por otro motivo — está abajo. */
+
+.ui-slider {
+  --slider-track: var(--ui-bg-subtle);
+  --slider-track-border: var(--ui-gr-contour);
+  --slider-fill: var(--ui-accent);
+  --slider-thumb: transparent;
+  --slider-ring: var(--ui-ring);
+  /* El surco: sombra adentro del canto de arriba, que es lo que hace que un
+     canal se vea excavado. La mecánica la pinta ENCIMA del relleno, así que
+     el surco se sigue viendo con la barra llena. */
+  --slider-track-shadow:
+    inset 0 var(--ui-border-width) calc(var(--ui-gr-depth) * 0.6) 0 var(--ui-gr-deep);
+}
+
+.ui-slider__track {
+  /* EL CANTO COMIDO, mordida chica: la pista mide unos 10px de alto. Con
+     longhands a proposito — ver tokens.css. */
+  -webkit-mask-image: var(--ui-gr-chip-image);
+          mask-image: var(--ui-gr-chip-image);
+  -webkit-mask-position: var(--ui-gr-chip-position);
+          mask-position: var(--ui-gr-chip-position);
+  -webkit-mask-size: var(--ui-gr-chip-size);
+          mask-size: var(--ui-gr-chip-size);
+  -webkit-mask-repeat: var(--ui-gr-chip-repeat);
+          mask-repeat: var(--ui-gr-chip-repeat);
+}
+
+/* ⛔ EL RELLENO LLEVA LA LAMINA, COMO LA BARRA DE PROGRESO Y EL BOTON.
+   Es la misma laca en las tres piezas: tenerla en una y no en otra las hacía
+   ver de sistemas distintos. */
+.ui-slider__fill {
+  background-image: var(--ui-gr-foil);
+  background-size: var(--ui-gr-foil-span);
+}
+
+/* -- La plaqueta ----------------------------------------------------------- */
+/* ⚠ ACA LA LAMINA SI VA EN UN ::before, y no por el foco: el halo del tirador
+   es una `box-shadow` PROYECTADA, y una máscara en el elemento la recorta
+   contra el canto — o sea que el halo desaparecería justo al agarrarlo. En el
+   ::before, la máscara se come el canto y el halo sigue saliendo del elemento,
+   que está entero. */
+
+.ui-slider__thumb {
+  isolation: isolate;
+}
+
+.ui-slider__thumb::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+
+  background-color: var(--ui-accent);
+  background-image: var(--ui-gr-foil);
+  background-size: var(--ui-gr-foil-span);
+  box-shadow: var(--ui-gr-edge);
+
+  /* EL CANTO COMIDO, mordida chica. */
+  -webkit-mask-image: var(--ui-gr-chip-image);
+          mask-image: var(--ui-gr-chip-image);
+  -webkit-mask-position: var(--ui-gr-chip-position);
+          mask-position: var(--ui-gr-chip-position);
+  -webkit-mask-size: var(--ui-gr-chip-size);
+          mask-size: var(--ui-gr-chip-size);
+  -webkit-mask-repeat: var(--ui-gr-chip-repeat);
+          mask-repeat: var(--ui-gr-chip-repeat);
+
+  transition: background-position var(--ui-duration-slow) var(--ui-ease-out);
+}
+
+/* Arrastrando, el reflejo recorre la plaqueta y el canto se raspa. Es el mismo
+   gesto del botón, que es el mismo de la entrada. */
+.ui-slider.is-dragging {
+  --ui-gr-erode: 1.7;
+}
+.ui-slider.is-dragging .ui-slider__thumb::before {
+  background-position: 100% 0;
+}
+
+.ui-slider__value {
+  letter-spacing: var(--ui-tracking-wide);
+}

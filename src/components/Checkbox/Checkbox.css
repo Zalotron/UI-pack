@@ -18,7 +18,7 @@
   align-items: center;
   gap: var(--ui-space-3);
   min-height: var(--check-h);
-  cursor: pointer;
+  cursor: var(--ui-cursor-pointer, pointer);
 }
 
 .ui-checkbox--label-start { flex-direction: row-reverse; }
@@ -126,7 +126,7 @@
 
 .ui-checkbox.is-disabled {
   opacity: var(--ui-disabled-opacity);
-  cursor: not-allowed;
+  cursor: var(--ui-cursor-disabled, not-allowed);
 }
 
 .ui-checkbox__input:focus-visible + .ui-checkbox__box {

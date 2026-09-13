@@ -1,0 +1,24 @@
+/* ----------------------------------------------- Icon — PIEL del pack GRUNGE */
+/* Interfaz: --icon-color | --icon-stroke | --icon-cap | --icon-join
+             --icon-halo | --icon-halo-stroke                                */
+
+/* Trazo gordo, remate CUADRADO y unión en ángulo vivo. Es todo lo que hace
+   falta: un icono de este pack tiene que parecer cortado con la misma
+   herramienta que el canto de las piezas, y un remate redondo lo delata de
+   inmediato como dibujado en otro lado.
+
+   ⛔ NO LLEVA MASCARA. Un icono mide 20px y su trazo 2: la banda comida se lo
+   llevaría entero. El canto roto es del MATERIAL, y un icono no es material —
+   es una marca hecha sobre él.
+
+   Lo que sí lleva es la estampa: un pelo de hollín debajo, como el que deja
+   cualquier cosa apoyada sobre una superficie sucia. Va con `drop-shadow` y no
+   con `box-shadow` porque un SVG de trazo no tiene caja que sombrear, tiene
+   forma. */
+
+.ui-icon {
+  --icon-color: currentColor;
+  --icon-cap: butt;
+  --icon-join: miter;
+  filter: drop-shadow(0 1px 0 var(--ui-gr-deep));
+}

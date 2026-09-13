@@ -1,0 +1,59 @@
+/* ---------------------------------------- Container — PIEL del pack MINIMAL */
+/* Interfaz: --container-bg | --container-border-color | --container-shadow    */
+
+/* Un panel de editor: un escalón de luz sobre el fondo y, como mucho, una
+   línea que lo cierra. Nada más. Lo que separa una superficie de la de abajo
+   es --ui-mn-step, o sea la perilla CONTRAST. */
+
+.ui-container--panel {
+  --container-bg: var(--ui-surface);
+  --container-border-color: var(--ui-border);
+  --container-shadow: none;
+}
+
+/* Sin contorno: cuando el escalón de luz ya alcanza y una línea más sería
+   ruido. Es el que más se usa en una interfaz densa. */
+.ui-container--solid {
+  --container-bg: var(--ui-surface);
+  --container-border-color: transparent;
+  --container-shadow: none;
+}
+
+/* Solo la línea. Para agrupar sin agregar una capa. */
+.ui-container--outline {
+  --container-bg: transparent;
+  --container-border-color: var(--ui-border);
+  --container-shadow: none;
+}
+
+.ui-container--ghost {
+  --container-bg: transparent;
+  --container-border-color: transparent;
+  --container-shadow: none;
+}
+
+.ui-container--no-border {
+  --container-border-color: transparent;
+}
+
+/* -- Elevación ------------------------------------------------------------- */
+/* ⛔ LO APOYADO NO PROYECTA. Solo tiene sombra lo que de verdad FLOTA por
+   encima del resto —un desplegable, un modal—, y de eso se encargan sus
+   componentes. Un panel con sombra en una interfaz densa convierte la pantalla
+   en una pila de tarjetas, que es lo que este pack no es. */
+
+.ui-container--elev-sm { --container-shadow: none; }
+.ui-container--elev-md { --container-shadow: var(--ui-shadow-sm); }
+.ui-container--elev-lg { --container-shadow: var(--ui-shadow-md); }
+
+/* -- Reacción al mouse ----------------------------------------------------- */
+/* Un escalón más de luz. No se levanta ni se hunde: --ui-hover-lift y
+   --ui-press-shift están en 0 en este pack, y es a propósito. */
+
+.ui-container.is-interactive:hover {
+  --container-bg: var(--ui-surface-hover);
+}
+
+.ui-container.is-interactive:active {
+  --container-bg: var(--ui-surface-active);
+}

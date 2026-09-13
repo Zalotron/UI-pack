@@ -30,7 +30,7 @@
   align-items: center;
   gap: var(--ui-space-3);
   min-height: var(--radio-h);
-  cursor: pointer;
+  cursor: var(--ui-cursor-pointer, pointer);
 }
 
 .ui-radio__input {
@@ -94,7 +94,7 @@
 
 .ui-radio.is-disabled {
   opacity: var(--ui-disabled-opacity);
-  cursor: not-allowed;
+  cursor: var(--ui-cursor-disabled, not-allowed);
 }
 
 .ui-radio__input:focus-visible + .ui-radio__dot {

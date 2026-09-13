@@ -1,0 +1,33 @@
+/* -------------------------------------- ColorPicker — PIEL del pack MINIMAL */
+/* Interfaz: --cp-bg | --cp-border | --cp-ring | --cp-value-fg
+             --cp-panel-bg | --cp-panel-border | --cp-panel-shadow           */
+
+/* Mismo reparto que el Select: el disparador es una superficie y el panel es
+   de lo poco que flota. El valor en hexadecimal va en mono, como cualquier
+   valor que uno quiera leer o copiar. */
+
+.ui-colorpicker {
+  --cp-bg: var(--ui-surface-hover);
+  --cp-border: var(--ui-border);
+  --cp-value-fg: var(--ui-text-muted);
+  --cp-panel-bg: var(--ui-surface-hover);
+  --cp-panel-border: var(--ui-border-strong);
+  --cp-panel-shadow: var(--ui-shadow-md);
+}
+
+.ui-colorpicker:hover:not(.is-disabled) {
+  --cp-bg: var(--ui-surface-active);
+  --cp-border: var(--ui-border-strong);
+  --cp-value-fg: var(--ui-text);
+}
+
+/* Los estados activos llevan :not(.is-disabled) para empatarle la
+   especificidad al :hover de arriba. */
+.ui-colorpicker.is-open:not(.is-disabled) {
+  --cp-border: var(--ui-accent);
+  --cp-value-fg: var(--ui-text);
+}
+
+.ui-colorpicker__value {
+  font-family: var(--ui-font-mono);
+}

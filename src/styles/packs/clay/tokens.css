@@ -201,6 +201,13 @@
 
   --ui-tabs-indicator-h: 4px;      /* gorda, como todo */
 
+  /* Aire arriba y abajo de la fila de pestañas, para que no le recorte las
+
+     sombras a lo que tenga adentro. La tercera sombra de --ui-clay-body NO es `inset`: la pieza proyecta
+     hacia abajo, y el hover la manda todavia mas lejos. */
+
+  --ui-tabs-bleed: calc(var(--ui-clay-drop) * 2.5);
+
   --ui-swatch-w: 2.8em;
   --ui-picker-w: 244px;
   --ui-picker-area-h: 140px;
@@ -211,6 +218,69 @@
   --ui-press-shift: 0px;
   --ui-hover-lift: -3px;
   --ui-disabled-opacity: 0.45;
+
+  /* ==================================================================== */
+  /*  CURSORES                                                            */
+  /*  gordo y redondo, como todo lo demas del pack                        */
+  /*  ------------------------------------------------------------------  */
+  /*  Los NUEVE, dibujados. La FORMA la comparten todos los packs —una     */
+  /*  flecha es una flecha y una mano abierta es una mano abierta: son     */
+  /*  convenciones de uso, no lugar para inventar— y lo que cambia es      */
+  /*  COMO ESTA PINTADA. Mismo reparto que el resto del sistema.           */
+  /*                                                                       */
+  /*  ⚠ CADA URL LLEVA SU HOTSPOT Y SU FALLBACK, Y LOS DOS SON             */
+  /*  OBLIGATORIOS. El hotspot es el pixel que apunta —la punta de la      */
+  /*  flecha, el medio de la palma, el centro de la cruz— y sin el el      */
+  /*  navegador usa la esquina de arriba a la izquierda. El fallback es lo */
+  /*  que se ve si el SVG no carga o el tamaño no entra: sin el, el cursor */
+  /*  puede quedar en NINGUNO.                                             */
+  /*                                                                       */
+  /*  ⚠ LOS DOS DEL ARO MIDEN 28px Y NO 24: llevan la insignia al costado  */
+  /*  de la flecha, igual que los nativos, y no entraba en 24. Sigue lejos */
+  /*  del tope de 32, pasado el cual varios navegadores lo ignoran.        */
+  /*                                                                       */
+  /*  ⚠ Y SON DE TINTA NEUTRA, NO DEL COLOR DE MARCA. Un data URI es un    */
+  /*  documento aparte y no ve las variables CSS, asi que un cursor no     */
+  /*  puede seguir a BRAND_COLOR: pintarlo del color de marca seria        */
+  /*  clavarlo y mentir cuando la perilla se mueva. La identidad la lleva  */
+  /*  la forma y el acabado.                                               */
+  /* ==================================================================== */
+  /* el puntero de siempre */
+  --ui-cursor-default:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M3 2 3 17.6 7.3 13.4 10 19.5 12.9 18.2 10.3 12.3 16.2 12.3Z' fill='%23fff' stroke='%232a2f3a' stroke-opacity='.85' stroke-width='4' stroke-linejoin='round' stroke-linecap='round'/%3E%3Cpath d='M3 2 3 17.6 7.3 13.4 10 19.5 12.9 18.2 10.3 12.3 16.2 12.3Z' fill='%23fff' stroke='%23fff' stroke-width='1.4' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E") 3 2, default;
+  /* lo que se puede apretar */
+  --ui-cursor-pointer:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M8 2.6c0-1 2-1 2 0v6.1h1V6.2c0-1 2-1 2 0v2.5h1V7.4c0-1 2-1 2 0v1.3h1V9c0-1 2-1 2 0v5.6c0 3-2 5.4-5 5.4h-1.6c-1.6 0-3-.8-3.8-2.2L5 13.6c-.5-.9 1.2-2 1.8-1.1L8 14.2Z' fill='%23fff' stroke='%232a2f3a' stroke-opacity='.85' stroke-width='4' stroke-linejoin='round' stroke-linecap='round'/%3E%3Cpath d='M8 2.6c0-1 2-1 2 0v6.1h1V6.2c0-1 2-1 2 0v2.5h1V7.4c0-1 2-1 2 0v1.3h1V9c0-1 2-1 2 0v5.6c0 3-2 5.4-5 5.4h-1.6c-1.6 0-3-.8-3.8-2.2L5 13.6c-.5-.9 1.2-2 1.8-1.1L8 14.2Z' fill='%23fff' stroke='%23fff' stroke-width='1.4' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E") 9 2, pointer;
+  /* donde se escribe */
+  --ui-cursor-text:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M7 3h6M7 19h6M10 3v16' fill='none' stroke='%232a2f3a' stroke-opacity='.85' stroke-width='4.6' stroke-linecap='round'/%3E%3Cpath d='M7 3h6M7 19h6M10 3v16' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") 10 11, text;
+  /* lo que no se puede tocar */
+  --ui-cursor-disabled:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Cpath d='M3 2 3 17.6 7.3 13.4 10 19.5 12.9 18.2 10.3 12.3 16.2 12.3Z' fill='%23fff' stroke='%232a2f3a' stroke-opacity='.85' stroke-width='4' stroke-linejoin='round' stroke-linecap='round'/%3E%3Cpath d='M3 2 3 17.6 7.3 13.4 10 19.5 12.9 18.2 10.3 12.3 16.2 12.3Z' fill='%23fff' stroke='%23fff' stroke-width='1.4' stroke-linejoin='round' stroke-linecap='round'/%3E%3Cpath d='M20 13.8a5.4 5.4 0 1 0 0 10.8 5.4 5.4 0 0 1 0-10.8M16.7 15.8l6.6 6.8' fill='none' stroke='%232a2f3a' stroke-opacity='.85' stroke-width='4.6' stroke-linecap='round'/%3E%3Cpath d='M20 13.8a5.4 5.4 0 1 0 0 10.8 5.4 5.4 0 0 1 0-10.8M16.7 15.8l6.6 6.8' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") 3 2, not-allowed;
+  /* lo que se puede agarrar */
+  --ui-cursor-grab:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M6.2 13V8.7c0-1.3 2.2-1.3 2.2 0v1.6V4.4c0-1.3 2.2-1.3 2.2 0v5.6V3.7c0-1.3 2.2-1.3 2.2 0v6.3V6c0-1.3 2.2-1.3 2.2 0v8.6c0 3.4-2.1 5.9-5.4 5.9-2 0-3.5-.8-4.6-2.4l-2.7-3.8c-.7-1 1-2.4 1.9-1.4Z' fill='%23fff' stroke='%232a2f3a' stroke-opacity='.85' stroke-width='4' stroke-linejoin='round' stroke-linecap='round'/%3E%3Cpath d='M6.2 13V8.7c0-1.3 2.2-1.3 2.2 0v1.6V4.4c0-1.3 2.2-1.3 2.2 0v5.6V3.7c0-1.3 2.2-1.3 2.2 0v6.3V6c0-1.3 2.2-1.3 2.2 0v8.6c0 3.4-2.1 5.9-5.4 5.9-2 0-3.5-.8-4.6-2.4l-2.7-3.8c-.7-1 1-2.4 1.9-1.4Z' fill='%23fff' stroke='%23fff' stroke-width='1.4' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E") 12 11, grab;
+  /* mientras se arrastra */
+  --ui-cursor-grabbing:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M6.2 13.6v-2.4c0-1.3 2.2-1.3 2.2 0v.5c0-1.3 2.2-1.3 2.2 0v.2c0-1.3 2.2-1.3 2.2 0v.3c0-1.3 2.2-1.3 2.2 0v2.6c0 3.2-2.1 5.7-5.4 5.7-2 0-3.5-.8-4.6-2.4l-2.3-3.2c-.7-1 1-2.4 1.9-1.4Z' fill='%23fff' stroke='%232a2f3a' stroke-opacity='.85' stroke-width='4' stroke-linejoin='round' stroke-linecap='round'/%3E%3Cpath d='M6.2 13.6v-2.4c0-1.3 2.2-1.3 2.2 0v.5c0-1.3 2.2-1.3 2.2 0v.2c0-1.3 2.2-1.3 2.2 0v.3c0-1.3 2.2-1.3 2.2 0v2.6c0 3.2-2.1 5.7-5.4 5.7-2 0-3.5-.8-4.6-2.4l-2.3-3.2c-.7-1 1-2.4 1.9-1.4Z' fill='%23fff' stroke='%23fff' stroke-width='1.4' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E") 12 12, grabbing;
+  /* arrastre vertical (el Spinner) */
+  --ui-cursor-resize-ns:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M12 1.6 7.9 7.4h2.6v9.2H7.9L12 22.4l4.1-5.8h-2.6V7.4h2.6Z' fill='%23fff' stroke='%232a2f3a' stroke-opacity='.85' stroke-width='4' stroke-linejoin='round' stroke-linecap='round'/%3E%3Cpath d='M12 1.6 7.9 7.4h2.6v9.2H7.9L12 22.4l4.1-5.8h-2.6V7.4h2.6Z' fill='%23fff' stroke='%23fff' stroke-width='1.4' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E") 12 12, ns-resize;
+  /* elegir un punto (el area de color) */
+  --ui-cursor-crosshair:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M12 1v9.2M12 13.8V23M1 12h9.2M13.8 12H23' fill='none' stroke='%232a2f3a' stroke-opacity='.85' stroke-width='4.6' stroke-linecap='round'/%3E%3Cpath d='M12 1v9.2M12 13.8V23M1 12h9.2M13.8 12H23' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") 12 12, crosshair;
+  /* esperando (un boton en carga) */
+  --ui-cursor-busy:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Cpath d='M3 2 3 17.6 7.3 13.4 10 19.5 12.9 18.2 10.3 12.3 16.2 12.3Z' fill='%23fff' stroke='%232a2f3a' stroke-opacity='.85' stroke-width='4' stroke-linejoin='round' stroke-linecap='round'/%3E%3Cpath d='M3 2 3 17.6 7.3 13.4 10 19.5 12.9 18.2 10.3 12.3 16.2 12.3Z' fill='%23fff' stroke='%23fff' stroke-width='1.4' stroke-linejoin='round' stroke-linecap='round'/%3E%3Cpath d='M25.4 19.2a5.4 5.4 0 1 1-2.5-4.6' fill='none' stroke='%232a2f3a' stroke-opacity='.85' stroke-width='4.6' stroke-linecap='round'/%3E%3Cpath d='M25.4 19.2a5.4 5.4 0 1 1-2.5-4.6' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") 3 2, progress;
+
+
+
+
+
+
+
+
+
 
   /* ---------------------------------------------------------- Radios ---- */
   --ui-radius-xs:   calc(7px  * var(--ui-roundness));
@@ -238,6 +308,44 @@
      perilla: un material que rebota mucho también se deforma mucho. */
   --ui-squash: calc(0.06 * var(--ui-bounce-amount));
 
+  /* ==================================================================== */
+  /*  CUANTO SE MUEVE LA ENTRADA                                          */
+  /*  ------------------------------------------------------------------  */
+  /*  ⛔ LA AMPLITUD SE DIVIDE POR SPEED, O SEA QUE SI TARDA MAS, CAE      */
+  /*  DESDE MAS ALTO. No es un capricho: es la unica forma de que la       */
+  /*  animacion se vea igual de viva a cualquier velocidad.                */
+  /*                                                                       */
+  /*  Con la amplitud fija, bajar SPEED repartia los mismos 14px en mas de */
+  /*  un segundo: 0.17px por cuadro, que es MENOS DE LO QUE EL OJO LEE     */
+  /*  COMO MOVIMIENTO. La pieza no se trababa — es que no se llegaba a ver */
+  /*  que se moviera, y eso se lee igual de mal. Medido, la velocidad      */
+  /*  media pasa de 0.17 a 0.7-1.6px por cuadro, y ahora es la MISMA con   */
+  /*  SPEED en 0.4 que en 2.5.                                             */
+  /*                                                                       */
+  /*  Es la misma idea que ya estaba en el pack: las piezas tienen masa.   */
+  /*  Algo que tarda mas en caer es porque venia de mas arriba.            */
+  /* ==================================================================== */
+  /* Cuanto CAE. Lleva una base fija para que con BOUNCE en 0 la pieza igual
+     entre —si no, en 0 no quedaria mas que un fundido— y el resto lo pone la
+     perilla. Dividido por SPEED, o sea: si tarda mas, cae desde mas alto. */
+  --ui-cl-fall:   calc((6px + 10px * var(--ui-bounce-amount)) / var(--ui-speed, 1));
+
+  /* ⛔ CUANTO ENCOGE **NO** SE DIVIDE POR SPEED, y es la excepcion a la regla
+     de arriba. Un `scale` ya es relativo al tamaño de la pieza: a igual valor
+     mueve mas pixeles en una caja grande que en una chica, asi que se defiende
+     solo. Dividirlo ademas por SPEED lo mandaba a 0.55 de recorrido con la
+     perilla al minimo — la pieza entraba a menos de la mitad de su tamaño, que
+     ya no es un rebote, es un zoom. */
+  --ui-cl-shrink: calc(0.22 * var(--ui-bounce-amount));
+
+  /* El desplegable encoge menos: es chico y crece desde su borde de arriba, asi
+     que el mismo recorrido se veria exagerado. */
+  --ui-cl-swell:  calc(0.14 * var(--ui-bounce-amount));
+
+  /* Lo anidado se mueve la mitad, y sin encoger: ver el final de
+     lifecycle.css. */
+  --ui-cl-slip:   calc(7px / var(--ui-speed, 1));
+
   /* ------------------------------------------------------ Movimiento ---- */
   /* Las duraciones se dividen por SPEED: 1 es el ritmo de fábrica, 2 el doble
      de rápido. Es la segunda perilla del pack. */
@@ -254,13 +362,51 @@
      entero sin tocar un solo componente. */
   --ui-ease-out:  cubic-bezier(0.3, 1.7, 0.5, 1);
 
-  /* ⛔ LA CURVA PARA UNA ANIMACION CON PARADAS INTERMEDIAS.
-     Simetrica: arranca y termina QUIETA. Hace falta porque una curva se aplica
-     entre CADA PAR de keyframes, no a la animacion entera — ver el comentario
-     de ui-cl-drop-in. En una parada intermedia la pieza esta cambiando de
-     sentido, o sea que ahi su velocidad es cero, y la curva tiene que decir lo
-     mismo de los dos lados o se ve un tiron. */
-  --ui-ease-settle: cubic-bezier(0.45, 0, 0.55, 1);
+  /* ==================================================================== */
+  /*  EL REBOTE VIVE EN LA CURVA, NO EN LOS VALORES                       */
+  /*  ------------------------------------------------------------------  */
+  /*  Una cubic-bezier con y1 > 1 SE PASA DE LARGO SOLA: llega al destino, */
+  /*  lo sobrepasa y vuelve. Eso da un rebote de verdad con DOS keyframes  */
+  /*  y ninguna parada intermedia — y cada parada intermedia era una       */
+  /*  frenada, porque en una parada la velocidad es cero por definicion.   */
+  /*                                                                       */
+  /*  ⛔ Y ADEMAS ES LO QUE PERMITE QUE LA ANIMACION CORRA EN LA GPU.       */
+  /*  Chrome no compone una animacion cuyos KEYFRAMES contengan `var()`:   */
+  /*  tiene que recalcular estilo en cada cuadro, en cada elemento. La     */
+  /*  `animation-timing-function` no cuenta — se resuelve una sola vez, al */
+  /*  crear la animacion. Poniendo el rebote aca, los keyframes quedan     */
+  /*  casi libres de variables.                                            */
+  /*                                                                       */
+  /*  ⛔ LA CURVA ES FIJA Y BOUNCE NO LA TOCA. LA PERILLA MUEVE LA         */
+  /*  AMPLITUD, NO LA FORMA — y eso no es un detalle, es lo que hace que   */
+  /*  el rebote SE VEA.                                                    */
+  /*                                                                       */
+  /*  El sobrepaso de una curva es un PORCENTAJE DEL RECORRIDO. Con la     */
+  /*  perilla metida en la curva, subir BOUNCE agrandaba ese porcentaje    */
+  /*  pero el recorrido seguia siendo chico: un 21% de un scale que        */
+  /*  recorre 0.07 es 1.015, o sea NADA. La pieza entraba sin rebote por   */
+  /*  mas que la perilla estuviera al maximo.                              */
+  /*                                                                       */
+  /*  Con la curva fija en 42.6% y BOUNCE moviendo el recorrido, el        */
+  /*  sobrepaso sale LINEAL y a la escala que corresponde:                 */
+  /*                                                                       */
+  /*      BOUNCE 0   entra en 1.000, no se pasa                            */
+  /*      BOUNCE 1   entra en 0.780 y llega a 1.094                        */
+  /*      BOUNCE 2   entra en 0.560 y llega a 1.187                        */
+  /*                                                                       */
+  /*  (0.78 y 1.09 son, no por casualidad, los valores que tenia el        */
+  /*  keyframe original a mano. La curva llega sola a donde se llegaba     */
+  /*  con tres paradas intermedias, y sin las frenadas que traian.)        */
+  /*                                                                       */
+  /*  ⚠ Y ASI LA CURVA NO LLEVA NI UN var(), que es lo que necesita Chrome */
+  /*  para no tener que resolverla de nuevo en cada cuadro.                */
+  /* ==================================================================== */
+  --ui-ease-bounce: cubic-bezier(0.45, 2.45, 0.85, 1);
+
+  /* Para lo que entra ADENTRO de algo que ya se esta moviendo: llega y se
+     queda, sin pasarse. Ver el final de lifecycle.css. */
+  --ui-ease-slip: cubic-bezier(0.3, 0.9, 0.4, 1);
+
   --ui-ease-in:   cubic-bezier(0.6, -0.4, 0.8, 0.3);
 
   /* ----------------------------------------------------------- Capas ---- */

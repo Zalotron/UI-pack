@@ -1,0 +1,35 @@
+/* ===========================================================================
+   PACK "MINIMAL" — la interfaz de un editor de código.
+
+   Sobria, apretada y sin una sola cosa que no esté ahí para trabajar. Nada es
+   puro —ni el fondo es negro ni el texto es blanco—, la jerarquía es un
+   escalón de luz de dos o tres puntos, todo es denso y el acento SEÑALA en vez
+   de decorar.
+
+   La estética entera vive en tokens.css. Las pieles son cortas a propósito:
+   este pack se define por lo que se saca, no por lo que agrega.
+
+   NO tocar src/components/ ni src/styles/structure.css: eso es mecánica
+   compartida entre todos los packs.
+   =========================================================================== */
+
+@import url("./tokens.css");
+/* OBLIGATORIO: entradas y salidas de ciclo de vida. Ver el archivo. */
+@import url("./lifecycle.css");
+
+@import url("./components/Container.css");
+@import url("./components/Separator.css");
+@import url("./components/Spinner.css");
+@import url("./components/Slider.css");
+@import url("./components/Select.css");
+@import url("./components/ColorPicker.css");
+@import url("./components/Toggle.css");
+@import url("./components/Checkbox.css");
+@import url("./components/RadioGroup.css");
+@import url("./components/TextField.css");
+@import url("./components/Window.css");
+@import url("./components/Tabs.css");
+@import url("./components/Scroll.css");
+@import url("./components/Button.css");
+@import url("./components/Progress.css");
+@import url("./components/Icon.css");

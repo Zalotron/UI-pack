@@ -17,6 +17,9 @@ html {
 
 body {
   margin: 0;
+  /* El puntero de toda la pagina. Un pack que quiera el suyo lo declara; el
+     fallback es el del sistema, o sea: sin declarar nada, nada cambia. */
+  cursor: var(--ui-cursor-default, auto);
   background: var(--ui-bg);
   color: var(--ui-text);
   font-family: var(--ui-font-sans);
@@ -56,6 +59,11 @@ textarea,
 .ui-selectable * {
   user-select: text;
   -webkit-user-select: text;
+  /* Y el cursor acompaña: lo que se puede seleccionar tiene que ANUNCIAR que
+     se puede. Hace falta declararlo porque el `cursor` del body ya no es
+     `auto` —un pack puede poner el suyo— y con un cursor fijo el navegador
+     deja de cambiarlo solo sobre el texto. */
+  cursor: var(--ui-cursor-text, text);
 }
 
 /* El [hidden] del navegador es `display: none` con especificidad casi nula:

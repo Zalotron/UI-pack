@@ -101,7 +101,7 @@
   border: 0;
   background: none;
   color: inherit;
-  cursor: pointer;
+  cursor: var(--ui-cursor-pointer, pointer);
   transition:
     background var(--ui-duration-fast) var(--ui-ease),
     color var(--ui-duration-fast) var(--ui-ease);

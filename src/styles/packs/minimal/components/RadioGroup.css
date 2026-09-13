@@ -1,0 +1,21 @@
+/* --------------------------------------- RadioGroup — PIEL del pack MINIMAL */
+/* Interfaz: --radio-bg | --radio-border | --radio-fill | --radio-ring         */
+
+/* Lo mismo que el Checkbox, porque significan lo mismo. Lo único que cambia es
+   la forma: el punto es REDONDO, y eso no lo decide el pack — es lo que
+   distingue "elegí uno" de "marcá varios". */
+
+.ui-radiogroup {
+  --radio-bg: var(--ui-bg-subtle);
+  --radio-border: var(--ui-border-strong);
+  --radio-fill: var(--ui-accent);
+}
+
+.ui-radio:hover:not(.is-disabled) {
+  --radio-border: var(--ui-accent);
+}
+
+/* :not(.is-disabled) para empatarle la especificidad al hover de arriba. */
+.ui-radio.is-checked:not(.is-disabled) {
+  --radio-border: var(--ui-accent);
+}

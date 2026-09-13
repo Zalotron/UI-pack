@@ -1,0 +1,86 @@
+/* ------------------------------------------- Checkbox — PIEL del pack GRUNGE */
+/* Interfaz: --check-bg | --check-bg-on | --check-border | --check-mark
+             --check-ring                                                     */
+
+/* Sin marcar es un hueco picado; marcado se llena de lámina y el tilde queda
+   estampado sobre la laca. Es la pieza más chica del pack y aun así lleva casi
+   todo: canto comido, luz en el canto y laca. Costra no: no entra.
+
+   ⚠ LA LAMINA VA EN UN ::before: el anillo de foco se dibuja sobre
+   `.ui-checkbox__box` y una máscara ahí se lo comería. Ver
+   components/Container.css. */
+
+.ui-checkbox {
+  --check-bg: transparent;
+  --check-bg-on: transparent;
+  --check-border: transparent;
+  --check-mark: var(--ui-on-accent);
+
+  --gr-fill: var(--ui-bg-subtle);
+  --gr-sheet: none;
+  --gr-edge: var(--ui-gr-edge-sunken);
+}
+
+.ui-checkbox__box {
+  isolation: isolate;
+}
+
+/* LA LAMINA. */
+.ui-checkbox__box::before {
+  content: "";
+  position: absolute;
+  inset: calc(var(--ui-border-width) * -1);
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+
+  background-color: var(--gr-fill);
+  background-image: var(--gr-sheet);
+  background-size: var(--ui-gr-foil-span);
+  box-shadow: var(--gr-edge);
+
+  /* EL CANTO COMIDO, mordida chica: la casilla mide unos 19px de lado y con la
+     banda entera no quedaría casilla. Con longhands — ver tokens.css. */
+  -webkit-mask-image: var(--ui-gr-chip-image);
+          mask-image: var(--ui-gr-chip-image);
+  -webkit-mask-position: var(--ui-gr-chip-position);
+          mask-position: var(--ui-gr-chip-position);
+  -webkit-mask-size: var(--ui-gr-chip-size);
+          mask-size: var(--ui-gr-chip-size);
+  -webkit-mask-repeat: var(--ui-gr-chip-repeat);
+          mask-repeat: var(--ui-gr-chip-repeat);
+
+  transition: background-color var(--ui-duration-fast) var(--ui-ease);
+}
+
+.ui-checkbox:hover:not(.is-disabled) {
+  --gr-fill: var(--ui-surface);
+  --ui-gr-sheen: rgb(from var(--ui-neutral-0) r g b / 0.30);
+}
+
+/* ⛔ MARCADO DEJA DE SER UN HUECO Y PASA A SER UNA PIEZA: el canto se da vuelta
+   y la luz sube. Es el mismo gesto que distingue un campo de un botón, aplicado
+   acá para que "marcado" no sea solo un cambio de color.
+   :not(.is-disabled) para empatarle la especificidad al hover de arriba. */
+.ui-checkbox.is-checked:not(.is-disabled),
+.ui-checkbox.is-indeterminate:not(.is-disabled) {
+  --gr-fill: var(--ui-accent);
+  --gr-sheet: var(--ui-gr-foil);
+  --gr-edge: var(--ui-gr-edge);
+}
+
+.ui-checkbox:active:not(.is-disabled) {
+  --ui-gr-erode: 1.8;
+}
+
+/* El tilde va gordo: sobre una superficie picada un trazo fino se pierde. */
+.ui-checkbox__mark {
+  border-width: 0 var(--ui-border-width) var(--ui-border-width) 0;
+}
+.ui-checkbox.is-indeterminate .ui-checkbox__mark {
+  border-width: 0 0 var(--ui-border-width) 0;
+}
+
+.ui-checkbox__label {
+  letter-spacing: var(--ui-tracking-tight);
+}

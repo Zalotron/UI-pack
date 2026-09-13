@@ -18,11 +18,11 @@ export default {
    *
    * ROUNDNESS 0 no es un default perezoso: es la estetica. Este pack es de
    * esquina viva, y el segundo neon sale de correr el brand 160 grados de
-   * tono — con un brand cian da magenta. Cambiar BRAND_COLOR recalcula el par
+   * tono — con este turquesa da un rosa. Cambiar BRAND_COLOR recalcula el par
    * entero.
    */
   settings: {
-    BRAND_COLOR: '#00f0ff',
+    BRAND_COLOR: '#00ffd0',
     ROUNDNESS: 0,
 
     /* El tema en el que este pack NACE.

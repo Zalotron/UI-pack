@@ -1,0 +1,127 @@
+/* --------------------------------------------- Select — PIEL del pack GRUNGE */
+/* Interfaz: --select-bg | --select-border | --select-menu-bg
+             --select-menu-border | --select-menu-shadow
+             --select-option-hover / -selected                                */
+
+/* El disparador es una PLACA apoyada —se aprieta, no se escribe en él— así que
+   lleva el canto con la luz arriba, igual que un botón. La lista es otra placa
+   más grande, puesta encima.
+
+   El disparador se arma como todas: lámina en el ::before. Ver
+   components/Container.css. */
+
+.ui-select {
+  --select-bg: transparent;
+  --select-border: transparent;
+  --gr-fill: var(--ui-surface);
+}
+
+.ui-select__trigger {
+  position: relative;
+  isolation: isolate;
+  letter-spacing: var(--ui-tracking-tight);
+}
+
+/* LA LAMINA del disparador. */
+.ui-select__trigger::before {
+  content: "";
+  position: absolute;
+  inset: calc(var(--ui-border-width) * -1);
+  z-index: -2;
+  border-radius: inherit;
+  pointer-events: none;
+
+  background-color: var(--gr-fill);
+  box-shadow: var(--ui-gr-edge);
+
+  /* EL CANTO COMIDO. Con longhands a proposito — ver tokens.css. */
+  -webkit-mask-image: var(--ui-gr-tear-image);
+          mask-image: var(--ui-gr-tear-image);
+  -webkit-mask-position: var(--ui-gr-tear-position);
+          mask-position: var(--ui-gr-tear-position);
+  -webkit-mask-size: var(--ui-gr-tear-size);
+          mask-size: var(--ui-gr-tear-size);
+  -webkit-mask-repeat: var(--ui-gr-tear-repeat);
+          mask-repeat: var(--ui-gr-tear-repeat);
+
+  transition:
+    background-color var(--ui-duration-fast) var(--ui-ease),
+    box-shadow var(--ui-duration-fast) var(--ui-ease);
+}
+
+/* LA COSTRA del disparador. */
+.ui-select__trigger::after {
+  content: "";
+  position: absolute;
+  inset: var(--ui-gr-bite);
+  z-index: -1;
+  pointer-events: none;
+
+  background: var(--ui-gr-soot);
+  -webkit-mask-image: var(--ui-gr-grit);
+          mask-image: var(--ui-gr-grit);
+  -webkit-mask-size: var(--ui-gr-grit-size);
+          mask-size: var(--ui-gr-grit-size);
+}
+
+.ui-select:hover:not(.is-disabled) {
+  --gr-fill: var(--ui-surface-hover);
+  --ui-gr-sheen: rgb(from var(--ui-neutral-0) r g b / 0.30);
+}
+
+/* Abierto, la placa se hunde: la luz se va al canto de abajo y el contorno
+   pasa a acento. Es la misma inversión que separa un hueco de una pieza. */
+.ui-select.is-open:not(.is-disabled) {
+  --ui-gr-contour: var(--ui-accent);
+}
+.ui-select.is-open:not(.is-disabled) .ui-select__trigger::before {
+  box-shadow: var(--ui-gr-edge-sunken);
+}
+
+/* -- La lista -------------------------------------------------------------- */
+
+/* ⚠ ACA LA MASCARA VA EN EL ELEMENTO, y hay dos razones para la excepción:
+
+     1. La lista no se enfoca (el foco vive en el disparador) y no tiene hijos
+        que se salgan de su caja, que son las dos cosas por las que la regla
+        del pack manda enmascarar un ::before y no el elemento.
+     2. La lista SCROLLEA. Un ::before `absolute` adentro de una región que
+        scrollea se va con el contenido: la lámina y la costra se arrastrarían
+        hacia arriba al bajar por la lista. Una máscara, en cambio, se posiciona
+        contra la caja del elemento y se queda quieta — y una `box-shadow`
+        `inset` también, porque se pinta como fondo.
+
+   El precio es la sombra proyectada: una `mask` recorta lo que se pinta fuera
+   de la caja, así que un desplegable de este pack NO tiene hollín debajo. Se
+   separa con el contorno, que acá es de 2px y de tinta. En un pack donde la
+   profundidad la hace la textura y no la altura, no se extraña.
+   Por eso --select-menu-shadow no es una sombra sino el canto: las tres
+   `inset` de --ui-gr-edge, que sí sobreviven a la máscara. */
+
+.ui-select__list {
+  --select-menu-bg: var(--ui-surface);
+  --select-menu-border: transparent;
+  --select-menu-shadow: var(--ui-gr-edge);
+  --select-option-hover: var(--ui-surface-hover);
+  --select-option-selected: var(--ui-accent-subtle);
+
+  -webkit-mask-image: var(--ui-gr-tear-image);
+          mask-image: var(--ui-gr-tear-image);
+  -webkit-mask-position: var(--ui-gr-tear-position);
+          mask-position: var(--ui-gr-tear-position);
+  -webkit-mask-size: var(--ui-gr-tear-size);
+          mask-size: var(--ui-gr-tear-size);
+  -webkit-mask-repeat: var(--ui-gr-tear-repeat);
+          mask-repeat: var(--ui-gr-tear-repeat);
+}
+
+.ui-select__option {
+  letter-spacing: var(--ui-tracking-tight);
+}
+
+/* La elegida lleva una tira al costado: es la misma pieza lacada que
+   marca la pestaña activa y el relleno de una barra. Va como `inset`, así que
+   la máscara de la lista no se la come. */
+.ui-select__option.is-selected {
+  box-shadow: inset calc(var(--ui-border-width) * 1.5) 0 0 var(--ui-accent);
+}

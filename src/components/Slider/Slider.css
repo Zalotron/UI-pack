@@ -54,7 +54,7 @@
   padding: 0;
   border: 0;
   background: none;
-  cursor: pointer;
+  cursor: var(--ui-cursor-pointer, pointer);
 
   -webkit-appearance: none;
   appearance: none;
@@ -138,7 +138,7 @@
   margin-top: calc((var(--slider-track-h) - var(--slider-thumb-h)) / 2);
   border: 0;
   background: transparent;
-  cursor: grab;
+  cursor: var(--ui-cursor-grab, grab);
 }
 
 .ui-slider__input::-moz-range-thumb {
@@ -146,11 +146,11 @@
   height: var(--slider-thumb-h);
   border: 0;
   background: transparent;
-  cursor: grab;
+  cursor: var(--ui-cursor-grab, grab);
 }
 
-.ui-slider__input:active::-webkit-slider-thumb { cursor: grabbing; }
-.ui-slider__input:active::-moz-range-thumb { cursor: grabbing; }
+.ui-slider__input:active::-webkit-slider-thumb { cursor: var(--ui-cursor-grabbing, grabbing); }
+.ui-slider__input:active::-moz-range-thumb { cursor: var(--ui-cursor-grabbing, grabbing); }
 
 /* El tirador que se ve. Barra vertical, no círculo: sigue el redondeo global,
    así con ROUNDNESS 0 queda recto como el resto del sistema.
@@ -222,6 +222,6 @@
 
 .ui-slider.is-disabled {
   opacity: var(--ui-disabled-opacity);
-  cursor: not-allowed;
+  cursor: var(--ui-cursor-disabled, not-allowed);
 }
-.ui-slider.is-disabled .ui-slider__input { cursor: not-allowed; }
+.ui-slider.is-disabled .ui-slider__input { cursor: var(--ui-cursor-disabled, not-allowed); }

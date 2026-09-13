@@ -1,0 +1,24 @@
+/* ----------------------------------------- Progress — PIEL del pack MINIMAL */
+/* Interfaz: --progress-track | --progress-fill | --progress-ring-fill
+             --progress-label-fg | --progress-value-fg
+             --progress-radius | --progress-cap                              */
+
+/* La barra de progreso de una barra de estado: dos píxeles de alto, sin canal
+   marcado y sin remates redondos. Una medida no se redondea — con las puntas
+   curvas miente sobre dónde termina. */
+
+.ui-progress {
+  --progress-track: var(--ui-bg-subtle);
+  --progress-fill: var(--ui-accent);
+  --progress-ring-fill: var(--ui-accent);
+  --progress-label-fg: var(--ui-text-muted);
+  --progress-value-fg: var(--ui-text-muted);
+  --progress-radius: 0;
+  --progress-fill-radius: 0;
+  --progress-cap: butt;
+}
+
+/* El porcentaje en mono y tabular: no tiene que bailar mientras sube. */
+.ui-progress__value {
+  font-variant-numeric: tabular-nums;
+}

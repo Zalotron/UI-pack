@@ -1,0 +1,160 @@
+/* ---------------------------------------- ColorPicker — PIEL del pack GRUNGE */
+/* Interfaz: --cp-bg | --cp-border | --cp-ring | --cp-value-fg
+             --cp-panel-bg | --cp-panel-border | --cp-panel-shadow           */
+
+/* Mismo reparto que el Select: el disparador es una placa apoyada (lámina en
+   su ::before) y el panel es una placa grande puesta encima, enmascarada en el
+   elemento por las mismas razones que la lista — ver components/Select.css.  */
+
+.ui-colorpicker {
+  --cp-bg: transparent;
+  --cp-border: transparent;
+  --cp-value-fg: var(--ui-text-muted);
+  --gr-fill: var(--ui-surface);
+}
+
+.ui-colorpicker__trigger {
+  position: relative;
+  isolation: isolate;
+}
+
+/* LA LAMINA del disparador. */
+.ui-colorpicker__trigger::before {
+  content: "";
+  position: absolute;
+  inset: calc(var(--ui-border-width) * -1);
+  z-index: -2;
+  border-radius: inherit;
+  pointer-events: none;
+
+  background-color: var(--gr-fill);
+  box-shadow: var(--ui-gr-edge);
+
+  /* EL CANTO COMIDO. Con longhands a proposito — ver tokens.css. */
+  -webkit-mask-image: var(--ui-gr-tear-image);
+          mask-image: var(--ui-gr-tear-image);
+  -webkit-mask-position: var(--ui-gr-tear-position);
+          mask-position: var(--ui-gr-tear-position);
+  -webkit-mask-size: var(--ui-gr-tear-size);
+          mask-size: var(--ui-gr-tear-size);
+  -webkit-mask-repeat: var(--ui-gr-tear-repeat);
+          mask-repeat: var(--ui-gr-tear-repeat);
+
+  transition:
+    background-color var(--ui-duration-fast) var(--ui-ease),
+    box-shadow var(--ui-duration-fast) var(--ui-ease);
+}
+
+/* LA COSTRA del disparador. */
+.ui-colorpicker__trigger::after {
+  content: "";
+  position: absolute;
+  inset: var(--ui-gr-bite);
+  z-index: -1;
+  pointer-events: none;
+
+  background: var(--ui-gr-soot);
+  -webkit-mask-image: var(--ui-gr-grit);
+          mask-image: var(--ui-gr-grit);
+  -webkit-mask-size: var(--ui-gr-grit-size);
+          mask-size: var(--ui-gr-grit-size);
+}
+
+.ui-colorpicker:hover:not(.is-disabled) {
+  --gr-fill: var(--ui-surface-hover);
+  --cp-value-fg: var(--ui-text);
+  --ui-gr-sheen: rgb(from var(--ui-neutral-0) r g b / 0.30);
+}
+
+/* Los estados activos llevan :not(.is-disabled) para empatarle la
+   especificidad al :hover de arriba. */
+.ui-colorpicker.is-open:not(.is-disabled) {
+  --ui-gr-contour: var(--ui-accent);
+  --cp-value-fg: var(--ui-text);
+}
+.ui-colorpicker.is-open:not(.is-disabled) .ui-colorpicker__trigger::before {
+  box-shadow: var(--ui-gr-edge-sunken);
+}
+
+/* ⛔ LA MUESTRA NO LLEVA NI LAMINA NI COSTRA. Es el color que el usuario
+   eligió y tiene que verse tal cual: una veta de laca encima lo falsearía, y
+   este es el único lugar del sistema donde eso importa. Lo único que sí lleva
+   es el canto comido, porque eso no cambia el color — le cambia la forma. */
+.ui-colorpicker__swatch {
+  -webkit-mask-image: var(--ui-gr-chip-image);
+          mask-image: var(--ui-gr-chip-image);
+  -webkit-mask-position: var(--ui-gr-chip-position);
+          mask-position: var(--ui-gr-chip-position);
+  -webkit-mask-size: var(--ui-gr-chip-size);
+          mask-size: var(--ui-gr-chip-size);
+  -webkit-mask-repeat: var(--ui-gr-chip-repeat);
+          mask-repeat: var(--ui-gr-chip-repeat);
+}
+
+.ui-colorpicker__value {
+  letter-spacing: var(--ui-tracking-wide);
+}
+
+/* -- El panel -------------------------------------------------------------- */
+/* Enmascarado en el elemento, como la lista del Select y por lo mismo. El
+   "sombreado" es el canto: tres `inset`, que sobreviven a la máscara. */
+
+.ui-colorpicker__panel {
+  --cp-panel-bg: var(--ui-surface);
+  --cp-panel-border: transparent;
+  --cp-panel-shadow: var(--ui-gr-edge);
+
+  -webkit-mask-image: var(--ui-gr-tear-image);
+          mask-image: var(--ui-gr-tear-image);
+  -webkit-mask-position: var(--ui-gr-tear-position);
+          mask-position: var(--ui-gr-tear-position);
+  -webkit-mask-size: var(--ui-gr-tear-size);
+          mask-size: var(--ui-gr-tear-size);
+  -webkit-mask-repeat: var(--ui-gr-tear-repeat);
+          mask-repeat: var(--ui-gr-tear-repeat);
+}
+
+/* El área y la tira de tono son ventanas al color: contorno de tinta y nada
+   más. Acá tampoco va la lámina, por lo mismo que en la muestra. */
+.ui-colorpicker__area,
+.ui-colorpicker__hue {
+  box-shadow: inset 0 0 0 var(--ui-border-width) var(--ui-border);
+}
+
+/* -- La rueda de matices --------------------------------------------------- */
+/* Es DOMINIO DEL COMPONENTE, no una decisión de estilo: un selector de color
+   tiene que mostrar el espectro entero, en todos los packs. Por eso es el único
+   lugar del pack donde se declaran colores que no salen de --ui-brand.
+
+   ⚠ VA EN LA PISTA VISIBLE (--slider-track) Y NO EN EL PSEUDO NATIVO DEL
+   <input>, que es donde la ponen los packs más viejos. El pseudo se dibuja
+   ENCIMA de la pista y sin saber nada de su forma, así que le pasaba por arriba
+   al canto comido: quedaba un arcoíris de bordes rectos sobre un canal roto, o
+   sea la única pieza del pack cortada a máquina. En la pista visible hereda la
+   máscara y se rompe igual que todo lo demás.
+
+   Y el relleno se apaga: es hijo de la pista y taparía la mitad izquierda de la
+   rueda con la laca. */
+.ui-colorpicker__hue {
+  --slider-track: linear-gradient(
+    to right,
+    hsl(0 100% 50%), hsl(60 100% 50%), hsl(120 100% 50%),
+    hsl(180 100% 50%), hsl(240 100% 50%), hsl(300 100% 50%), hsl(360 100% 50%)
+  );
+  --slider-fill: transparent;
+}
+
+/* El relleno hereda la lámina del Slider: hay que apagarla a mano. */
+.ui-colorpicker__hue .ui-slider__fill {
+  background-image: none;
+}
+
+/* ⛔ Y SOBRE LA RUEDA LA PLAQUETA VA EN CRUDO, SIN LACA.
+   El tirador del Slider va lacado, y acá eso es un problema de lectura y no de
+   gusto: encima de todos los matices, una plaqueta roja es UN COLOR MÁS, y el
+   usuario deja de saber cuál de los dos tiene que mirar. Es el mismo motivo
+   por el que la muestra no lleva veta. */
+.ui-colorpicker__hue .ui-slider__thumb::before {
+  background-color: var(--ui-neutral-0);
+  background-image: none;
+}

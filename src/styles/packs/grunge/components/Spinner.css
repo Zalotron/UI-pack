@@ -1,0 +1,85 @@
+/* -------------------------------------------- Spinner — PIEL del pack GRUNGE */
+/* Interfaz: --spinner-bg | --spinner-fg | --spinner-border | --spinner-ring
+             --spinner-caret                                                  */
+
+/* Mismo hueco que el TextField, y a propósito: los dos son lugares donde se
+   escribe. En este pack eso se lee como "acá el material está picado", con la
+   luz del canto abajo en vez de arriba.
+
+   Se arma como todas: lámina en el ::before, costra en el ::after. Ver
+   components/Container.css. */
+
+.ui-spinner {
+  --spinner-bg: transparent;
+  --spinner-border: transparent;
+  --gr-fill: var(--ui-bg-subtle);
+
+  position: relative;
+  isolation: isolate;
+}
+
+/* LA LAMINA, hundida. */
+.ui-spinner::before {
+  content: "";
+  position: absolute;
+  inset: calc(var(--ui-border-width) * -1);
+  z-index: -2;
+  border-radius: inherit;
+  pointer-events: none;
+
+  background-color: var(--gr-fill);
+  box-shadow: var(--ui-gr-edge-sunken);
+
+  /* EL CANTO COMIDO. Con longhands a proposito — ver tokens.css. */
+  -webkit-mask-image: var(--ui-gr-tear-image);
+          mask-image: var(--ui-gr-tear-image);
+  -webkit-mask-position: var(--ui-gr-tear-position);
+          mask-position: var(--ui-gr-tear-position);
+  -webkit-mask-size: var(--ui-gr-tear-size);
+          mask-size: var(--ui-gr-tear-size);
+  -webkit-mask-repeat: var(--ui-gr-tear-repeat);
+          mask-repeat: var(--ui-gr-tear-repeat);
+
+  transition: background-color var(--ui-duration-fast) var(--ui-ease);
+}
+
+/* LA COSTRA. */
+.ui-spinner::after {
+  content: "";
+  position: absolute;
+  inset: var(--ui-gr-bite);
+  z-index: -1;
+  pointer-events: none;
+
+  background: var(--ui-gr-soot);
+  -webkit-mask-image: var(--ui-gr-grit);
+          mask-image: var(--ui-gr-grit);
+  -webkit-mask-size: var(--ui-gr-grit-size);
+          mask-size: var(--ui-gr-grit-size);
+}
+
+.ui-spinner:hover:not(.is-disabled) {
+  --gr-fill: var(--ui-surface);
+}
+
+/* Los estados activos llevan :not(.is-disabled) para empatarle la
+   especificidad al :hover de arriba. Sin eso el hover gana y el control se ve
+   MAS apagado con el mouse encima que sin él. */
+
+/* Arrastrando, la pieza se raspa: el canto se come más mientras dura el
+   gesto. Es el mismo número que anima la entrada, ver lifecycle.css. */
+.ui-spinner.is-dragging:not(.is-disabled) {
+  --ui-gr-contour: var(--ui-accent);
+  --ui-gr-erode: 1.6;
+  --spinner-ring: var(--ui-ring-soft);
+}
+
+.ui-spinner.is-editing:not(.is-disabled) {
+  --ui-gr-contour: var(--ui-accent);
+  --spinner-caret: var(--ui-accent);
+  --spinner-ring: var(--ui-ring);
+}
+
+.ui-spinner__input {
+  font-variant-numeric: tabular-nums;
+}

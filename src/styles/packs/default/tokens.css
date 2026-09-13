@@ -205,6 +205,12 @@
 
   --ui-tabs-indicator-h: 2px;   /* grosor de la rayita de la pestana activa */
 
+  /* Aire arriba y abajo de la fila de pestañas, para que no le recorte las
+
+     sombras a lo que tenga adentro. Sin sombras adentro de la fila: no hay nada que recortar. */
+
+  --ui-tabs-bleed: 0px;
+
   /* ColorPicker */
   --ui-swatch-w: 2.6em;
   --ui-picker-w: 232px;        /* ancho mínimo del panel */
@@ -217,6 +223,33 @@
   --ui-hover-lift: -2px;
   /* Opacidad de cualquier elemento deshabilitado. */
   --ui-disabled-opacity: 0.55;
+
+  /* ==================================================================== */
+  /*  CURSORES — los del sistema, a proposito.                            */
+  /*  ------------------------------------------------------------------  */
+  /*  Este pack es el de proposito general: lo que se espera de el es que  */
+  /*  no sorprenda. Un cursor dibujado es lo primero que delata un sitio   */
+  /*  "con estilo", y eso es exactamente lo que este pack no quiere ser.   */
+  /*  Los tokens existen igual para que cualquier pack pueda cambiarlos.   */
+  /* ==================================================================== */
+  --ui-cursor-default:      default;  /* el puntero de siempre */
+  --ui-cursor-pointer:      pointer;  /* lo que se puede apretar */
+  --ui-cursor-text:         text;  /* donde se escribe */
+  --ui-cursor-disabled:     not-allowed;  /* lo que no se puede tocar */
+  --ui-cursor-grab:         grab;  /* lo que se puede agarrar */
+  --ui-cursor-grabbing:     grabbing;  /* mientras se arrastra */
+  --ui-cursor-resize-ns:    ns-resize;  /* arrastre vertical (el Spinner) */
+  --ui-cursor-crosshair:    crosshair;  /* elegir un punto (el area de color) */
+  --ui-cursor-busy:         progress;  /* esperando (un boton en carga) */
+
+
+
+
+
+
+
+
+
 
   /* ---------------------------------------------------------- Radios ---- */
   /* Toda la escala se multiplica por --ui-roundness (config.ROUNDNESS).

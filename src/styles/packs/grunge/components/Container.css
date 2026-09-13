@@ -1,0 +1,203 @@
+/* ------------------------------------------ Container — PIEL del pack GRUNGE */
+/* Acá va SOLO la estética. La mecánica (layout, escalas, medidas) está en
+     src/components/Container/Container.css
+   y no se toca al crear un pack.
+
+   Interfaz que rellena un pack:
+     --container-bg            fondo de la superficie
+     --container-border-color  color del borde
+     --container-shadow        sombra
+
+   ===========================================================================
+   ⛔ LA REGLA DE CONSTRUCCION DEL PACK — leer esto antes de tocar CUALQUIER
+      piel de grunge, no solo esta.
+   ===========================================================================
+
+   ACA NADA SE PINTA EN EL ELEMENTO: TODO SE PINTA EN LA LAMINA.
+
+   El canto comido es una `mask`, y una `mask` recorta TODO lo que el elemento
+   dibuja. Puesta en el elemento se lleva puestas dos cosas que no son
+   negociables:
+
+     1. EL ANILLO DE FOCO. Un `outline` es parte de lo que pinta el elemento,
+        asi que la mascara se lo come. Un pack no puede dejar sin foco visible
+        a los controles: eso no es una decision estetica.
+     2. LO QUE SE SALE DE LA CAJA. La lista de un Select y el panel de un
+        ColorPicker viven ADENTRO de su componente y se salen de el. Una
+        mascara en el contenedor los corta a la altura del borde.
+
+   Y ademas se lleva las sombras proyectadas, que quedan recortadas contra el
+   canto y desaparecen.
+
+   Por eso cada pieza de este pack se arma igual:
+
+     el elemento    transparente, sin contorno, sin fondo. Conserva su caja,
+                    su `outline` y sus hijos sin recortar. Lleva la sombra —
+                    que es hollin difuso y no delata el rectangulo.
+     ::before       LA LAMINA. Es el material: relleno, contorno (como sombra
+                    `inset`, no como borde), luz del canto y LA MASCARA del
+                    canto comido. Va en z-index -2.
+     ::after        LA COSTRA. El arido, como color plano enmascarado por la
+                    nube de puntos. Va en z-index -1 y metido --ui-gr-bite
+                    para adentro, asi nunca cae en la banda comida y no hace
+                    falta enmascararlo dos veces.
+
+   Los dos en z-index negativo, y el elemento con `isolation: isolate` para
+   que ese negativo NO se escape hacia atras: adentro de su propio contexto de
+   apilamiento, un hijo en -1 se pinta ARRIBA del fondo del elemento y DEBAJO
+   de su contenido, que es justo donde va el material.
+
+   El `inset` negativo de la lámina es para que cubra tambien el anillo del
+   borde, que la mecanica reserva con --ui-border-width y este pack deja
+   transparente.                                                             */
+
+/* -- Variantes de superficie ---------------------------------------------- */
+
+.ui-container--panel,
+.ui-container--solid,
+.ui-container--outline {
+  /* El elemento no pinta: sostiene. */
+  --container-bg: transparent;
+  --container-border-color: transparent;
+
+  position: relative;
+  isolation: isolate;
+}
+
+/* LA LAMINA. */
+.ui-container--panel::before,
+.ui-container--solid::before,
+.ui-container--outline::before {
+  content: "";
+  position: absolute;
+  /* Hasta el borde de la caja, anillo del borde incluido. */
+  inset: calc(var(--ui-border-width) * -1);
+  z-index: -2;
+  border-radius: inherit;
+  pointer-events: none;
+
+  background-color: var(--gr-fill);
+  background-image: var(--ui-gr-mottle);
+  box-shadow: var(--ui-gr-edge);
+
+  /* EL CANTO COMIDO. Con longhands a proposito — ver tokens.css. */
+  -webkit-mask-image: var(--ui-gr-tear-image);
+          mask-image: var(--ui-gr-tear-image);
+  -webkit-mask-position: var(--ui-gr-tear-position);
+          mask-position: var(--ui-gr-tear-position);
+  -webkit-mask-size: var(--ui-gr-tear-size);
+          mask-size: var(--ui-gr-tear-size);
+  -webkit-mask-repeat: var(--ui-gr-tear-repeat);
+          mask-repeat: var(--ui-gr-tear-repeat);
+}
+
+/* LA COSTRA. */
+.ui-container--panel::after,
+.ui-container--solid::after {
+  content: "";
+  position: absolute;
+  /* Metida lo que mide la mordida: asi nunca pisa la banda comida. */
+  inset: var(--ui-gr-bite);
+  z-index: -1;
+  pointer-events: none;
+
+  background: var(--ui-gr-soot);
+  -webkit-mask-image: var(--ui-gr-grit);
+          mask-image: var(--ui-gr-grit);
+  -webkit-mask-size: var(--ui-gr-grit-size);
+          mask-size: var(--ui-gr-grit-size);
+}
+
+/* El panel es la losa entera: material, contorno, luz del canto y hollín
+   debajo. Es la superficie donde el manchón y la costra se ven de verdad. */
+.ui-container--panel {
+  --gr-fill: var(--ui-surface);
+  --container-shadow: var(--ui-shadow-md);
+}
+
+/* La misma losa sin hollín: para anidar. Dos piezas apiladas con su sombra
+   cada una se leen como suciedad acumulada, no como profundidad. */
+.ui-container--solid {
+  --gr-fill: var(--ui-surface);
+  --container-shadow: none;
+}
+
+/* Solo el contorno: el hormigón de atrás a la vista, con el canto igual de
+   roto. Se apaga el relleno, no la lámina — el contorno vive en ella. */
+.ui-container--outline {
+  --gr-fill: transparent;
+  --container-shadow: none;
+  /* Sin relleno no hay espesor que sombrear por dentro, así que se apaga la
+     sombra interior y quedan el filete de luz y el contorno.
+
+     ⚠ SE APAGA CON COLOR, NO SACANDO LA ENTRADA DE LA LISTA. --ui-gr-edge
+     tiene que conservar siempre sus tres sombras en el mismo orden: CSS no
+     interpola entre listas que cambian de forma, y este contenedor transiciona
+     su `box-shadow` como cualquier otro. */
+  --ui-gr-deep: transparent;
+}
+.ui-container--outline::before {
+  background-image: none;
+}
+
+/* Nada: ni material, ni contorno, ni costra. Es el que usa el layout. */
+.ui-container--ghost {
+  --container-bg: transparent;
+  --container-border-color: transparent;
+  --container-shadow: none;
+}
+
+/* `border: false` gana sobre cualquier variante. El contorno de este pack no
+   es un borde sino la segunda sombra de la lámina, así que apagarlo es
+   ponerla transparente — la lista sigue teniendo la misma forma. */
+.ui-container--no-border {
+  --ui-gr-contour: transparent;
+}
+
+/* -- Elevación ------------------------------------------------------------- */
+/* Hollín, no altura. Lo que cambia entre los tres niveles es cuánta mugre se
+   juntó debajo de la pieza. */
+
+.ui-container--elev-sm { --container-shadow: var(--ui-shadow-sm); }
+.ui-container--elev-md { --container-shadow: var(--ui-shadow-md); }
+.ui-container--elev-lg { --container-shadow: var(--ui-shadow-lg); }
+
+/* -- Reacción al mouse ----------------------------------------------------- */
+/* Pasar el mouse PULE el canto: el filete de luz de arriba se enciende, que es
+   lo que le pasa a un material viejo donde lo tocan. Apretar lo hunde contra la
+   pared y el canto se come un poco más — el mismo gesto de la entrada, a otra
+   escala. */
+
+.ui-container.is-interactive {
+  transition:
+    box-shadow var(--ui-duration-base) var(--ui-ease),
+    transform var(--ui-duration-fast) var(--ui-ease),
+    --ui-gr-erode var(--ui-duration-fast) var(--ui-ease);
+}
+
+.ui-container.is-interactive:hover {
+  --gr-fill: var(--ui-surface-hover);
+  --ui-gr-sheen: rgb(from var(--ui-neutral-0) r g b / 0.30);
+  --container-shadow: var(--ui-shadow-lg);
+  transform: translateY(var(--ui-hover-lift));
+}
+
+.ui-container.is-interactive:active {
+  --gr-fill: var(--ui-surface-active);
+  --ui-gr-erode: 1.6;
+  --container-shadow: var(--ui-shadow-sm);
+  transform: translateY(var(--ui-press-shift));
+}
+
+/* -- Un desplegable abierto adentro ---------------------------------------- */
+/* Consecuencia directa de esta estética: `isolation` convierte al contenedor
+   en contexto de apilamiento, y entonces un Select o un ColorPicker abierto no
+   puede treparse por encima del contenedor SIGUIENTE — queda tapado, aunque
+   tenga z-index. El arreglo va acá y no en la estructura porque el problema lo
+   crea este pack: uno que no aísle no lo tiene.
+   Sube el contenedor entero, y solo mientras haya algo abierto. */
+
+.ui-container:has(.is-open) {
+  position: relative;
+  z-index: var(--ui-z-dropdown);
+}

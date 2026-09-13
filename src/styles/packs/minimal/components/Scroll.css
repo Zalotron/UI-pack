@@ -1,0 +1,14 @@
+/* ------------------------------------------- Scroll — PIEL del pack MINIMAL */
+/* Interfaz: --scroll-track | --scroll-thumb | --scroll-thumb-hover
+             --scroll-radius                                                  */
+
+/* La barra de un editor: sin riel, recta, y del color del texto con muy poca
+   opacidad. Recta y no redondeada aunque ROUNDNESS suba — una barra con forma
+   propia llama la atención, y esta tiene que poder ignorarse. */
+
+.ui-scroll {
+  --scroll-track: transparent;
+  --scroll-thumb: var(--ui-scroll-thumb);
+  --scroll-thumb-hover: var(--ui-scroll-thumb-hover);
+  --scroll-radius: 0;
+}

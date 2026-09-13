@@ -52,9 +52,9 @@ como parámetro de contenedor"*.
 - **`src/` no carga NINGUN recurso externo.** Ni fuentes, ni imágenes, ni CDNs:
   la carpeta se tiene que poder copiar a otro proyecto y funcionar sola.
   - Un pack **puede nombrar** una familia que no sea del sistema (`blueprint`
-    nombra `Handlee`), pero **siempre con fallbacks reales detrás** — quien
-    importe la librería y no la cargue tiene que ver algo parecido, no una
-    tipografía de sistema al azar.
+    nombra `Handlee`, `grunge` nombra `Protest Revolution`), pero **siempre con fallbacks
+    reales detrás** — quien importe la librería y no la cargue tiene que ver
+    algo parecido, no una tipografía de sistema al azar.
   - Quien la carga es el **visor**, en `index.html`. Es el mismo reparto que la
     ambientación de fondo: lo que es del catálogo vive en el catálogo.
 - **`src/` nunca importa de `catalog/`.** La dependencia va en un solo sentido.
@@ -66,9 +66,9 @@ como parámetro de contenedor"*.
 - Markup con los helpers `el()` / `cx()` de `src/core/dom.js`. Evitar `innerHTML`
   con datos variables.
 - **Un pack = una estética completa.** La lógica de los componentes es
-  compartida; la estética es del pack. Hoy hay nueve packs reales — `default`, `glass`, `cyber`,
-  `soft`, `blueprint`, `editorial`, `clay`, `riso` y `nocturne` — más el molde
-  `_template`.
+  compartida; la estética es del pack. Hoy hay once packs reales — `default`,
+  `glass`, `cyber`, `soft`, `blueprint`, `editorial`, `clay`, `riso`,
+  `nocturne`, `grunge` y `minimal` — más el molde `_template`.
   - `src/components/<X>/<X>.css` → **estructura** (caja, layout, escalas,
     interfaz de variables). Agnóstico al estilo, **no se toca al crear un pack**.
   - `src/styles/packs/<pack>/components/<X>.css` → **piel**: TODA la
@@ -114,7 +114,7 @@ como parámetro de contenedor"*.
   en el pack**, porque el problema lo creó esa estética.
 - **Al agregar un componente hay que crear su piel en TODOS los packs**
   (hoy `default`, `glass`, `cyber`, `soft`, `blueprint`, `editorial`, `clay`,
-  `riso`, `nocturne` y `_template`).
+  `riso`, `nocturne`, `grunge`, `minimal` y `_template`).
 - **⛔ TODO COMPONENTE ENTRA Y SALE ANIMADO.** `UIComponent` pone
   `.is-entering` al montar y `.is-leaving` en `leave()`, y **espera** a que
   terminen las animaciones antes de sacar el nodo. La mecánica decide CUANDO;
@@ -167,6 +167,21 @@ como parámetro de contenedor"*.
   pack no puede redondearla por vistosa que le quede, ni desde el token ni
   desde su piel. Si un estilo necesita verse blando, lo consigue con la
   superficie, no con la curva del marco.
+- **Los CURSORES también son del pack.** La mecánica no escribe `cursor: pointer`
+  en ningún lado: consume `var(--ui-cursor-*, <nativo>)`, y el fallback es el
+  valor del sistema — un pack que no declare nada se comporta como siempre.
+  - Los nueve: `default`, `pointer`, `text`, `disabled`, `grab`, `grabbing`,
+    `resize-ns`, `crosshair`, `busy`.
+  - **La FORMA se comparte, el pintado es del pack.** Una flecha es una flecha
+    y una mano es una mano: son convenciones de uso, no lugar para inventar.
+    Lo que cambia es relleno, contorno, grosor y remate.
+  - Un cursor dibujado va como SVG en data URI, y **siempre** con su *hotspot*
+    (el píxel que apunta) y su **fallback nativo** detrás: sin el fallback, si
+    el SVG no carga el cursor puede quedar en ninguno.
+  - ⚠ **No pueden seguir a `BRAND_COLOR`**: un data URI es un documento aparte
+    y no ve las variables CSS. Van en tinta neutra; la identidad la lleva la
+    forma. Es la misma restricción que las texturas de `riso` y `grunge`.
+  - Lienzo de 32px como máximo: más grande, varios navegadores lo ignoran.
 - Nombres CSS: `.ui-<nombre>`, `.ui-<nombre>__<parte>`, `.ui-<nombre>--<variante>`,
   estados con `.is-<estado>`.
 - **Texto NO seleccionable por defecto.** `base.css` apaga `user-select` en el
@@ -182,7 +197,8 @@ como parámetro de contenedor"*.
 2. `@import` del CSS estructural en `src/styles/structure.css`
 3. Piel en `src/styles/packs/<pack>/components/<Nombre>.css` para **todos**
    los packs (`default`, `glass`, `cyber`, `soft`, `blueprint`, `editorial`,
-   `clay`, `riso`, `nocturne`, `_template`), más su `@import` en cada `pack.css`
+   `clay`, `riso`, `nocturne`, `grunge`, `minimal`, `_template`), más su
+   `@import` en cada `pack.css`
 4. `export` de la clase en `src/index.js`
 5. `catalog/demos/<Nombre>.demo.js` + entrada en `catalog/demos/index.js`
 

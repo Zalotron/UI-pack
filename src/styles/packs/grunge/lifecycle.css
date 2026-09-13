@@ -1,0 +1,157 @@
+/* ===========================================================================
+   PACK "GRUNGE" — entradas y salidas
+   ---------------------------------------------------------------------------
+   Contrato de `UIComponent`: la mecanica pone `.is-entering` al montar y
+   `.is-leaving` en `leave()`, y espera a que termine lo que corra aca.
+
+   La idea: EL MATERIAL SE REHACE Y SE DESHACE. La pieza no se desliza ni
+   crece: llega DESINTEGRADA —el canto comido tantas veces mas que de la pieza
+   no queda mas que el centro— y el material se vuelve a juntar hasta el
+   desgaste de reposo. Al irse, el canto se la come desde afuera y lo que
+   queda se despega de la pared.
+
+   Todo eso sale de UN SOLO numero, --ui-gr-erode, que multiplica la mordida
+   (ver tokens.css). En reposo vale 1, que es el desgaste normal del pack; en
+   la entrada arranca mucho mas alto. Tres consecuencias que importan:
+
+     · La animacion no fija ninguna mascara ni ningun tamaño. Solo escala la
+       mordida que cada pieza ya tiene, asi que termina EXACTAMENTE en el
+       reposo y no hay nada a lo que saltar al sacarse la clase.
+     · Como HEREDA, lo de adentro se rehace junto con su padre: la casilla de
+       un checkbox, el tirador de un toggle y el pulgar de un slider se
+       reintegran con la pieza que los contiene.
+     · Es el MISMO numero que sube al apretar un control (ver cualquier piel),
+       asi que el gesto de la entrada y el del click son el mismo gesto a dos
+       escalas. Un pack no deberia tener dos vocabularios.
+
+   El despegue de la pared sale del mismo numero y da 0 en reposo, asi que
+   tampoco hay que declararlo dos veces.
+
+   ⛔ PERO LA CUENTA SE HACE EN `translate`, NO EN UNA VARIABLE INTERMEDIA.
+   Una custom property resuelve sus `var()` en el elemento DONDE SE DECLARA, y
+   lo que hereda despues es el resultado: un `--ui-gr-slap` declarado en :root
+   se congelaria con el erode de :root y el despegue no se veria nunca. Puesta
+   la cuenta en `translate` —que es una propiedad comun— se resuelve en cada
+   elemento, con el erode que la animacion le esta poniendo encima.
+   (Es exactamente el mismo motivo por el que las medidas de la mordida viven
+   en un `*`; esta explicado arriba de ese bloque, en tokens.css.)
+
+   La salida es MAS CORTA que la entrada: lo que aparece se presenta, lo que
+   se va no debe hacerte esperar.
+   =========================================================================== */
+
+/* Cuanto se despega la pieza por cada vuelta de desgaste. Es solo la unidad:
+   la cuenta va en cada `translate`, por lo de arriba. */
+:root {
+  --ui-gr-slap-unit: -1.2px;
+}
+
+/* -- Rehacerse ------------------------------------------------------------- */
+/* La opacidad sube temprano y rapido: lo que tarda no es que aparezca, es que
+   el material se vuelva a juntar. Si se desvaneciera parejo se veria un
+   fundido con textura, que es otra cosa. */
+
+@keyframes ui-gr-mend-in {
+  0% {
+    opacity: 0;
+    --ui-gr-erode: 9;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    --ui-gr-erode: 1;
+  }
+}
+
+@keyframes ui-gr-mend-out {
+  0% {
+    opacity: 1;
+    --ui-gr-erode: 1;
+  }
+  100% {
+    opacity: 0;
+    --ui-gr-erode: 7;
+  }
+}
+
+/* -- Version de control ---------------------------------------------------- */
+/* Una pieza chica con la mordida a nueve veces no se esta rehaciendo: no
+   existe todavia. Lo que se acorta es cuanto arranca comida, no el gesto. */
+
+@keyframes ui-gr-mend-in-sm {
+  0%   { opacity: 0; --ui-gr-erode: 4.5; }
+  24%  { opacity: 1; }
+  100% { opacity: 1; --ui-gr-erode: 1; }
+}
+
+@keyframes ui-gr-mend-out-sm {
+  0%   { opacity: 1; --ui-gr-erode: 1; }
+  100% { opacity: 0; --ui-gr-erode: 3.6; }
+}
+
+/* ===========================================================================
+   Asignación por componente
+   =========================================================================== */
+
+/* -- Las piezas grandes ---------------------------------------------------- */
+/* `translate` va en la regla y NO en el keyframe: asi lo recalcula el
+   navegador cada vez que cambia --ui-gr-erode, que es lo unico animado. En
+   reposo el erode vale 1, la resta da 0 y no desplaza nada. */
+
+.ui-container.is-entering,
+.ui-window.is-entering,
+.ui-select.is-entering,
+.ui-colorpicker.is-entering {
+  animation: ui-gr-mend-in var(--ui-duration-slow) var(--ui-ease-out) both;
+  /* Escalonado: lo reparte UIComponent al montar. Va DESPUES del shorthand,
+     que resetea animation-delay a 0. */
+  animation-delay: var(--ui-enter-delay, 0ms);
+  translate: 0 calc(var(--ui-gr-slap-unit) * (var(--ui-gr-erode) - 1));
+}
+
+.ui-container.is-leaving,
+.ui-window.is-leaving,
+.ui-select.is-leaving,
+.ui-colorpicker.is-leaving {
+  animation: ui-gr-mend-out var(--ui-duration-base) var(--ui-ease-in) both;
+  translate: 0 calc(var(--ui-gr-slap-unit) * (var(--ui-gr-erode) - 1));
+}
+
+/* -- Controles y estructura ------------------------------------------------ */
+
+.ui-btn.is-entering,
+.ui-spinner.is-entering,
+.ui-slider.is-entering,
+.ui-toggle.is-entering,
+.ui-checkbox.is-entering,
+.ui-radiogroup.is-entering,
+.ui-textfield.is-entering,
+.ui-tabs.is-entering,
+.ui-scroll.is-entering,
+.ui-progress.is-entering,
+.ui-icon.is-entering,
+.ui-separator.is-entering {
+  animation: ui-gr-mend-in-sm var(--ui-duration-base) var(--ui-ease-out) both;
+  /* Escalonado: lo reparte UIComponent al montar. Va DESPUES del shorthand,
+     que resetea animation-delay a 0. */
+  animation-delay: var(--ui-enter-delay, 0ms);
+  translate: 0 calc(var(--ui-gr-slap-unit) * (var(--ui-gr-erode) - 1));
+}
+
+.ui-btn.is-leaving,
+.ui-spinner.is-leaving,
+.ui-slider.is-leaving,
+.ui-toggle.is-leaving,
+.ui-checkbox.is-leaving,
+.ui-radiogroup.is-leaving,
+.ui-textfield.is-leaving,
+.ui-tabs.is-leaving,
+.ui-scroll.is-leaving,
+.ui-progress.is-leaving,
+.ui-icon.is-leaving,
+.ui-separator.is-leaving {
+  animation: ui-gr-mend-out-sm var(--ui-duration-fast) var(--ui-ease-in) both;
+  translate: 0 calc(var(--ui-gr-slap-unit) * (var(--ui-gr-erode) - 1));
+}

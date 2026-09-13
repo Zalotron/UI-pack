@@ -11,22 +11,26 @@
   <link rel="stylesheet" href="./src/styles/structure.css">
   <!-- El CSS del pack lo inyecta src/config.js segun STYLE_PACK. -->
 
-  <!-- ⚠ LA UNICA FUENTE EXTERNA DEL PROYECTO, Y SE CARGA ACA A PROPOSITO.
+  <!-- ⚠ LAS UNICAS FUENTES EXTERNAS DEL PROYECTO, Y SE CARGAN ACA A PROPOSITO.
        La regla es "cero dependencias": `src/` tiene que poder copiarse a
        cualquier proyecto sin arrastrar nada, y un `@import` a un dominio ajeno
        adentro de un pack seria justamente arrastrar algo.
 
-       Por eso la pide el VISOR y no la libreria. El pack `blueprint` nombra la
-       familia en su stack —con humanistas del sistema detras— asi que si quien
-       importa la libreria no la carga, cae al fallback y no se rompe nada:
-       pierde la letra manuscrita, no el pack.
+       Por eso las pide el VISOR y no la libreria. Los packs NOMBRAN la familia
+       en su stack, con una escalera de sistema detras, asi que si quien importa
+       la libreria no las carga cae al fallback y no se rompe nada: pierde la
+       letra, no el pack.
+
+         Handlee  -> blueprint, con humanistas del sistema detras.
+         Protest Revolution -> grunge, con Impact y las condensadas de
+                               cartel del sistema detras.
 
        Es el mismo reparto que ya usa la ambientacion de fondo: lo que es del
        catalogo vive en el catalogo. -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Handlee&display=swap">
+        href="https://fonts.googleapis.com/css2?family=Handlee&family=Protest+Revolution&display=swap">
 
   <!-- Solo tipografía del catálogo: no es parte de la librería. -->
   <link rel="stylesheet" href="./catalog/catalog.css">

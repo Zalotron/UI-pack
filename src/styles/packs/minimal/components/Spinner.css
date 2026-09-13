@@ -1,0 +1,34 @@
+/* ------------------------------------------ Spinner — PIEL del pack MINIMAL */
+/* Interfaz: --spinner-bg | --spinner-fg | --spinner-border | --spinner-ring
+             --spinner-caret                                                  */
+
+/* Mismo tratamiento que el TextField, porque son lo mismo: un lugar donde se
+   escribe. El número va en la mono del pack — en una herramienta los valores
+   se comparan en columna, y para eso tienen que medir todos igual. */
+
+.ui-spinner {
+  --spinner-bg: var(--ui-bg-subtle);
+  --spinner-border: var(--ui-border);
+  font-family: var(--ui-font-mono);
+}
+
+.ui-spinner:hover:not(.is-disabled) {
+  --spinner-border: var(--ui-border-strong);
+}
+
+/* Los estados activos llevan :not(.is-disabled) para empatarle la
+   especificidad al :hover de arriba. Sin eso el hover gana y el control se ve
+   MAS apagado con el mouse encima que sin él. */
+.ui-spinner.is-dragging:not(.is-disabled),
+.ui-spinner.is-editing:not(.is-disabled) {
+  --spinner-border: var(--ui-accent);
+  --spinner-bg: var(--ui-surface);
+}
+
+.ui-spinner.is-editing:not(.is-disabled) {
+  --spinner-caret: var(--ui-accent);
+}
+
+.ui-spinner__input {
+  font-variant-numeric: tabular-nums;
+}

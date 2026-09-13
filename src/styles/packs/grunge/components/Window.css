@@ -1,0 +1,111 @@
+/* --------------------------------------------- Window — PIEL del pack GRUNGE */
+/* Interfaz: --window-bg | --window-bar-bg | --window-border | --window-line
+             --window-title-fg | --window-control-hover
+             --window-close-hover | --window-close-fg | --window-shadow      */
+
+/* Una placa grande de material, arrancada. Es la pieza donde el canto comido
+   se ve de verdad: en un botón la mordida es un detalle, en un marco de 800px
+   es el borde de una chapa rota.
+
+   ⛔ ESQUINAS CUADRADAS, SIEMPRE — regla del proyecto, no del pack. Acá encima
+   cae de maduro: nada de este pack está cortado a máquina, y una curva prolija
+   en el único marco que hay sería la excepción que arruina la idea.
+
+   ⚠ ACA LA MASCARA VA EN EL ELEMENTO, como en la lista del Select y por lo
+   mismo: la ventana ya tiene `overflow: hidden`, así que nada se le sale de la
+   caja, y ella misma no se enfoca. El precio es igual: una `mask` recorta lo
+   que se pinta afuera, así que la ventana NO proyecta hollín. Un modal se
+   separa con el oscurecido de atrás —que este pack pone bien cargado— y una
+   ventana suelta, con su contorno de 2px. */
+
+.ui-window {
+  --window-bg: var(--ui-surface);
+  --window-bar-bg: var(--ui-bg-subtle);
+  --window-border: var(--ui-border);
+  --window-line: var(--ui-line);
+  --window-title-fg: var(--ui-text-muted);
+  --window-control-hover: var(--ui-surface-hover);
+  --window-shadow: none;
+
+  --window-close-hover: var(--ui-danger);
+  --window-close-fg: var(--ui-on-danger);
+
+  isolation: isolate;
+
+  /* EL CANTO COMIDO. Con longhands a proposito — ver tokens.css. */
+  -webkit-mask-image: var(--ui-gr-tear-image);
+          mask-image: var(--ui-gr-tear-image);
+  -webkit-mask-position: var(--ui-gr-tear-position);
+          mask-position: var(--ui-gr-tear-position);
+  -webkit-mask-size: var(--ui-gr-tear-size);
+          mask-size: var(--ui-gr-tear-size);
+  -webkit-mask-repeat: var(--ui-gr-tear-repeat);
+          mask-repeat: var(--ui-gr-tear-repeat);
+}
+
+/* ⚠ `position: relative` SOLO EN LA VENTANA SUELTA.
+   El modal es un <dialog>, y el navegador lo centra con `position: absolute` +
+   `margin: auto`. Pisarle el `position` lo descentra. El modal ya está
+   posicionado, así que su ::before encuentra contenedor igual. */
+.ui-window:not(.ui-window--modal) {
+  position: relative;
+}
+
+/* LA COSTRA. La ventana es la superficie más grande del sistema: sin arenilla
+   se lee como un rectángulo pintado, que es lo contrario del pack. */
+.ui-window::before {
+  content: "";
+  position: absolute;
+  inset: var(--ui-gr-bite);
+  z-index: -1;
+  pointer-events: none;
+
+  background: var(--ui-gr-soot);
+  -webkit-mask-image: var(--ui-gr-grit);
+          mask-image: var(--ui-gr-grit);
+  -webkit-mask-size: var(--ui-gr-grit-size);
+          mask-size: var(--ui-gr-grit-size);
+}
+
+/* -- La barra -------------------------------------------------------------- */
+/* Tiene fondo propio y opaco, así que tapa la costra de la ventana: lleva la
+   suya. Y el filete de luz del canto de arriba, que es lo que la hace parecer
+   una chapa remachada sobre la placa y no una franja pintada. */
+
+.ui-window__bar {
+  position: relative;
+  isolation: isolate;
+  box-shadow: inset 0 var(--ui-border-width) 0 0 var(--ui-gr-sheen);
+}
+
+.ui-window__bar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+
+  background: var(--ui-gr-soot);
+  -webkit-mask-image: var(--ui-gr-grit);
+          mask-image: var(--ui-gr-grit);
+  -webkit-mask-size: var(--ui-gr-grit-size);
+          mask-size: var(--ui-gr-grit-size);
+}
+
+.ui-window__title {
+  font-weight: var(--ui-weight-semibold);
+  font-size: var(--ui-text-xs);
+  letter-spacing: var(--ui-tracking-wide);
+  text-transform: uppercase;
+}
+
+/* -- Maximizada ------------------------------------------------------------ */
+/* ⛔ SIN CANTO COMIDO. Maximizada la ventana está pegada a los cuatro bordes de
+   la pantalla: un borde roto ahí no se lee como material arrancado, se lee como
+   que falta pintar el borde de la aplicación. El material se corta donde se
+   corta la pantalla. */
+
+.ui-window.is-maximized {
+  -webkit-mask-image: none;
+          mask-image: none;
+}

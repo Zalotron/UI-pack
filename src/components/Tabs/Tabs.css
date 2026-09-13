@@ -33,7 +33,26 @@
   overflow-x: auto;
   overflow-y: hidden;
 
-  border-bottom: var(--ui-border-width) solid var(--tabs-line);
+  /* ⛔ EL AIRE PARA QUE NO SE RECORTEN LAS SOMBRAS. NO ES DECORACION.
+     Esta fila es un contenedor INVISIBLE —no tiene fondo, solo una línea
+     abajo— y sin embargo recorta: `overflow-x: auto` obliga al otro eje a
+     dejar de ser `visible`, y por spec no hay forma de tener scroll en un eje
+     y desborde en el otro (`clip` tampoco: al lado de `auto` computa a
+     `hidden`). Así que lo que sobresalga de las pestañas se corta en seco.
+
+     Y sobresale bastante: el glow de la rayita en `glass` y `cyber`, el
+     relieve de la pestaña activa en `soft` y `clay`, la plancha corrida en
+     `riso`. Todos quedaban cortados arriba y abajo.
+
+     Como el recorte ocurre en la caja de PADDING, la única salida es darle
+     padding. El margen negativo lo devuelve a su lugar en el flujo, así que
+     el aire NO cambia el espaciado del componente: solo le da al recorte algo
+     de qué vivir. Con `--ui-tabs-bleed` en 0 esto no hace nada en absoluto.
+
+     ⚠ Cuánto aire hace falta es cosa del PACK, porque depende de cuánto
+     irradia su sombra: por eso es un token y no un número acá. */
+  padding-block: var(--ui-tabs-bleed);
+  margin-block: calc(var(--ui-tabs-bleed) * -1);
 }
 
 /* ⛔ EL CARRIL: ES LO QUE IMPIDE QUE LA DECORACION MUEVA EL SCROLL.
@@ -63,6 +82,14 @@
   overflow-x: clip;
   overflow-y: visible;
   overflow-clip-margin: var(--ui-space-8);
+
+  /* ⛔ LA LINEA VA ACA Y NO EN LA FILA, y es consecuencia directa del aire de
+     arriba. La rayita se apoya en el borde de abajo del CARRIL; si la línea
+     siguiera siendo el borde de la fila, el padding la dejaría `--ui-tabs-bleed`
+     más abajo y la rayita quedaría flotando lejos de ella.
+     En el carril las dos cosas vuelven a estar pegadas, y de paso la línea
+     acompaña a las pestañas al scrollear en vez de quedarse fija. */
+  border-bottom: var(--ui-border-width) solid var(--tabs-line);
 }
 
 .ui-tabs--stretch .ui-tabs__tab { flex: 1; }
@@ -82,7 +109,7 @@
   line-height: 1;
   white-space: nowrap;
 
-  cursor: pointer;
+  cursor: var(--ui-cursor-pointer, pointer);
   transition:
     color var(--ui-duration-fast) var(--ui-ease),
     background var(--ui-duration-fast) var(--ui-ease);
@@ -97,7 +124,7 @@
 
 .ui-tabs__tab.is-disabled {
   opacity: var(--ui-disabled-opacity);
-  cursor: not-allowed;
+  cursor: var(--ui-cursor-disabled, not-allowed);
 }
 
 .ui-tabs__tab:focus-visible {

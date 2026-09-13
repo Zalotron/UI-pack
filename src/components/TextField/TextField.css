@@ -43,6 +43,10 @@
   font-family: var(--ui-font-sans);
   font-size: var(--field-font);
   line-height: 1.4;
+
+  /* Se declara aunque el navegador ya ponga el suyo: es lo que le da al pack
+     un lugar donde cambiarlo. */
+  cursor: var(--ui-cursor-text, text);
 }
 
 .ui-textfield__input::placeholder { color: var(--field-placeholder); }
@@ -80,4 +84,4 @@
 /* -- Estados --------------------------------------------------------------- */
 
 .ui-textfield.is-disabled { opacity: var(--ui-disabled-opacity); }
-.ui-textfield.is-disabled .ui-textfield__input { cursor: not-allowed; }
+.ui-textfield.is-disabled .ui-textfield__input { cursor: var(--ui-cursor-disabled, not-allowed); }

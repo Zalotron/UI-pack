@@ -33,7 +33,7 @@
   /* ==================================================================== */
   /*  =============   EL UNICO COLOR DECLARADO   ======================== */
   /* ==================================================================== */
-  --ui-brand: #00f0ff;      /* pack settings -> BRAND_COLOR */
+  --ui-brand: #00ffd0;      /* pack settings -> BRAND_COLOR */
 
   /* Cero curvas. El cyberpunk no tiene esquinas blandas.
      Es el fallback: manda pack settings -> ROUNDNESS */
@@ -197,6 +197,13 @@
 
   --ui-tabs-indicator-h: 2px;
 
+  /* Aire arriba y abajo de la fila de pestañas, para que no le recorte las
+
+     sombras a lo que tenga adentro. El tubo de la rayita tiene DOS halos y el de afuera llega al doble
+     del alcance. Con menos que esto, el neon se corta en seco. */
+
+  --ui-tabs-bleed: calc(var(--ui-glow-reach) * 2);
+
   --ui-swatch-w: 2.6em;
   --ui-picker-w: 232px;
   --ui-picker-area-h: 136px;
@@ -205,6 +212,69 @@
   --ui-press-shift: 1px;
   --ui-hover-lift: -1px;
   --ui-disabled-opacity: 0.35;
+
+  /* ==================================================================== */
+  /*  CURSORES                                                            */
+  /*  nada relleno: TRAZO. Y lo que se aprieta se senala con una mira     */
+  /*  ------------------------------------------------------------------  */
+  /*  Los NUEVE, dibujados. La FORMA la comparten todos los packs —una     */
+  /*  flecha es una flecha y una mano abierta es una mano abierta: son     */
+  /*  convenciones de uso, no lugar para inventar— y lo que cambia es      */
+  /*  COMO ESTA PINTADA. Mismo reparto que el resto del sistema.           */
+  /*                                                                       */
+  /*  ⚠ CADA URL LLEVA SU HOTSPOT Y SU FALLBACK, Y LOS DOS SON             */
+  /*  OBLIGATORIOS. El hotspot es el pixel que apunta —la punta de la      */
+  /*  flecha, el medio de la palma, el centro de la cruz— y sin el el      */
+  /*  navegador usa la esquina de arriba a la izquierda. El fallback es lo */
+  /*  que se ve si el SVG no carga o el tamaño no entra: sin el, el cursor */
+  /*  puede quedar en NINGUNO.                                             */
+  /*                                                                       */
+  /*  ⚠ LOS DOS DEL ARO MIDEN 28px Y NO 24: llevan la insignia al costado  */
+  /*  de la flecha, igual que los nativos, y no entraba en 24. Sigue lejos */
+  /*  del tope de 32, pasado el cual varios navegadores lo ignoran.        */
+  /*                                                                       */
+  /*  ⚠ Y SON DE TINTA NEUTRA, NO DEL COLOR DE MARCA. Un data URI es un    */
+  /*  documento aparte y no ve las variables CSS, asi que un cursor no     */
+  /*  puede seguir a BRAND_COLOR: pintarlo del color de marca seria        */
+  /*  clavarlo y mentir cuando la perilla se mueva. La identidad la lleva  */
+  /*  la forma y el acabado.                                               */
+  /* ==================================================================== */
+  /* el puntero de siempre */
+  --ui-cursor-default:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M3 2 3 17.6 7.3 13.4 10 19.5 12.9 18.2 10.3 12.3 16.2 12.3Z' fill='none' stroke='%23000' stroke-opacity='.85' stroke-width='3.4' stroke-linejoin='miter' stroke-linecap='square'/%3E%3Cpath d='M3 2 3 17.6 7.3 13.4 10 19.5 12.9 18.2 10.3 12.3 16.2 12.3Z' fill='%23000' fill-opacity='.55' stroke='%23fff' stroke-width='1.2' stroke-linejoin='miter' stroke-linecap='square'/%3E%3C/svg%3E") 3 2, default;
+  /* lo que se puede apretar */
+  --ui-cursor-pointer:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M12 3v5M12 16v5M3 12h5M16 12h5' fill='none' stroke='%23000' stroke-opacity='.85' stroke-width='3.4' stroke-linecap='square'/%3E%3Cpath d='M12 3v5M12 16v5M3 12h5M16 12h5' fill='none' stroke='%23fff' stroke-width='1.4' stroke-linecap='square'/%3E%3C/svg%3E") 12 12, pointer;
+  /* donde se escribe */
+  --ui-cursor-text:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M7 3h6M7 19h6M10 3v16' fill='none' stroke='%23000' stroke-opacity='.85' stroke-width='3.4' stroke-linecap='square'/%3E%3Cpath d='M7 3h6M7 19h6M10 3v16' fill='none' stroke='%23fff' stroke-width='1.4' stroke-linecap='square'/%3E%3C/svg%3E") 10 11, text;
+  /* lo que no se puede tocar */
+  --ui-cursor-disabled:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Cpath d='M3 2 3 17.6 7.3 13.4 10 19.5 12.9 18.2 10.3 12.3 16.2 12.3Z' fill='none' stroke='%23000' stroke-opacity='.85' stroke-width='3.4' stroke-linejoin='miter' stroke-linecap='square'/%3E%3Cpath d='M3 2 3 17.6 7.3 13.4 10 19.5 12.9 18.2 10.3 12.3 16.2 12.3Z' fill='%23000' fill-opacity='.55' stroke='%23fff' stroke-width='1.2' stroke-linejoin='miter' stroke-linecap='square'/%3E%3Cpath d='M20 13.8a5.4 5.4 0 1 0 0 10.8 5.4 5.4 0 0 1 0-10.8M16.7 15.8l6.6 6.8' fill='none' stroke='%23000' stroke-opacity='.85' stroke-width='3.4' stroke-linecap='square'/%3E%3Cpath d='M20 13.8a5.4 5.4 0 1 0 0 10.8 5.4 5.4 0 0 1 0-10.8M16.7 15.8l6.6 6.8' fill='none' stroke='%23fff' stroke-width='1.4' stroke-linecap='square'/%3E%3C/svg%3E") 3 2, not-allowed;
+  /* lo que se puede agarrar */
+  --ui-cursor-grab:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M6.2 13V8.7c0-1.3 2.2-1.3 2.2 0v1.6V4.4c0-1.3 2.2-1.3 2.2 0v5.6V3.7c0-1.3 2.2-1.3 2.2 0v6.3V6c0-1.3 2.2-1.3 2.2 0v8.6c0 3.4-2.1 5.9-5.4 5.9-2 0-3.5-.8-4.6-2.4l-2.7-3.8c-.7-1 1-2.4 1.9-1.4Z' fill='none' stroke='%23000' stroke-opacity='.85' stroke-width='3.4' stroke-linejoin='miter' stroke-linecap='square'/%3E%3Cpath d='M6.2 13V8.7c0-1.3 2.2-1.3 2.2 0v1.6V4.4c0-1.3 2.2-1.3 2.2 0v5.6V3.7c0-1.3 2.2-1.3 2.2 0v6.3V6c0-1.3 2.2-1.3 2.2 0v8.6c0 3.4-2.1 5.9-5.4 5.9-2 0-3.5-.8-4.6-2.4l-2.7-3.8c-.7-1 1-2.4 1.9-1.4Z' fill='%23000' fill-opacity='.55' stroke='%23fff' stroke-width='1.2' stroke-linejoin='miter' stroke-linecap='square'/%3E%3C/svg%3E") 12 11, grab;
+  /* mientras se arrastra */
+  --ui-cursor-grabbing:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M6.2 13.6v-2.4c0-1.3 2.2-1.3 2.2 0v.5c0-1.3 2.2-1.3 2.2 0v.2c0-1.3 2.2-1.3 2.2 0v.3c0-1.3 2.2-1.3 2.2 0v2.6c0 3.2-2.1 5.7-5.4 5.7-2 0-3.5-.8-4.6-2.4l-2.3-3.2c-.7-1 1-2.4 1.9-1.4Z' fill='none' stroke='%23000' stroke-opacity='.85' stroke-width='3.4' stroke-linejoin='miter' stroke-linecap='square'/%3E%3Cpath d='M6.2 13.6v-2.4c0-1.3 2.2-1.3 2.2 0v.5c0-1.3 2.2-1.3 2.2 0v.2c0-1.3 2.2-1.3 2.2 0v.3c0-1.3 2.2-1.3 2.2 0v2.6c0 3.2-2.1 5.7-5.4 5.7-2 0-3.5-.8-4.6-2.4l-2.3-3.2c-.7-1 1-2.4 1.9-1.4Z' fill='%23000' fill-opacity='.55' stroke='%23fff' stroke-width='1.2' stroke-linejoin='miter' stroke-linecap='square'/%3E%3C/svg%3E") 12 12, grabbing;
+  /* arrastre vertical (el Spinner) */
+  --ui-cursor-resize-ns:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M12 1.6 7.9 7.4h2.6v9.2H7.9L12 22.4l4.1-5.8h-2.6V7.4h2.6Z' fill='none' stroke='%23000' stroke-opacity='.85' stroke-width='3.4' stroke-linejoin='miter' stroke-linecap='square'/%3E%3Cpath d='M12 1.6 7.9 7.4h2.6v9.2H7.9L12 22.4l4.1-5.8h-2.6V7.4h2.6Z' fill='%23000' fill-opacity='.55' stroke='%23fff' stroke-width='1.2' stroke-linejoin='miter' stroke-linecap='square'/%3E%3C/svg%3E") 12 12, ns-resize;
+  /* elegir un punto (el area de color) */
+  --ui-cursor-crosshair:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M12 1v9.2M12 13.8V23M1 12h9.2M13.8 12H23' fill='none' stroke='%23000' stroke-opacity='.85' stroke-width='3.4' stroke-linecap='square'/%3E%3Cpath d='M12 1v9.2M12 13.8V23M1 12h9.2M13.8 12H23' fill='none' stroke='%23fff' stroke-width='1.4' stroke-linecap='square'/%3E%3C/svg%3E") 12 12, crosshair;
+  /* esperando (un boton en carga) */
+  --ui-cursor-busy:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Cpath d='M3 2 3 17.6 7.3 13.4 10 19.5 12.9 18.2 10.3 12.3 16.2 12.3Z' fill='none' stroke='%23000' stroke-opacity='.85' stroke-width='3.4' stroke-linejoin='miter' stroke-linecap='square'/%3E%3Cpath d='M3 2 3 17.6 7.3 13.4 10 19.5 12.9 18.2 10.3 12.3 16.2 12.3Z' fill='%23000' fill-opacity='.55' stroke='%23fff' stroke-width='1.2' stroke-linejoin='miter' stroke-linecap='square'/%3E%3Cpath d='M25.4 19.2a5.4 5.4 0 1 1-2.5-4.6' fill='none' stroke='%23000' stroke-opacity='.85' stroke-width='3.4' stroke-linecap='square'/%3E%3Cpath d='M25.4 19.2a5.4 5.4 0 1 1-2.5-4.6' fill='none' stroke='%23fff' stroke-width='1.4' stroke-linecap='square'/%3E%3C/svg%3E") 3 2, progress;
+
+
+
+
+
+
+
+
+
 
   /* ---------------------------------------------------------- Radios ---- */
   /* La escala existe y respeta ROUNDNESS, pero el pack arranca en 0: todo

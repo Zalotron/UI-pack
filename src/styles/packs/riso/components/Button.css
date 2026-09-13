@@ -95,3 +95,36 @@
   --btn-bg-hover: var(--ui-danger-hover);
   --btn-fg: var(--ui-on-danger);
 }
+
+/* -- Lo que va ADENTRO del botón ------------------------------------------ */
+/* ⛔ EL CONTENIDO DE UN BOTON NO LLEVA CORRIDA PROPIA: LA CORRIDA ES DE LA
+   PIEZA.
+
+   Una plancha corre la pieza ENTERA — el bloque de tinta, su rótulo y su icono
+   salen desplazados juntos, porque son la misma impresión. Dándole corrida
+   propia a lo de adentro, el icono salía a dos tintas por su cuenta ADEMAS de
+   la corrida del botón: dos registros distintos en una pieza de 40px, que no
+   se lee como impresión sino como que algo quedó mal pegado. Y se notaba justo
+   al subir MISREGISTER, que es la perilla con la que uno espera exagerar el
+   efecto y no ensuciarlo.
+
+   Se apaga en dos pasos, y los dos hacen falta:
+
+     · --ui-riso-offset en 0 vale para CUALQUIER descendiente, incluso los que
+       todavía no existen. Toda la corrida del pack sale de ahí, así que nada
+       adentro de un botón puede volver a tenerla sin querer.
+     · `filter: none` saca el `drop-shadow` del icono del todo. Con la corrida
+       en 0 ya sería invisible, pero el filtro se seguiría evaluando y —peor— la
+       segunda tinta quedaría EXACTAMENTE debajo del trazo, asomando por el
+       antialiasing como un contorno sucio.
+
+   ⚠ El icono SUELTO no entra acá: ese sí es una pieza impresa por derecho
+   propio y conserva su segunda tinta. Ver components/Icon.css. */
+
+.ui-btn * {
+  --ui-riso-offset: 0px;
+}
+
+.ui-btn .ui-icon {
+  filter: none;
+}

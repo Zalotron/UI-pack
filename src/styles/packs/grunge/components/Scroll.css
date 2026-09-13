@@ -1,0 +1,18 @@
+/* --------------------------------------------- Scroll — PIEL del pack GRUNGE */
+/* Interfaz: --scroll-track | --scroll-thumb | --scroll-thumb-hover
+             --scroll-radius                                                  */
+
+/* Una barra recta y en crudo. Un pseudo-elemento nativo no acepta ni máscara ni
+   ::before, así que acá no hay canto comido posible: la pieza se resuelve con
+   lo único que queda, que es color, ancho y forma.
+
+   Recta a propósito, y no porque ROUNDNESS esté en 0: aunque se suba la
+   perilla, una barra redondeada al lado de un canal picado se ve de otro
+   sistema. Es la única pieza del pack que no sigue el redondeo. */
+
+.ui-scroll {
+  --scroll-track: transparent;
+  --scroll-thumb: var(--ui-scroll-thumb);
+  --scroll-thumb-hover: var(--ui-accent);
+  --scroll-radius: 0;
+}
