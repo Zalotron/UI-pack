@@ -31,3 +31,46 @@
 .ui-colorpicker__value {
   font-family: var(--ui-font-mono);
 }
+
+/* -- La rueda de matices --------------------------------------------------- */
+/* Es DOMINIO DEL COMPONENTE, no una decisión de estilo: un selector de color
+   tiene que mostrar el espectro entero, en todos los packs. Por eso es el único
+   lugar del sistema donde se declaran colores que no salen de --ui-brand.
+
+   ⚠ VA EN LA PISTA VISIBLE (--slider-track) Y NO EN EL PSEUDO NATIVO DEL
+   <input>, que es donde la ponen los packs más viejos. El pseudo se dibuja
+   ENCIMA de la pista y sin saber nada de su forma, así que se lleva puesto el
+   redondeo y el filo de 1px que este pack le pone a todos sus canales. En la
+   pista visible el arcoíris queda ADENTRO de la caja del pack, que es lo que
+   tiene que pasar.
+
+   Y el relleno se apaga: es hijo de la pista y, con el acento encima, taparía
+   de azul la mitad izquierda de la rueda. */
+
+.ui-colorpicker__hue {
+  --slider-track: linear-gradient(
+    to right,
+    hsl(0 100% 50%), hsl(60 100% 50%), hsl(120 100% 50%),
+    hsl(180 100% 50%), hsl(240 100% 50%), hsl(300 100% 50%), hsl(360 100% 50%)
+  );
+  --slider-fill: transparent;
+
+  /* Sobre la rueda el tirador va neutro y su halo también. El de este pack es
+     el acento a 22%: encima de los matices no se vería, y además sería el
+     mismo color que el usuario está tratando de elegir. */
+  --slider-thumb: var(--ui-neutral-0);
+  --slider-ring: rgb(from var(--ui-neutral-950) r g b / 0.35);
+}
+
+/* ⚠ Y HAY QUE REPETIRLO EN LOS DOS ESTADOS QUE EL SLIDER DE ESTE PACK PISA.
+   Su piel mueve el tirador a --ui-text con el mouse encima y al ACENTO mientras
+   se arrastra, con selectores de más peso que `.ui-colorpicker__hue` a secas
+   (0,3,0 y 0,2,0 contra 0,1,0). Sin esto, el tirador se vuelve azul justo en el
+   gesto en el que uno está mirando el color: hay que igualarles el peso, y
+   ColorPicker.css se importa después que Slider.css, así que empatados gana
+   este. */
+
+.ui-colorpicker__hue:hover:not(.is-disabled),
+.ui-colorpicker__hue.is-dragging {
+  --slider-thumb: var(--ui-neutral-0);
+}
