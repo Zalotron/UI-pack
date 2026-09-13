@@ -199,11 +199,19 @@
 
   --ui-tabs-indicator-h: 2px;
 
-  /* Aire arriba y abajo de la fila de pestañas, para que no le recorte las
+  /* Cuánto se derrama el halo de la rayita activa. Vive acá y no en la piel
+     porque el aire de la fila tiene que salir del MISMO número: escrito dos
+     veces, se desincronizan y el halo se corta. */
+  --ui-glass-indicator-glow: 12px;
 
-     sombras a lo que tenga adentro. Lo que irradia el halo de la rayita — ver components/Tabs.css. */
+  /* Aire alrededor de la fila de pestañas, para que no le recorte las sombras
+     a lo que tenga adentro. Ver components/Tabs.css.
 
-  --ui-tabs-bleed: 12px;
+     ⚠ CON HOLGURA, NO JUSTO. Era exactamente el radio del halo, y un desenfoque
+     pinta hasta su radio ENTERO: la última fila del degradé caía justo sobre el
+     borde del recorte y se cortaba. Se ve poco —es la cola del halo, casi
+     transparente— pero es el mismo defecto que en `soft`, mas chico. */
+  --ui-tabs-bleed: calc(var(--ui-glass-indicator-glow) * 1.5);
 
   --ui-swatch-w: 2.6em;
   --ui-picker-w: 232px;

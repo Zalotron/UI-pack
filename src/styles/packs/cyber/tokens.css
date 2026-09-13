@@ -199,10 +199,15 @@
 
   /* Aire arriba y abajo de la fila de pestañas, para que no le recorte las
 
-     sombras a lo que tenga adentro. El tubo de la rayita tiene DOS halos y el de afuera llega al doble
-     del alcance. Con menos que esto, el neon se corta en seco. */
+     sombras a lo que tenga adentro. El tubo de la rayita tiene DOS halos y el
+     de afuera llega al doble del alcance.
 
-  --ui-tabs-bleed: calc(var(--ui-glow-reach) * 2);
+     ⚠ POR TRES Y NO POR DOS. Por dos es EXACTAMENTE lo que mide el halo de
+     afuera, y un desenfoque pinta hasta su radio entero: la última fila del
+     degradé caía justo sobre el borde del recorte. El aire tiene que pasarse,
+     no empatar. */
+
+  --ui-tabs-bleed: calc(var(--ui-glow-reach) * 3);
 
   --ui-swatch-w: 2.6em;
   --ui-picker-w: 232px;

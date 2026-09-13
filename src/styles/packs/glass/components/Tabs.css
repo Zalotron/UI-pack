@@ -13,5 +13,5 @@
 
 /* La rayita activa no es una raya pintada: es luz. */
 .ui-tabs__indicator {
-  box-shadow: 0 0 12px rgb(from var(--ui-accent) r g b / 0.85);
+  box-shadow: 0 0 var(--ui-glass-indicator-glow) rgb(from var(--ui-accent) r g b / 0.85);
 }

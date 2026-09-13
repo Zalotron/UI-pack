@@ -42,17 +42,28 @@
 
      Y sobresale bastante: el glow de la rayita en `glass` y `cyber`, el
      relieve de la pestaña activa en `soft` y `clay`, la plancha corrida en
-     `riso`. Todos quedaban cortados arriba y abajo.
+     `riso`.
+
+     ⚠ VA EN LOS CUATRO LADOS, NO SOLO ARRIBA Y ABAJO. Un scroller recorta en
+     su caja de padding ENTERA, no nada más en el eje que scrollea: la primera
+     y la última pestaña también tienen el borde del recorte pegado al costado.
+     Y una sombra irradia parejo — si necesita 13px arriba, necesita 13px a la
+     izquierda. Esto se escapó la primera vez porque el eje Y era el que se veía
+     obviamente cortado, y en `soft` la primera pestaña quedaba con el relieve
+     comido del lado de afuera.
 
      Como el recorte ocurre en la caja de PADDING, la única salida es darle
      padding. El margen negativo lo devuelve a su lugar en el flujo, así que
      el aire NO cambia el espaciado del componente: solo le da al recorte algo
-     de qué vivir. Con `--ui-tabs-bleed` en 0 esto no hace nada en absoluto.
+     de qué vivir. Y como el margen compensa EXACTAMENTE al padding, la caja de
+     margen mide lo mismo que antes: la fila no se sale de su contenedor, solo
+     PINTA hacia afuera — que es lo que hace cualquier sombra.
+     Con `--ui-tabs-bleed` en 0 esto no hace nada en absoluto.
 
      ⚠ Cuánto aire hace falta es cosa del PACK, porque depende de cuánto
      irradia su sombra: por eso es un token y no un número acá. */
-  padding-block: var(--ui-tabs-bleed);
-  margin-block: calc(var(--ui-tabs-bleed) * -1);
+  padding: var(--ui-tabs-bleed);
+  margin: calc(var(--ui-tabs-bleed) * -1);
 }
 
 /* ⛔ EL CARRIL: ES LO QUE IMPIDE QUE LA DECORACION MUEVA EL SCROLL.
@@ -65,9 +76,30 @@
    `overflow-clip-margin` le deja pintar igual hacia afuera, asi que el rebote
    SE SIGUE VIENDO. Son la unica combinacion que separa las dos cosas.
 
-   ⚠ `overflow-y: visible` explicito: `clip` es el unico valor que puede convivir
-   con `visible` en el otro eje. Sin eso el eje Y pasaria a `clip` tambien y la
-   marca, apoyada en el borde de abajo, quedaria cortada.
+   ⛔ Y RECORTA EN LOS DOS EJES, AUNQUE SOLO HAGA FALTA EN UNO.
+   Esto empezo siendo `overflow-x: clip` + `overflow-y: visible`, para que la
+   marca apoyada en el borde de abajo no se cortara. Parecia lo correcto y es
+   justo lo que rompe `overflow-clip-margin`: MEDIDO, con la mezcla de ejes el
+   margen se ignora por completo — 0px, 32px y 99px dan el mismo render pixel a
+   pixel, y el riel corta seco en su caja. El glow de la primera pestaña en
+   `soft` se comia del lado de afuera aunque la fila ya tuviera todo el aire.
+
+   Con `clip` en los dos ejes el margen SI se aplica, y como se aplica a los
+   cuatro lados la marca tampoco se corta: es lo que antes se buscaba dejando
+   el eje Y en `visible`. Se gana lo uno sin perder lo otro.
+
+   ⛔ Y EL VALOR TIENE QUE SER UNA LONGITUD PELADA. `overflow-clip-margin` NO
+   acepta funciones de calculo: MEDIDO, `calc(2rem)`, `max(2rem, 13px)` y
+   `calc(var(--x) + 0px)` computan los tres a 0px —la declaracion entera se
+   descarta— mientras que `2rem` y `var(--x)` con una longitud pelada adentro
+   dan 32px. Por eso NO se puede poner aca `var(--ui-tabs-bleed)`: en la mitad
+   de los packs el sangrado es un `calc()`, y el margen caeria a 0 sin avisar,
+   que es exactamente el sintoma que se estaba arreglando.
+
+   `--ui-space-8` sirve porque es 2rem pelado en todos los packs, y 32px le
+   sobra al alcance real de la sombra de cualquiera de ellos: `soft` 8.5px,
+   `clay` 19.6px, `glass` 6px. Si algun pack llegara a irradiar mas, lo que
+   corresponde es un token propio con una longitud pelada, no un `max()`.
 
    El carril es tambien el ancla de la marca (`position: relative`), asi que el
    `offsetLeft` que mide el JS sigue dando lo mismo. */
@@ -79,8 +111,7 @@
      contenedor scrollea. */
   flex: 1 0 auto;
 
-  overflow-x: clip;
-  overflow-y: visible;
+  overflow: clip;
   overflow-clip-margin: var(--ui-space-8);
 
   /* ⛔ LA LINEA VA ACA Y NO EN LA FILA, y es consecuencia directa del aire de

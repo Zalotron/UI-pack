@@ -29,9 +29,17 @@
    Lo que sí sigue siendo de acá es el aire de los COSTADOS: no lleva margen
    negativo que lo compense, así que mete la fila hacia adentro — que es lo que
    este pack quiere, para que el relieve de la primera y la última pestaña no
-   toquen el canto del contenedor. */
+   toquen el canto del contenedor.
+
+   ⛔ PERO SE SUMA AL SANGRADO, NO LO REEMPLAZA. `padding-inline` pisa el eje
+   horizontal del `padding` que escribe la mecánica, así que poner acá el
+   retiro a secas le sacaba a la fila los 13px de aire lateral y le devolvía
+   4px: la primera pestaña volvía a tener el borde del recorte encima y su
+   relieve salía comido. Son dos cosas distintas viviendo en la misma
+   propiedad — el sangrado, que el margen negativo compensa y no se ve, y el
+   retiro, que sí se ve — y hay que escribir la suma. */
 .ui-tabs__list {
-  padding-inline: var(--ui-soft-distance-sm);
+  padding-inline: calc(var(--ui-tabs-bleed) + var(--ui-soft-distance-sm));
 }
 
 .ui-tabs__tab {
