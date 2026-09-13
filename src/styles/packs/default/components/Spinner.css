@@ -1,0 +1,26 @@
+/* ------------------------------------------- Spinner — PIEL del pack DEFAULT */
+/* Interfaz: --spinner-bg | --spinner-fg | --spinner-border                    */
+
+.ui-spinner {
+  --spinner-bg: var(--ui-surface);
+  --spinner-border: var(--ui-border);
+}
+
+.ui-spinner:hover:not(.is-disabled) {
+  --spinner-border: var(--ui-border-strong);
+}
+
+/* Los estados activos llevan :not(.is-disabled) para empatarle la
+   especificidad al :hover de arriba. Sin eso el hover gana y el control
+   se ve MAS apagado con el mouse encima que sin el. */
+.ui-spinner.is-dragging:not(.is-disabled) {
+  --spinner-border: var(--ui-accent);
+  --spinner-ring: var(--ui-ring-soft);
+}
+
+/* Editando: borde de acento, halo suave y cursor del color de la marca. */
+.ui-spinner.is-editing:not(.is-disabled) {
+  --spinner-border: var(--ui-accent);
+  --spinner-ring: var(--ui-ring);
+  --spinner-caret: var(--ui-accent);
+}

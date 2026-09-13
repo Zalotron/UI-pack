@@ -1,0 +1,28 @@
+/* --------------------------------------------------------------- Component */
+/* PLANTILLA. Reglas de nombres:
+   - Bloque:     .ui-<nombre>
+   - Elemento:   .ui-<nombre>__<parte>
+   - Modificador:.ui-<nombre>--<variante>
+   - Estado:     .is-<estado>  (is-open, is-disabled, is-loading, is-active)
+   Usar SIEMPRE tokens (var(--ui-*)), nunca valores hardcodeados.            */
+
+.ui-component {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ui-space-2);
+  padding: var(--ui-space-2) var(--ui-space-3);
+  border: var(--ui-border-width) solid var(--ui-border);
+  border-radius: var(--ui-radius-md);
+  background: var(--ui-surface);
+  color: var(--ui-text);
+  font-family: var(--ui-font-sans);
+  font-size: var(--ui-text-md);
+}
+
+.ui-component__text {
+  font-weight: var(--ui-weight-medium);
+}
+
+.ui-component--default {
+  /* variante por defecto */
+}

@@ -1,0 +1,107 @@
+/* ===========================================================================
+   PACK "EDITORIAL" — entradas y salidas
+   ---------------------------------------------------------------------------
+   Contrato de `UIComponent`: la mecánica pone `.is-entering` al montar y
+   `.is-leaving` en `leave()`, y espera a que termine lo que corra acá.
+
+   La idea: una página no salta, se ASIENTA. El texto sube apenas un renglón
+   mientras aparece, como cuando una composición cae en su lugar. Nada rebota,
+   nada se desenfoca, nada parpadea — este pack no tiene efectos, tiene ritmo.
+
+   Por eso el movimiento es el más lento y el más chico de todos los packs: lo
+   que se nota es el TIEMPO, no el desplazamiento.
+
+   La salida es MAS CORTA que la entrada: lo que aparece se presenta, lo que se
+   va no debe hacerte esperar.
+   =========================================================================== */
+
+/* -- Asentarse -------------------------------------------------------------- */
+/* El desplazamiento se mide en `em`, no en píxeles: así una entrada acompaña
+   al cuerpo de la letra. Si alguien sube la escala tipográfica, el movimiento
+   crece con ella en vez de quedarse chico. */
+
+@keyframes ui-ed-settle-in {
+  from { opacity: 0; translate: 0 0.45em; }
+  to   { opacity: 1; translate: 0 0; }
+}
+
+@keyframes ui-ed-settle-out {
+  from { opacity: 1; translate: 0 0; }
+  to   { opacity: 0; translate: 0 0.2em; }
+}
+
+/* -- Abrirse ---------------------------------------------------------------- */
+/* Para lo que se despliega sobre la página: además de asentarse, aparece
+   desde su borde de arriba, como una hoja que se desdobla. */
+
+@keyframes ui-ed-unfold-in {
+  from { opacity: 0; clip-path: inset(0 0 100% 0); translate: 0 0.25em; }
+  to   { opacity: 1; clip-path: inset(0);          translate: 0 0; }
+}
+
+@keyframes ui-ed-unfold-out {
+  from { opacity: 1; clip-path: inset(0);          translate: 0 0; }
+  to   { opacity: 0; clip-path: inset(0 0 70% 0);  translate: 0 0; }
+}
+
+/* ===========================================================================
+   Asignación por componente
+   =========================================================================== */
+
+/* -- Las cajas de la página ------------------------------------------------ */
+
+.ui-container.is-entering,
+.ui-window.is-entering {
+  animation: ui-ed-settle-in var(--ui-duration-slow) var(--ui-ease-out) both;
+  /* Escalonado: lo reparte UIComponent al montar. Va DESPUES del shorthand,
+     que resetea animation-delay a 0. */
+  animation-delay: var(--ui-enter-delay, 0ms);
+}
+.ui-container.is-leaving,
+.ui-window.is-leaving {
+  animation: ui-ed-settle-out var(--ui-duration-base) var(--ui-ease-in) both;
+}
+
+/* -- Lo que se despliega --------------------------------------------------- */
+
+.ui-select.is-entering,
+.ui-colorpicker.is-entering {
+  animation: ui-ed-unfold-in var(--ui-duration-base) var(--ui-ease-out) both;
+  animation-delay: var(--ui-enter-delay, 0ms);
+}
+.ui-select.is-leaving,
+.ui-colorpicker.is-leaving {
+  animation: ui-ed-unfold-out var(--ui-duration-fast) var(--ui-ease-in) both;
+}
+
+/* -- Controles y estructura ------------------------------------------------ */
+
+.ui-btn.is-entering,
+.ui-spinner.is-entering,
+.ui-slider.is-entering,
+.ui-toggle.is-entering,
+.ui-checkbox.is-entering,
+.ui-radiogroup.is-entering,
+.ui-textfield.is-entering,
+.ui-tabs.is-entering,
+.ui-scroll.is-entering,
+.ui-progress.is-entering,
+.ui-icon.is-entering,
+.ui-separator.is-entering {
+  animation: ui-ed-settle-in var(--ui-duration-base) var(--ui-ease-out) both;
+  animation-delay: var(--ui-enter-delay, 0ms);
+}
+.ui-btn.is-leaving,
+.ui-spinner.is-leaving,
+.ui-slider.is-leaving,
+.ui-toggle.is-leaving,
+.ui-checkbox.is-leaving,
+.ui-radiogroup.is-leaving,
+.ui-textfield.is-leaving,
+.ui-tabs.is-leaving,
+.ui-scroll.is-leaving,
+.ui-progress.is-leaving,
+.ui-icon.is-leaving,
+.ui-separator.is-leaving {
+  animation: ui-ed-settle-out var(--ui-duration-fast) var(--ui-ease-in) both;
+}

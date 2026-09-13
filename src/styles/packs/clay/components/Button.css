@@ -1,0 +1,77 @@
+/* ----------------------------------------------- Button — PIEL del pack CLAY */
+/* Interfaz: --btn-bg / --btn-bg-hover | --btn-gloss | --btn-fg
+             --btn-border / -hover | --btn-shadow                            */
+
+/* El botón es LA pieza del pack: gorda, redonda, con volumen propio, y la que
+   mejor muestra el gesto de aplastarse. */
+
+.ui-btn {
+  --btn-gloss: none;
+  --btn-border: transparent;
+  --btn-border-hover: transparent;
+  --btn-shadow: var(--ui-clay-body);
+  font-weight: var(--ui-weight-semibold);
+
+  /* La mecánica no transiciona ni la sombra ni el aplastado: se agregan acá,
+     que es donde viven. */
+  transition:
+    box-shadow var(--ui-duration-fast) var(--ui-ease),
+    background var(--ui-duration-fast) var(--ui-ease),
+    scale var(--ui-duration-fast) var(--ui-ease-out),
+    translate var(--ui-duration-fast) var(--ui-ease-out);
+}
+
+.ui-btn:hover:not(.is-disabled) {
+  --btn-bg: var(--btn-bg-hover);
+  --btn-shadow: var(--ui-clay-lifted);
+  border-color: var(--btn-border-hover);
+  translate: 0 var(--ui-hover-lift);
+}
+
+/* ⚠ APRETAR ES APLASTAR, no hundir.
+   Es la diferencia de gesto con `soft`: allá la pieza se mete en la lámina;
+   acá se deforma contra el fondo, se ensancha y se achata. Sale de
+   --ui-squash, que responde a la perilla BOUNCE — en 0 no se deforma nada. */
+.ui-btn:active:not(.is-disabled) {
+  --btn-shadow: var(--ui-clay-pressed);
+  translate: 0 0;
+  scale: calc(1 + var(--ui-squash)) calc(1 - var(--ui-squash));
+}
+
+/* Sin volumen no hay pieza que tocar, que es lo que se quiere comunicar. */
+.ui-btn.is-disabled {
+  --btn-shadow: none;
+}
+
+/* -- Variantes ------------------------------------------------------------ */
+
+.ui-btn--primary {
+  --btn-bg: var(--ui-accent);
+  --btn-bg-hover: var(--ui-accent-hover);
+  --btn-fg: var(--ui-on-accent);
+}
+
+/* La misma pieza, sin teñir. */
+.ui-btn--secondary {
+  --btn-bg: var(--ui-surface);
+  --btn-bg-hover: var(--ui-surface-hover);
+  --btn-fg: var(--ui-text);
+}
+
+/* Sin volumen hasta que lo tocás: recién ahí se forma la pieza. */
+.ui-btn--ghost {
+  --btn-bg: transparent;
+  --btn-bg-hover: var(--ui-surface);
+  --btn-fg: var(--ui-text-muted);
+  --btn-shadow: none;
+}
+.ui-btn--ghost:hover:not(.is-disabled) {
+  --btn-shadow: var(--ui-clay-body);
+  color: var(--ui-text);
+}
+
+.ui-btn--danger {
+  --btn-bg: var(--ui-danger);
+  --btn-bg-hover: var(--ui-danger-hover);
+  --btn-fg: var(--ui-on-danger);
+}

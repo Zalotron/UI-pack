@@ -1,0 +1,7 @@
+/* --------------------------------------- Separator — PIEL del pack _template */
+/* Interfaz a rellenar: --separator-color                                      */
+
+.ui-separator--soft   { --separator-color: var(--ui-line-soft); }
+.ui-separator--base   { --separator-color: var(--ui-line); }
+.ui-separator--strong { --separator-color: var(--ui-border-strong); }
+.ui-separator--accent { --separator-color: var(--ui-accent); }

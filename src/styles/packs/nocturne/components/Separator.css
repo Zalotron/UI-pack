@@ -1,0 +1,18 @@
+/* --------------------------------------- Separator — PIEL del pack NOCTURNE */
+/* Interfaz: --separator-color, --separator-thickness.
+   --separator-color se usa como `background`, así que acepta un degradé.     */
+
+/* Es la ÚNICA línea del pack, y existe porque un separador no es un borde: es
+   una pieza con su propio significado. Aun así va apenas visible — entre dos
+   capas que ya se distinguen por tono, una línea fuerte sobra. */
+
+.ui-separator--soft   { --separator-color: var(--ui-line-soft); }
+.ui-separator--base   { --separator-color: var(--ui-line); }
+.ui-separator--strong { --separator-color: rgb(from var(--ui-text) r g b / 0.20); }
+
+/* El acento sí se permite el degradé del pack, que se apaga en las puntas. */
+.ui-separator--accent {
+  --separator-thickness: calc(var(--ui-border-width) * 2);
+  --separator-color: var(--ui-nc-fill);
+  border-radius: var(--ui-radius-full);
+}

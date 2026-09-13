@@ -1,0 +1,26 @@
+/* -------------------------------------------- Tabs — PIEL del pack EDITORIAL */
+/* Interfaz: --tabs-fg | --tabs-fg-active | --tabs-bg-hover
+             --tabs-line | --tabs-indicator                                  */
+
+/* Los encabezados de sección de una revista: versalitas espaciadas sobre un
+   filete, y la activa marcada con otro filete debajo.
+
+   La rayita mide 1px en este pack (--ui-tabs-indicator-h), no 2: una barra
+   gruesa pesaría más que el rótulo que está marcando. */
+.ui-tabs {
+  --tabs-fg: var(--ui-text-subtle);
+  --tabs-fg-active: var(--ui-text);
+  --tabs-bg-hover: transparent;
+  --tabs-line: var(--ui-line);
+  --tabs-indicator: var(--ui-text);
+}
+
+.ui-tabs__tab {
+  text-transform: uppercase;
+  letter-spacing: var(--ui-tracking-wide);
+  font-size: var(--ui-text-xs);
+}
+
+.ui-tabs__tab:hover:not(.is-disabled):not(.is-active) {
+  color: var(--ui-text-muted);
+}

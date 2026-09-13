@@ -1,0 +1,74 @@
+/* ------------------------------------------ Button — PIEL del pack NOCTURNE */
+/* Interfaz: --btn-bg / --btn-bg-hover | --btn-gloss | --btn-fg
+             --btn-border / -hover | --btn-shadow                            */
+
+/* Sin borde, sin brillo, sin volumen. Un botón es una capa más — salvo el
+   primario, que es LO UNICO que brilla en toda la interfaz. */
+
+.ui-btn {
+  --btn-gloss: none;
+  --btn-border: transparent;
+  --btn-border-hover: transparent;
+  --btn-shadow: none;
+  font-weight: var(--ui-weight-medium);
+
+  transition:
+    background var(--ui-duration-fast) var(--ui-ease),
+    box-shadow var(--ui-duration-base) var(--ui-ease),
+    translate var(--ui-duration-fast) var(--ui-ease),
+    color var(--ui-duration-fast) var(--ui-ease);
+}
+
+.ui-btn:hover:not(.is-disabled) {
+  --btn-bg: var(--btn-bg-hover);
+  translate: 0 var(--ui-hover-lift);
+}
+
+/* Apretar HUNDE la capa: baja y su sombra se cierra. */
+.ui-btn:active:not(.is-disabled) {
+  --btn-shadow: none;
+  translate: 0 var(--ui-press-shift);
+}
+
+.ui-btn.is-disabled {
+  --btn-shadow: none;
+}
+
+/* -- Variantes ------------------------------------------------------------ */
+
+/* ⚠ EL PRIMARIO ES UN DEGRADE, NO UN COLOR.
+   Va en `--btn-gloss`, que es la capa de IMAGEN que la mecánica pinta sobre el
+   relleno (`background: var(--btn-gloss), var(--btn-bg)`). Ahí un degradé
+   entra sin pelear con nada. El color de abajo queda igual de fallback. */
+.ui-btn--primary {
+  --btn-gloss: var(--ui-nc-fill);
+  --btn-bg: var(--ui-accent);
+  --btn-bg-hover: var(--ui-accent-hover);
+  --btn-fg: var(--ui-on-accent);
+  --btn-shadow: var(--ui-shadow-md);
+}
+
+/* Una capa más, sin teñir. */
+.ui-btn--secondary {
+  --btn-bg: var(--ui-surface-hover);
+  --btn-bg-hover: var(--ui-surface-active);
+  --btn-fg: var(--ui-text);
+  --btn-shadow: var(--ui-shadow-sm);
+}
+
+/* Al ras del fondo hasta que lo tocás: ahí sube una capa. */
+.ui-btn--ghost {
+  --btn-bg: transparent;
+  --btn-bg-hover: var(--ui-surface-hover);
+  --btn-fg: var(--ui-text-muted);
+}
+.ui-btn--ghost:hover:not(.is-disabled) {
+  color: var(--ui-text);
+}
+
+.ui-btn--danger {
+  --btn-bg: var(--ui-danger);
+  --btn-bg-hover: var(--ui-danger-hover);
+  --btn-fg: var(--ui-on-danger);
+  --btn-shadow: var(--ui-shadow-md);
+}

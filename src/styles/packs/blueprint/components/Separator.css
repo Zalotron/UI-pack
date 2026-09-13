@@ -1,0 +1,56 @@
+/* --------------------------------------- Separator — PIEL del pack BLUEPRINT */
+/* Interfaz: --separator-color, --separator-thickness.
+   --separator-color se usa como `background`, así que acepta varias capas.   */
+
+/* Acá un separador no es una línea: es una LINEA DE COTA, con sus marcas en
+   las puntas.  ⊢————⊣
+
+   Se arma con tres capas de `background` sobre un elemento tan alto como las
+   marcas: dos barras verticales en los extremos y la línea al medio. Por eso
+   --separator-thickness pasa a ser el alto de la marca, no el grosor del
+   trazo: el grosor lo da el tamaño de cada capa. */
+
+.ui-separator--soft,
+.ui-separator--base,
+.ui-separator--strong,
+.ui-separator--accent {
+  --separator-thickness: var(--ui-bp-tick);
+}
+
+.ui-separator--soft   { --bp-ink: var(--ui-line-soft); }
+.ui-separator--base   { --bp-ink: var(--ui-line); }
+.ui-separator--strong { --bp-ink: var(--ui-border); }
+.ui-separator--accent { --bp-ink: var(--ui-accent); }
+
+.ui-separator--horizontal {
+  --separator-color:
+    linear-gradient(var(--bp-ink) 0 0) left center /
+      var(--ui-bp-line) 100% no-repeat,
+    linear-gradient(var(--bp-ink) 0 0) right center /
+      var(--ui-bp-line) 100% no-repeat,
+    linear-gradient(var(--bp-ink) 0 0) center /
+      100% var(--ui-bp-line) no-repeat;
+}
+
+/* Vertical: la misma cota, girada. */
+.ui-separator--vertical {
+  --separator-color:
+    linear-gradient(var(--bp-ink) 0 0) center top /
+      100% var(--ui-bp-line) no-repeat,
+    linear-gradient(var(--bp-ink) 0 0) center bottom /
+      100% var(--ui-bp-line) no-repeat,
+    linear-gradient(var(--bp-ink) 0 0) center /
+      var(--ui-bp-line) 100% no-repeat;
+}
+
+/* Con rótulo al medio, las dos mitades son cotas también. */
+.ui-separator--labeled::before,
+.ui-separator--labeled::after {
+  height: var(--ui-bp-tick);
+  background: var(--separator-color);
+}
+
+.ui-separator__label {
+  font-family: var(--ui-font-mono);
+  letter-spacing: var(--ui-tracking-wide);
+}

@@ -1,0 +1,23 @@
+/* ------------------------------------------ Toggle — PIEL del pack EDITORIAL */
+/* Interfaz: --toggle-track | --toggle-track-on | --toggle-knob-bg
+             --toggle-border | --toggle-ring                                  */
+
+/* Un interruptor discreto: carril de filete, tirador de tinta. Sin relleno de
+   color cuando está apagado — el estado se lee por DÓNDE está el tirador, no
+   por qué color tiene el carril. */
+.ui-toggle {
+  --toggle-track: transparent;
+  --toggle-track-on: var(--ui-accent-subtle);
+  --toggle-border: var(--ui-border);
+  --toggle-knob-bg: var(--ui-text-subtle);
+}
+
+.ui-toggle:hover:not(.is-disabled) {
+  --toggle-border: var(--ui-text-muted);
+}
+
+/* :not(.is-disabled) para empatarle la especificidad al hover de arriba. */
+.ui-toggle.is-checked:not(.is-disabled) {
+  --toggle-border: var(--ui-accent);
+  --toggle-knob-bg: var(--ui-accent);
+}

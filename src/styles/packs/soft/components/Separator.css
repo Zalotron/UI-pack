@@ -1,0 +1,65 @@
+/* -------------------------------------------- Separator — PIEL del pack SOFT */
+/* Interfaz: --separator-color, --separator-thickness.
+   --separator-color se usa como `background`, así que acepta un degradé.     */
+
+/* Un separador acá no es una línea pintada: es un SURCO. Dos píxeles, sombra
+   arriba y luz abajo — exactamente la misma luz que el resto del pack, vista
+   de costado. Es el mismo truco del relieve, en un elemento de 2px. */
+.ui-separator--soft,
+.ui-separator--base,
+.ui-separator--strong {
+  --separator-thickness: calc(var(--ui-border-width) * 2);
+}
+
+.ui-separator--soft {
+  --separator-color: linear-gradient(
+    180deg,
+    /* ⚠ SE ESCALA `alpha`, NO SE LO REEMPLAZA.
+       `rgb(from X r g b / calc(alpha * 0.5))` se queda con los canales de X y TIRA su
+       opacidad. La luz de este pack es blanco translucido, asi que eso daba un
+       blanco al 50% — una raya encendida cruzando el surco en tema oscuro.
+       Con `calc(alpha * ...)` la opacidad de origen se respeta y solo se
+       atenua. */
+    rgb(from var(--ui-soft-dark) r g b / calc(alpha * 0.35)) 0 50%,
+    rgb(from var(--ui-soft-light) r g b / calc(alpha * 0.5)) 50% 100%
+  );
+}
+
+.ui-separator--base {
+  --separator-color: linear-gradient(
+    180deg,
+    var(--ui-soft-dark) 0 50%,
+    var(--ui-soft-light) 50% 100%
+  );
+}
+
+/* El fuerte es un surco más hondo: se consigue con más contraste, no con más
+   grosor — un surco grueso deja de leerse como surco.
+
+   ⚠ LA MITAD OSCURA SALE DE `--ui-soft-dark`, NO DE UN NEUTRO.
+   Estuvo saliendo de `--ui-neutral-400`, que es un neutro FIJO: el tema oscuro
+   de este pack rehace `--ui-neutral-50/100/200` pero no el 400, así que en
+   oscuro el surco quedaba con una raya gris clara cruzándolo. Los tokens del
+   material sí saben de tema; los de la escala de neutros, no. */
+.ui-separator--strong {
+  --separator-color: linear-gradient(
+    180deg,
+    var(--ui-soft-dark) 0 50%,
+    var(--ui-soft-light) 50% 100%
+  );
+}
+
+/* Vertical: el mismo surco, girado. La luz sigue viniendo de la izquierda. */
+.ui-separator--soft.ui-separator--vertical,
+.ui-separator--base.ui-separator--vertical,
+.ui-separator--strong.ui-separator--vertical {
+  --separator-color: linear-gradient(
+    90deg,
+    var(--ui-soft-dark) 0 50%,
+    var(--ui-soft-light) 50% 100%
+  );
+}
+
+.ui-separator--accent {
+  --separator-color: var(--ui-accent);
+}

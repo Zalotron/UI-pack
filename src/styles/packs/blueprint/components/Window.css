@@ -1,0 +1,53 @@
+/* ------------------------------------------ Window — PIEL del pack BLUEPRINT */
+/* Interfaz: --window-bg | --window-bar-bg | --window-border | --window-line
+             --window-title-fg | --window-control-hover
+             --window-close-hover | --window-close-fg | --window-shadow      */
+
+/* Una lámina con su cajetín arriba: marco de trazo, papel cuadriculado en el
+   cuerpo y el rótulo en mayúsculas espaciadas.
+
+   ⛔ ESQUINAS CUADRADAS, SIEMPRE — regla del proyecto. Acá cae de maduro, pero
+   igual no es negociable: --ui-window-radius vale 0 en todos los packs. */
+
+.ui-window {
+  --window-bg: var(--ui-surface);
+  /* Lo que esta ventana pinta detras de lo que tenga adentro. Ver
+     --ui-bp-behind en tokens.css: lo hereda todo lo de adentro. */
+  --ui-bp-behind: var(--ui-surface);
+  --window-bar-bg: transparent;
+  --window-border: var(--ui-border-strong);
+  --window-line: var(--ui-border);
+  --window-title-fg: var(--ui-accent-text);
+  --window-control-hover: var(--ui-accent-subtle);
+  --window-shadow: none;
+
+  --window-close-hover: var(--ui-danger);
+  --window-close-fg: var(--ui-on-danger);
+}
+
+/* El cuerpo es la hoja: ahí va el cuadriculado, no en la barra. */
+.ui-window__body {
+  background: var(--ui-bp-grid);
+}
+
+/* El rótulo del cajetín. */
+.ui-window__title {
+  text-transform: uppercase;
+  letter-spacing: var(--ui-tracking-wide);
+  font-weight: var(--ui-weight-medium);
+}
+
+/* Cada botón de la barra va separado por su propio trazo, como las casillas
+   de un cajetín de verdad. */
+.ui-window__control {
+  border-left: var(--ui-bp-line) solid var(--ui-line-soft);
+}
+
+/* En un plano nada flota: la elevación se lee en el peso del marco. */
+.ui-window--elev-sm { --window-border: var(--ui-line); }
+.ui-window--elev-md { --window-border: var(--ui-border); }
+.ui-window--elev-lg { --window-border: var(--ui-border-strong); }
+
+/* El titulo NO cambia con el hover de la barra: la barra contiene los botones,
+   asi que pasar el mouse por minimizar o cerrar tambien contaria como hover de
+   la barra y el titulo se encenderia sin motivo. */

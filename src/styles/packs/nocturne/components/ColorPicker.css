@@ -1,0 +1,31 @@
+/* ------------------------------------- ColorPicker — PIEL del pack NOCTURNE */
+/* Interfaz: --cp-bg | --cp-border | --cp-ring | --cp-value-fg
+             --cp-panel-bg | --cp-panel-border | --cp-panel-shadow           */
+
+.ui-colorpicker {
+  --cp-bg: var(--ui-surface-hover);
+  --cp-border: transparent;
+  --cp-value-fg: var(--ui-text-muted);
+  --cp-panel-bg: var(--ui-surface-active);
+  --cp-panel-border: transparent;
+  --cp-panel-shadow: var(--ui-shadow-lg);
+}
+
+.ui-colorpicker:hover:not(.is-disabled) {
+  --cp-bg: var(--ui-surface-active);
+  --cp-value-fg: var(--ui-text);
+}
+
+/* Los estados activos llevan :not(.is-disabled) para empatarle la
+   especificidad al :hover de arriba. */
+.ui-colorpicker.is-open:not(.is-disabled) {
+  --cp-bg: var(--ui-bg-subtle);
+  --cp-value-fg: var(--ui-text);
+  --cp-ring: var(--ui-ring);
+}
+
+/* La muestra de color es la única pieza del pack que NO puede llevar el
+   degradé de la marca: muestra el color que el usuario eligió. */
+.ui-colorpicker__swatch {
+  box-shadow: var(--ui-shadow-sm);
+}

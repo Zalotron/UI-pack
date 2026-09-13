@@ -1,0 +1,30 @@
+/* ------------------------------------------- RadioGroup — PIEL del pack CLAY */
+/* Interfaz: --radio-bg | --radio-border | --radio-fill | --radio-ring         */
+
+/* Mismo gesto que el Checkbox, porque significan lo mismo: hueco apagado,
+   pieza encendida. */
+.ui-radiogroup {
+  --radio-bg: var(--ui-bg-subtle);
+  --radio-border: transparent;
+  --radio-fill: var(--ui-accent);
+}
+
+.ui-radio__dot {
+  box-shadow: var(--ui-clay-pressed);
+  transition:
+    box-shadow var(--ui-duration-base) var(--ui-ease-out),
+    scale var(--ui-duration-fast) var(--ui-ease-out);
+}
+
+.ui-radio:hover:not(.is-disabled) {
+  --radio-bg: var(--ui-surface-active);
+}
+
+/* :not(.is-disabled) para empatarle la especificidad al hover de arriba. */
+.ui-radio.is-checked:not(.is-disabled) .ui-radio__dot {
+  box-shadow: var(--ui-clay-body);
+}
+
+.ui-radio:active:not(.is-disabled) .ui-radio__dot {
+  scale: calc(1 - var(--ui-squash));
+}

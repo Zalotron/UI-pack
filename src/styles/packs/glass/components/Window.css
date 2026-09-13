@@ -1,0 +1,47 @@
+/* ---------------------------------------------- Window — PIEL del pack GLASS */
+/* Interfaz: --window-bg | --window-bar-bg | --window-border | --window-line
+             --window-title-fg | --window-control-hover
+             --window-close-hover | --window-close-fg | --window-shadow      */
+
+/* La ventana es la pieza donde más se nota el material: una placa entera de
+   vidrio con el canto iluminado.
+
+   ⛔ ESQUINAS CUADRADAS, SIEMPRE. El radio no sale de --ui-radius-* (ROUNDNESS
+   no lo toca) y tampoco es algo que este pack pueda decidir: --ui-window-radius
+   vale 0 en todos los packs. El vidrio acá lo ponen la película, el canto
+   degradado y el desenfoque — no la curva. */
+
+.ui-window {
+  --window-bg: var(--ui-glass-surface);
+  --window-border: transparent;
+  --window-line: rgb(from var(--ui-glass-tint) r g b / var(--ui-glass-inner-hi));
+  --window-title-fg: var(--ui-text-muted);
+  --window-control-hover: rgb(from var(--ui-glass-tint) r g b / var(--ui-glass-film-mid));
+  --window-shadow: var(--ui-glass-inner), var(--ui-shadow-lg);
+
+  /* La barra va un punto más cerrada que el cuerpo: la separa sin línea dura. */
+  --window-bar-bg: var(--ui-glass-film-dense);
+
+  /* Cerrar en rojo es la convención; el rojo sale del brand como todo. */
+  --window-close-hover: rgb(from var(--ui-danger) r g b / 0.85);
+  --window-close-fg: var(--ui-on-danger);
+
+  /* El desenfoque va acá, en la placa entera. La barra NO lo repite: dos
+     desenfoques apilados enturbian en vez de sumar. */
+  backdrop-filter: var(--ui-glass-blur-lg);
+  -webkit-backdrop-filter: var(--ui-glass-blur-lg);
+}
+
+.ui-window--elev-sm { --window-shadow: var(--ui-glass-inner), var(--ui-shadow-sm); }
+.ui-window--elev-md { --window-shadow: var(--ui-glass-inner), var(--ui-shadow-md); }
+.ui-window--elev-lg { --window-shadow: var(--ui-glass-inner), var(--ui-shadow-lg); }
+
+/* Maximizada pierde el canto: va pegada a la pantalla, no flota. */
+.ui-window.is-maximized {
+  --window-bg: var(--ui-glass-film);
+}
+
+/* El titulo NO cambia con el hover de la barra: la barra contiene los botones,
+   asi que pasar el mouse por minimizar o cerrar tambien contaria como hover de
+   la barra y el titulo se encenderia sin motivo. La zona de arrastre ya se
+   anuncia con el cursor. */

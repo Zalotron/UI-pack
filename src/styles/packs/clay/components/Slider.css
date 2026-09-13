@@ -1,0 +1,41 @@
+/* ----------------------------------------------- Slider — PIEL del pack CLAY */
+/* Interfaz: --slider-track | --slider-track-border | --slider-fill
+             --slider-thumb | --slider-ring                                   */
+
+/* Canal gordo excavado y una bolita apoyada adentro. El tirador mide 26px
+   (--ui-slider-thumb-w): en este pack nada es finito. */
+.ui-slider {
+  --slider-track: var(--ui-bg-subtle);
+  --slider-track-border: transparent;
+  /* El mismo fideo que la barra de progreso: son la misma pieza contando
+     lo mismo, asi que estan hechas del mismo material. */
+  --slider-fill: var(--ui-clay-noodle);
+  --slider-thumb: var(--ui-surface-hover);
+}
+
+.ui-slider:hover:not(.is-disabled) { --slider-thumb: var(--ui-neutral-0); }
+
+/* El canal, excavado. El sombreado va en --slider-track-shadow y no en el
+   fondo del canal: asi cae ENCIMA del relleno y el surco se lee hundido
+   tambien en el tramo lleno. */
+.ui-slider { --slider-track-shadow: var(--ui-clay-pressed); }
+
+/* ⚠ HAY QUE CONTESTAR LOS TRES ESTADOS DEL TIRADOR, NO SOLO EL DE REPOSO.
+   La mecánica marca hover, foco y arrastre con un halo de box-shadow, y esas
+   reglas tienen MAS especificidad que la de reposo: REEMPLAZAN la sombra. En
+   un pack donde box-shadow es el volumen, eso aplana la bolita justo al
+   tocarla. Ya pasó en `soft`; acá va contestado de entrada. */
+.ui-slider__thumb {
+  box-shadow: var(--ui-clay-body);
+}
+
+.ui-slider:hover .ui-slider__thumb,
+.ui-slider__input:focus-visible ~ .ui-slider__thumb {
+  box-shadow: var(--ui-clay-lifted);
+}
+
+/* Arrastrando la bolita se apoya contra el canal. Va después del hover para
+   ganarle con el mismo peso de especificidad. */
+.ui-slider.is-dragging .ui-slider__thumb {
+  box-shadow: var(--ui-clay-pressed);
+}

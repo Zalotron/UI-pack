@@ -1,0 +1,21 @@
+/* --------------------------------------- Separator — PIEL del pack EDITORIAL */
+/* Interfaz: --separator-color, --separator-thickness.
+   --separator-color se usa como `background`, así que acepta un degradé.     */
+
+/* Un filete de imprenta: la línea más fina que siga siendo visible, y que se
+   apaga antes de llegar al margen (--ui-sep-fade vale 30% acá, el desvanecido
+   más largo de todos los packs). En una página, una línea no toca el borde
+   del papel. */
+.ui-separator--soft   { --separator-color: var(--ui-line-soft); }
+.ui-separator--base   { --separator-color: var(--ui-line); }
+.ui-separator--strong { --separator-color: var(--ui-border); }
+.ui-separator--accent { --separator-color: var(--ui-accent); }
+
+/* Con texto al medio es un ladillo: versalitas chicas entre dos filetes, como
+   el corte de sección de un libro. */
+.ui-separator__label {
+  font-family: var(--ui-font-sans);
+  font-size: var(--ui-text-xs);
+  letter-spacing: var(--ui-tracking-wide);
+  color: var(--ui-text-muted);
+}

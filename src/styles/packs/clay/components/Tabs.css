@@ -1,0 +1,39 @@
+/* ------------------------------------------------- Tabs — PIEL del pack CLAY */
+/* Interfaz: --tabs-fg | --tabs-fg-active | --tabs-bg-hover
+             --tabs-line | --tabs-indicator                                  */
+
+/* La pestaña activa es una pieza que EMERGE de la fila. La rayita mide 4px en
+   este pack (--ui-tabs-indicator-h): gorda como todo lo demás, y se desliza
+   con el rebote del sistema porque la mecánica la anima con --ui-ease-out. */
+.ui-tabs {
+  --tabs-fg: var(--ui-text-muted);
+  --tabs-fg-active: var(--ui-accent-text);
+  --tabs-bg-hover: transparent;
+  --tabs-line: transparent;
+  --tabs-indicator: var(--ui-accent);
+}
+
+.ui-tabs__tab {
+  border-radius: var(--ui-radius-lg);
+  font-weight: var(--ui-weight-semibold);
+  transition:
+    color var(--ui-duration-fast) var(--ui-ease),
+    box-shadow var(--ui-duration-base) var(--ui-ease-out),
+    scale var(--ui-duration-fast) var(--ui-ease-out);
+}
+
+.ui-tabs__tab.is-active {
+  box-shadow: var(--ui-clay-body);
+}
+
+.ui-tabs__tab:hover:not(.is-disabled):not(.is-active) {
+  box-shadow: var(--ui-clay-pressed);
+}
+
+.ui-tabs__tab:active:not(.is-disabled) {
+  scale: calc(1 + var(--ui-squash) * 0.6) calc(1 - var(--ui-squash) * 0.6);
+}
+
+.ui-tabs__indicator {
+  border-radius: var(--ui-radius-full);
+}

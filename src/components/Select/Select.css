@@ -1,0 +1,171 @@
+/* ------------------------------------------------------ Select — ESTRUCTURA */
+/* Mecánica. Los colores los pone el pack.                                    */
+
+.ui-select {
+  --select-h: var(--ui-control-h-md);
+  --select-pad: var(--ui-control-pad-md);
+  --select-font: var(--ui-control-font-md);
+  --select-radius: var(--ui-control-radius-md);
+
+  --select-bg: transparent;
+  --select-fg: var(--ui-text);
+  --select-border: transparent;
+  --select-menu-bg: transparent;
+  --select-menu-shadow: none;
+  /* La lista NO sigue el estado del disparador: si compartiera
+     --select-border, al abrirse se pintaria de acento junto con el boton. */
+  --select-menu-border: transparent;
+  --select-option-hover: transparent;
+  --select-option-selected: transparent;
+
+  box-sizing: border-box;
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+/* -- Disparador ------------------------------------------------------------ */
+
+.ui-select__trigger {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: var(--ui-space-2);
+  width: 100%;
+  height: var(--select-h);
+  padding: 0 var(--select-pad);
+
+  border: var(--ui-border-width) solid var(--select-border);
+  border-radius: var(--select-radius);
+  background: var(--select-bg);
+  color: var(--select-fg);
+
+  font-family: var(--ui-font-sans);
+  font-size: var(--select-font);
+  line-height: 1;
+  text-align: start;
+
+  cursor: pointer;
+  transition:
+    border-color var(--ui-duration-fast) var(--ui-ease),
+    background var(--ui-duration-fast) var(--ui-ease);
+}
+
+.ui-select__trigger:focus-visible {
+  outline: var(--ui-focus-width) solid var(--ui-focus-ring);
+  outline-offset: var(--ui-focus-offset);
+}
+
+.ui-select__value {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ui-select__value.is-placeholder { color: var(--ui-text-subtle); }
+
+/* Chevron dibujado con dos bordes: sin SVG ni fuente de iconos. */
+.ui-select__arrow {
+  flex: none;
+  width: var(--ui-select-arrow);
+  height: var(--ui-select-arrow);
+  margin-inline-end: 1px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: translateY(-25%) rotate(45deg);
+  opacity: 0.5;
+  transition: transform var(--ui-duration-base) var(--ui-ease),
+              opacity var(--ui-duration-fast) var(--ui-ease);
+}
+.ui-select:hover .ui-select__arrow { opacity: 0.8; }
+.ui-select.is-open .ui-select__arrow {
+  transform: translateY(10%) rotate(225deg);
+  opacity: 1;
+}
+
+/* -- Lista ----------------------------------------------------------------- */
+
+.ui-select__list {
+  position: absolute;
+  z-index: var(--ui-z-dropdown);
+  inset-inline: 0;
+  top: calc(100% + var(--ui-space-1));
+
+  max-height: var(--ui-select-menu-max-h);
+  overflow-y: auto;
+
+  /* ⛔ LAS PUNTAS NECESITAN MAS AIRE QUE LOS COSTADOS.
+     Una esquina redondeada se mete hacia adentro, asi que una opcion pegada al
+     borde de arriba o de abajo pierde sus propias esquinas contra la curva: el
+     aire se ve MENOR ahi que en el resto de la lista, y parece que el menu se
+     la come. Con ROUNDNESS alto es imposible no verlo.
+
+     El aire de arriba y abajo crece con el radio. A medio radio la curva se
+     mete un 13% del radio en vez de un 29% — el resto se vuelve
+     imperceptible y no cuesta media lista de alto. */
+  padding: calc(var(--ui-space-1) + var(--select-radius) * 0.5) var(--ui-space-1);
+
+  /* Y el riel de la barra arranca donde termina la curva. Ver base.css. */
+  --scroll-ends: var(--select-radius);
+
+  border: var(--ui-border-width) solid var(--select-menu-border);
+  border-radius: var(--select-radius);
+  background: var(--select-menu-bg);
+  box-shadow: var(--select-menu-shadow);
+}
+
+/* Si no entra para abajo, se abre para arriba. */
+.ui-select--flip .ui-select__list {
+  top: auto;
+  bottom: calc(100% + var(--ui-space-1));
+}
+
+.ui-select__option {
+  padding: var(--ui-space-2) var(--ui-space-3);
+  border-radius: var(--ui-radius-sm);
+  color: var(--select-fg);
+  font-family: var(--ui-font-sans);
+  font-size: var(--select-font);
+  line-height: 1.3;
+  cursor: pointer;
+  transition: background var(--ui-duration-fast) var(--ui-ease);
+}
+
+.ui-select__option.is-active { background: var(--select-option-hover); }
+
+.ui-select__option.is-selected {
+  background: var(--select-option-selected);
+  font-weight: var(--ui-weight-medium);
+}
+
+.ui-select__option.is-disabled {
+  opacity: var(--ui-disabled-opacity);
+  cursor: not-allowed;
+}
+
+/* -- Tamaños --------------------------------------------------------------- */
+
+.ui-select--sm {
+  --select-h: var(--ui-control-h-sm);
+  --select-pad: var(--ui-control-pad-sm);
+  --select-font: var(--ui-control-font-sm);
+  --select-radius: var(--ui-control-radius-sm);
+}
+.ui-select--md {
+  --select-h: var(--ui-control-h-md);
+  --select-pad: var(--ui-control-pad-md);
+  --select-font: var(--ui-control-font-md);
+  --select-radius: var(--ui-control-radius-md);
+}
+.ui-select--lg {
+  --select-h: var(--ui-control-h-lg);
+  --select-pad: var(--ui-control-pad-lg);
+  --select-font: var(--ui-control-font-lg);
+  --select-radius: var(--ui-control-radius-lg);
+}
+
+/* -- Estados --------------------------------------------------------------- */
+
+.ui-select.is-disabled { opacity: var(--ui-disabled-opacity); }
+.ui-select.is-disabled .ui-select__trigger { cursor: not-allowed; }

@@ -1,0 +1,54 @@
+/* ===========================================================================
+   Estructura de los componentes — COMPARTIDA POR TODOS LOS PACKS.
+   Mecánica: caja, layout, escalas, interfaz de variables. Sin estética.
+
+   Al crear un componente nuevo, agregá acá su @import.
+   Al crear un PACK nuevo, este archivo NO se toca.
+   =========================================================================== */
+
+@import url("../components/Container/Container.css");
+@import url("../components/Separator/Separator.css");
+@import url("../components/Spinner/Spinner.css");
+@import url("../components/Progress/Progress.css");
+@import url("../components/Icon/Icon.css");
+@import url("../components/Slider/Slider.css");
+@import url("../components/Select/Select.css");
+@import url("../components/ColorPicker/ColorPicker.css");
+@import url("../components/Toggle/Toggle.css");
+@import url("../components/Checkbox/Checkbox.css");
+@import url("../components/RadioGroup/RadioGroup.css");
+@import url("../components/TextField/TextField.css");
+@import url("../components/Window/Window.css");
+@import url("../components/Tabs/Tabs.css");
+@import url("../components/Scroll/Scroll.css");
+@import url("../components/Button/Button.css");
+
+/* ---------------------------------------------------------------------------
+   ENTRADA Y SALIDA — lo único mecánico del asunto.
+
+   `UIComponent` pone `.is-entering` al montar y `.is-leaving` en `leave()`, y
+   espera a que terminen las animaciones. QUE SE VE en cada una lo define el
+   pack: acá no hay ni un keyframe, porque la coreografía es estética.
+
+   Lo único que sí es mecánica: algo que se está yendo no se puede seguir
+   tocando. Si no, se clickea un botón que ya está a mitad de camino de irse.
+
+   OJO: esta regla va DESPUES de los @import a propósito. En CSS los @import
+   tienen que ser lo primero del archivo (salvo @charset y @layer): una regla
+   antes los invalida a todos y la estructura entera deja de cargar.
+   --------------------------------------------------------------------------- */
+
+.is-leaving {
+  pointer-events: none;
+}
+
+/* El turno del escalonado de entrada. Lo ESCRIBE `UIComponent` como estilo en
+   línea sobre cada elemento al montarlo; acá va solo el valor por defecto, para
+   que `var(--ui-enter-delay)` resuelva a algo sensato si el JS no corrió.
+
+   Va en la estructura y no en los tokens de cada pack por lo mismo que
+   `--slider-progress`: es una variable que escribe la mecánica, no un valor de
+   estética. El pack decide si la usa. */
+:root {
+  --ui-enter-delay: 0ms;
+}

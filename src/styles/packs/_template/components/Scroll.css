@@ -1,0 +1,8 @@
+/* ------------------------------------------------ Scroll — PIEL del pack _template */
+/* Interfaz: --scroll-track | --scroll-thumb | --scroll-thumb-hover          */
+
+.ui-scroll {
+  --scroll-track: transparent;
+  --scroll-thumb: var(--ui-scroll-thumb);
+  --scroll-thumb-hover: var(--ui-scroll-thumb-hover);
+}

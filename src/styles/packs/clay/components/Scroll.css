@@ -1,0 +1,11 @@
+/* ----------------------------------------------- Scroll — PIEL del pack CLAY */
+/* Interfaz: --scroll-track | --scroll-thumb | --scroll-thumb-hover          */
+
+/* Una barra gorda de color. Un pseudo-elemento nativo no acepta las sombras
+   del volumen, así que acá la pieza se insinúa con el ancho y el tono: por eso
+   --ui-scroll-size vale 14px, de los más anchos del sistema. */
+.ui-scroll {
+  --scroll-track: transparent;
+  --scroll-thumb: var(--ui-scroll-thumb);
+  --scroll-thumb-hover: var(--ui-scroll-thumb-hover);
+}

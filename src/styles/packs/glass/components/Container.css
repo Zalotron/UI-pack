@@ -1,0 +1,132 @@
+/* ------------------------------------------- Container — PIEL del pack GLASS */
+/* Acá va SOLO la estética. La mecánica (layout, escalas, medidas) está en
+     src/components/Container/Container.css
+   y no se toca al crear un pack.
+
+   Interfaz que rellena un pack:
+     --container-bg            fondo de la superficie
+     --container-border-color  color del borde
+     --container-shadow        sombra
+
+   EL TRUCO DEL BORDE DEGRADADO
+   border-color no acepta un degradé. Pero `background` sí acepta VARIAS capas,
+   y cada una puede recortarse a una caja distinta:
+
+     background: <película> padding-box, <canto> border-box;
+
+   La película tapa todo menos el anillo del borde, así que del canto solo
+   queda visible ese anillo — un borde degradado de verdad. Pide, eso sí, que
+   el borde real sea transparente, si no lo tapa.
+
+   Por eso todas las variantes ponen --container-border-color: transparent.  */
+
+/* -- Variantes de superficie ---------------------------------------------- */
+
+/* ⚠ EL DESENFOQUE NO VA EN EL CONTENEDOR — VA EN UNA CAPA APARTE.
+
+   Un elemento con `backdrop-filter` se vuelve BACKDROP ROOT: sus descendientes
+   que también usan backdrop-filter solo pueden desenfocar lo que está pintado
+   DENTRO de él. Con el desenfoque puesto en .ui-container, el panel del
+   ColorPicker y la lista del Select —que viven adentro— se quedaban sin nada
+   que desenfocar, y peor todavía en la parte que se sale de la caja del
+   contenedor, donde ese root no tiene nada pintado. Se veían planos.
+
+   Por eso el contenedor NO lleva backdrop-filter: lleva `isolation` (que crea
+   contexto de apilamiento pero NO backdrop root) y el desenfoque vive en un
+   ::before detrás del contenido. Así el contenedor desenfoca la página, y sus
+   desplegables pueden desenfocarla también.
+
+   El ::before va en inset 0, o sea la caja de padding: el anillo del borde
+   queda afuera y el canto degradado se sigue viendo. */
+
+.ui-container--panel,
+.ui-container--solid,
+.ui-container--outline {
+  position: relative;
+  isolation: isolate;
+}
+
+.ui-container--panel::before,
+.ui-container--solid::before,
+.ui-container--outline::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;            /* detrás del contenido, delante de la película */
+  border-radius: inherit;
+  pointer-events: none;
+  backdrop-filter: var(--container-blur);
+  -webkit-backdrop-filter: var(--container-blur);
+}
+
+/* El panel es la placa de vidrio completa: película, canto degradado, la luz
+   interior del grosor y el desenfoque más fuerte. */
+.ui-container--panel {
+  --container-bg: var(--ui-glass-surface);
+  --container-border-color: transparent;
+  --container-shadow: var(--ui-glass-inner), var(--ui-shadow-md);
+  --container-blur: var(--ui-glass-blur-lg);
+}
+
+/* Vidrio más cerrado: se usa cuando adentro hay que leer. */
+.ui-container--solid {
+  --container-bg: var(--ui-glass-surface-dense);
+  --container-border-color: transparent;
+  --container-shadow: var(--ui-glass-inner), var(--ui-shadow-sm);
+  --container-blur: var(--ui-glass-blur-md);
+}
+
+/* Cristal limpio: sin película, solo el canto. Se ve el fondo entero, apenas
+   desenfocado. Es el que mejor muestra que hay vidrio. */
+.ui-container--outline {
+  --container-bg: var(--ui-glass-hollow);
+  --container-border-color: transparent;
+  --container-blur: var(--ui-glass-blur-sm);
+}
+
+.ui-container--ghost {
+  --container-bg: transparent;
+  --container-border-color: transparent;
+}
+
+/* `border: false` gana sobre cualquier variante: se queda la película y se
+   va el canto, que es lo único que dibujaba un borde. */
+.ui-container--no-border {
+  --container-bg: var(--ui-glass-film) padding-box;
+  --container-border-color: transparent;
+}
+
+/* -- Elevación ------------------------------------------------------------- */
+/* Se repiten para no perder la luz interior: el grosor del vidrio no depende
+   de cuánto flote. */
+
+.ui-container--elev-sm { --container-shadow: var(--ui-glass-inner), var(--ui-shadow-sm); }
+.ui-container--elev-md { --container-shadow: var(--ui-glass-inner), var(--ui-shadow-md); }
+.ui-container--elev-lg { --container-shadow: var(--ui-glass-inner), var(--ui-shadow-lg); }
+
+/* -- Reacción al mouse ----------------------------------------------------- */
+/* No cambia el fondo: se enciende el CANTO. Es como se comporta un vidrio
+   cuando le pega la luz de costado. */
+
+.ui-container.is-interactive:hover {
+  --container-bg: var(--ui-glass-surface-on);
+  --container-shadow: var(--ui-glass-inner), var(--ui-shadow-lg);
+  transform: translateY(var(--ui-hover-lift));
+}
+
+.ui-container.is-interactive:active {
+  transform: translateY(0);
+}
+
+/* -- Un desplegable abierto adentro ---------------------------------------- */
+/* Consecuencia directa de este pack: `backdrop-filter` convierte al contenedor
+   en contexto de apilamiento, y entonces un Select o un ColorPicker abierto no
+   puede treparse por encima del contenedor SIGUIENTE — queda tapado, aunque
+   tenga z-index. El arreglo va acá y no en la estructura porque el problema lo
+   crea esta estética: un pack opaco no lo tiene.
+   Sube el contenedor entero, y solo mientras haya algo abierto. */
+
+.ui-container:has(.is-open) {
+  position: relative;
+  z-index: var(--ui-z-dropdown);
+}

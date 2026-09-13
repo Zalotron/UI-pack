@@ -1,0 +1,67 @@
+/* ------------------------------------------ ColorPicker — PIEL del pack SOFT */
+/* Interfaz: --cp-bg | --cp-border | --cp-ring | --cp-value-fg
+             --cp-panel-bg | --cp-panel-border | --cp-panel-shadow           */
+
+.ui-colorpicker {
+  --cp-bg: var(--ui-surface);
+  --cp-border: var(--ui-line);
+  --cp-value-fg: var(--ui-text-muted);
+  --cp-panel-bg: var(--ui-surface);
+  --cp-panel-border: var(--ui-line);
+  --cp-panel-shadow: var(--ui-soft-out);
+}
+
+.ui-colorpicker__trigger {
+  box-shadow: var(--ui-soft-out-sm);
+  transition: box-shadow var(--ui-duration-base) var(--ui-ease);
+}
+
+.ui-colorpicker:hover:not(.is-disabled) {
+  --cp-border: var(--ui-border);
+  --cp-value-fg: var(--ui-text);
+}
+
+/* Los estados activos llevan :not(.is-disabled) para empatarle la
+   especificidad al :hover de arriba. */
+.ui-colorpicker.is-open:not(.is-disabled) {
+  --cp-border: var(--ui-accent);
+  --cp-value-fg: var(--ui-text);
+}
+.ui-colorpicker.is-open:not(.is-disabled) .ui-colorpicker__trigger {
+  box-shadow: var(--ui-soft-in-sm);
+}
+
+.ui-colorpicker__panel {
+  animation: ui-soft-emerge var(--ui-duration-base) var(--ui-ease-out) 1;
+}
+
+/* El área de saturación va hundida: es una ventana a la que se le apunta. */
+.ui-colorpicker__area {
+  box-shadow: var(--ui-soft-in-sm);
+}
+
+/* La rueda de matices: es el dominio del componente, no una decisión de
+   estilo. Un selector de color tiene que mostrar todo el espectro, y eso no
+   cambia de un pack a otro. */
+.ui-colorpicker__hue .ui-slider__input::-webkit-slider-runnable-track {
+  background: linear-gradient(
+    to right,
+    hsl(0 100% 50%), hsl(60 100% 50%), hsl(120 100% 50%),
+    hsl(180 100% 50%), hsl(240 100% 50%), hsl(300 100% 50%), hsl(360 100% 50%)
+  );
+}
+.ui-colorpicker__hue .ui-slider__input::-moz-range-track {
+  background: linear-gradient(
+    to right,
+    hsl(0 100% 50%), hsl(60 100% 50%), hsl(120 100% 50%),
+    hsl(180 100% 50%), hsl(240 100% 50%), hsl(300 100% 50%), hsl(360 100% 50%)
+  );
+}
+
+/* Sobre la rueda, el tirador va neutro: si tomara el acento se perdería.
+   Neutro pero DE LA LAMINA (`--ui-surface`), no un blanco de la escala de
+   neutros: esa escala no la rehace el tema oscuro entera, y un tirador blanco
+   sobre una lámina oscura se ve de otro sistema. */
+.ui-colorpicker__hue {
+  --slider-thumb: var(--ui-surface-hover);
+}

@@ -1,0 +1,539 @@
+/* ===========================================================================
+   PACK "CLAY" — tokens
+   ---------------------------------------------------------------------------
+   Plastilina. Piezas gordas, muy redondeadas, de color, APOYADAS sobre el
+   fondo — y que se mueven como si tuvieran masa.
+
+   RIGE LA MISMA REGLA DURA: un solo color declarado (--ui-brand). Todo lo demás
+   sale de él con color relativo.
+
+   ⚠ EN QUE SE DIFERENCIA DE `soft` (Neumorphic), QUE ES EL RIESGO REAL
+   Los dos usan sombras blandas, así que conviene tener clara la diferencia:
+
+     soft   Todo es LA MISMA LAMINA: la superficie tiene el mismo color que el
+            fondo y lo único que la distingue es la luz. Nada está apoyado
+            sobre nada — está repujado.
+     clay   Son OBJETOS SEPARADOS: tienen su propio color, su propio volumen, y
+            proyectan sombra SOBRE el fondo. Se pueden levantar y mover.
+
+   De ahí salen las tres diferencias concretas: acá las piezas tienen color
+   propio, la sombra proyectada va en una sola dirección (abajo, como la de un
+   objeto real) en vez de en dos, y el movimiento tiene rebote de verdad.
+
+   Las piezas:
+
+     1. VOLUMEN DE OBJETO   Luz adentro arriba, sombra adentro abajo, y una
+                            sombra gorda y blanda proyectada hacia abajo.
+     2. MUY REDONDO         ROUNDNESS 2.2, el más alto del sistema. La
+                            plastilina no tiene aristas.
+     3. EL MOVIMIENTO ES    Todo se pasa de largo y vuelve, y lo que se aprieta
+        LA IDENTIDAD        se APLASTA. Por eso las dos perillas del pack son
+                            de movimiento y no de color.
+
+   Requiere color relativo (Chrome 119+, Safari 16.4+, Firefox 128+).
+   =========================================================================== */
+
+:root {
+  color-scheme: light dark;
+
+  /* ==================================================================== */
+  /*  =============   EL UNICO COLOR DECLARADO   ======================== */
+  /* ==================================================================== */
+  /* Un verde menta. Es la única familia de tono que no usa ningún otro pack,
+     y es el registro justo: juguetón sin ser infantil. */
+  --ui-brand: #12bfa0;      /* pack settings -> BRAND_COLOR */
+
+  /* El más redondeado del sistema. La plastilina no tiene aristas. */
+  --ui-roundness: 2.2;
+
+  --ui-on-brand-light: hsl(from var(--ui-brand) h calc(s * 0.15) 99%);
+  --ui-on-brand-dark:  hsl(from var(--ui-brand) h calc(s * 0.50) 12%);
+  --ui-on-brand: var(--ui-on-brand-dark);
+
+  /* ------------------------------------------------------ Tipografía ---- */
+  /* Redonda y de trazo parejo, para acompañar a las formas. */
+  --ui-font-sans: "Nunito", "Quicksand", "Trebuchet MS", system-ui,
+                  -apple-system, "Segoe UI", Roboto, sans-serif;
+  --ui-font-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+
+  --ui-text-xs:   0.75rem;
+  --ui-text-sm:   0.8125rem;
+  --ui-text-md:   0.9375rem;
+  --ui-text-lg:   1.0625rem;
+  --ui-text-xl:   1.3125rem;
+  --ui-text-2xl:  1.625rem;
+  --ui-text-3xl:  2.125rem;
+
+  /* Más gruesa que en los otros packs: una letra fina al lado de una pieza
+     gorda se ve endeble. */
+  --ui-weight-regular:  500;
+  --ui-weight-medium:   600;
+  --ui-weight-semibold: 700;
+  --ui-weight-bold:     800;
+
+  --ui-leading-tight:   1.25;
+  --ui-leading-normal:  1.55;
+  --ui-leading-relaxed: 1.7;
+
+  --ui-tracking-tight: 0;
+  --ui-tracking-wide:  0.04em;
+
+  /* -------------------------------------------- Espaciado (escala 4px) -- */
+  --ui-space-0:  0;
+  --ui-space-1:  0.25rem;
+  --ui-space-2:  0.5rem;
+  --ui-space-3:  0.75rem;
+  --ui-space-4:  1rem;
+  --ui-space-5:  1.25rem;
+  --ui-space-6:  1.5rem;
+  --ui-space-8:  2rem;
+  --ui-space-10: 2.5rem;
+  --ui-space-12: 3rem;
+  --ui-space-16: 4rem;
+
+  /* --------------------------------------- Espaciado fluido ------------- */
+  /* Generoso: las piezas son gordas y la sombra proyectada necesita lugar
+     para caer sin meterse sobre la de al lado. */
+  --ui-pad-block-xs:  clamp(12px, 1.5vw, 16px);
+  --ui-pad-inline-xs: clamp(14px, 1.7vw, 18px);
+  --ui-pad-block-sm:  clamp(18px, 2.2vw, 24px);
+  --ui-pad-inline-sm: clamp(20px, 2.4vw, 26px);
+  --ui-pad-block-md:  clamp(26px, 3.2vw, 36px);
+  --ui-pad-inline-md: clamp(28px, 3.4vw, 40px);
+  --ui-pad-block-lg:  clamp(34px, 4.2vw, 48px);
+  --ui-pad-inline-lg: clamp(36px, 4.4vw, 52px);
+  --ui-pad-block-xl:  clamp(46px, 5.6vw, 68px);
+  --ui-pad-inline-xl: clamp(48px, 5.8vw, 72px);
+
+  --ui-gap-none: 0;
+  --ui-gap-xs:   var(--ui-space-2);
+  --ui-gap-sm:   clamp(12px, 1.5vw, 16px);
+  --ui-gap-md:   clamp(18px, 2.2vw, 26px);
+  --ui-gap-lg:   clamp(26px, 3.2vw, 38px);
+  --ui-gap-xl:   clamp(36px, 4.4vw, 54px);
+
+  --ui-col-min: 240px;
+
+  /* ------------------------------------------------ Separadores ---------- */
+  --ui-sep-space-none: 0;
+  --ui-sep-space-xs:   var(--ui-space-2);
+  --ui-sep-space-sm:   var(--ui-space-4);
+  --ui-sep-space-md:   clamp(20px, 3vh, 28px);
+  --ui-sep-space-lg:   clamp(30px, 4.5vh, 44px);
+  --ui-sep-space-xl:   clamp(40px, 6vh, 60px);
+
+  --ui-sep-fade: 22%;
+
+  /* ------------------------------------------- Controles ----------------- */
+  /* Gordos. Una pieza de plastilina finita no existe. */
+  --ui-control-h-sm:    34px;
+  --ui-control-h-md:    46px;
+  --ui-control-h-lg:    56px;
+  --ui-control-pad-sm:  var(--ui-space-4);
+  --ui-control-pad-md:  var(--ui-space-6);
+  --ui-control-pad-lg:  var(--ui-space-8);
+  --ui-control-font-sm: var(--ui-text-sm);
+  --ui-control-font-md: var(--ui-text-md);
+  --ui-control-font-lg: var(--ui-text-lg);
+  --ui-control-gap-sm:  var(--ui-space-2);
+  --ui-control-gap-md:  var(--ui-space-3);
+  --ui-control-gap-lg:  var(--ui-space-3);
+  --ui-control-radius-sm: var(--ui-radius-lg);
+  --ui-control-radius-md: var(--ui-radius-xl);
+  --ui-control-radius-lg: var(--ui-radius-xl);
+  /* Piso del spinner. NO es su ancho: el ancho lo reserva el propio
+     control segun sus limites. Esto es para que uno de un solo digito
+     siga siendo agarrable. */
+  --ui-spinner-min-w: 3ch;
+  /* Respiro sobre los caracteres reservados: la coma, el signo y el
+     cursor no miden lo que mide un cero, que es lo que mide `ch`. */
+--ui-spinner-slack: 0.75;
+
+  --ui-slider-track-ratio: 0.42;   /* canal gordo */
+  --ui-slider-thumb-ratio: 0.78;
+  --ui-slider-thumb-w: 26px;       /* una bolita, no una barra */
+  --ui-slider-value-w: 5ch;
+
+  --ui-select-menu-max-h: 260px;
+  --ui-select-arrow: 8px;
+
+  --ui-toggle-track-ratio: 0.68;
+  --ui-toggle-aspect: 1.7;
+  --ui-toggle-knob-inset: 4px;
+  --ui-check-ratio: 0.56;
+
+  --ui-scroll-size: 14px;
+  --ui-scroll-inset: 4px;
+  --ui-scroll-size-regular: 18px;
+  --ui-scroll-inset-regular: 5px;
+
+  /* Window. ⛔ EL MARCO DE UNA VENTANA ES CUADRADO, SIEMPRE. Es el pack más
+     redondeado de todos y aun así la ventana va recta: no es negociable. */
+  --ui-window-radius: 0;
+  /* El oscurecido detras de una ventana modal. Sale de la marca como
+     todo lo demas: un negro puro no pertenece a ningun pack. */
+  --ui-window-scrim: hsl(from var(--ui-brand) h calc(s * 0.30) 6% / 0.62);
+  --ui-window-bar-h: 46px;
+  --ui-window-control-w: 48px;
+  --ui-window-glyph: 10px;
+
+  /* Progress. La mas gorda: una pieza de plastilina finita no existe. */
+  --ui-progress-h-sm: 10px;
+  --ui-progress-h-md: 16px;
+  --ui-progress-h-lg: 22px;
+  --ui-progress-ring-sm: 44px;
+  --ui-progress-ring-md: 60px;
+  --ui-progress-ring-lg: 80px;
+  /* ⚠ ESTO NO SON PIXELES: es el PORCENTAJE DEL DIAMETRO.
+     El aro se dibuja en un SVG con `viewBox="0 0 100 100"`, asi que una unidad
+     del trazo vale un centesimo del diametro. Escrito como `px` el numero
+     mentia: un `16px` sobre un aro de 64 se dibujaba de 10. Y ademas asi es
+     como tiene que ser — el trazo acompana al tamano del aro en las tres
+     variantes en vez de quedarse fijo. */
+  --ui-progress-ring-width: 22;
+
+  /* Iconos. Son de TRAZO, asi que lo que los hace de este pack es el grosor:
+     el mismo dibujo con otro calibre ya es otro icono. */
+  --ui-icon-sm: 18px;
+  --ui-icon-md: 22px;
+  --ui-icon-lg: 28px;
+  --ui-icon-stroke: 2.4px;
+
+  --ui-tabs-indicator-h: 4px;      /* gorda, como todo */
+
+  --ui-swatch-w: 2.8em;
+  --ui-picker-w: 244px;
+  --ui-picker-area-h: 140px;
+  --ui-picker-cursor: 14px;
+
+  /* No se desplaza al apretar: se APLASTA. El aplastado lo hace cada piel con
+     `scale`, que es lo que le da el peso. */
+  --ui-press-shift: 0px;
+  --ui-hover-lift: -3px;
+  --ui-disabled-opacity: 0.45;
+
+  /* ---------------------------------------------------------- Radios ---- */
+  --ui-radius-xs:   calc(7px  * var(--ui-roundness));
+  --ui-radius-sm:   calc(10px * var(--ui-roundness));
+  --ui-radius-md:   calc(14px * var(--ui-roundness));
+  --ui-radius-lg:   calc(18px * var(--ui-roundness));
+  --ui-radius-xl:   calc(24px * var(--ui-roundness));
+  --ui-radius-full: calc(999px * min(var(--ui-roundness), 1));
+  --ui-radius-circle: 50%;
+
+  /* -------------------------------------------------------- Bordes ------ */
+  --ui-border-width: 1px;
+
+  /* ==================================================================== */
+  /*  ===============   CALIBRE DEL MOVIMIENTO   ======================= */
+  /*  Acá vive la identidad del pack. Las dos perillas PROPIAS son de       */
+  /*  movimiento, no de color, porque eso es lo que este estilo ES.        */
+  /* ==================================================================== */
+
+  /* Cuánto se pasa de largo todo lo que entra o cambia de estado.
+     0 = sin rebote (y el pack deja de ser este pack). Perilla: BOUNCE. */
+  --ui-bounce-amount: var(--ui-bounce, 1);
+
+  /* Cuánto se aplasta lo que se aprieta, en fracción. Sale de la misma
+     perilla: un material que rebota mucho también se deforma mucho. */
+  --ui-squash: calc(0.06 * var(--ui-bounce-amount));
+
+  /* ------------------------------------------------------ Movimiento ---- */
+  /* Las duraciones se dividen por SPEED: 1 es el ritmo de fábrica, 2 el doble
+     de rápido. Es la segunda perilla del pack. */
+  --ui-duration-fast: calc(160ms / var(--ui-speed, 1));
+  --ui-duration-base: calc(280ms / var(--ui-speed, 1));
+  --ui-duration-slow: calc(480ms / var(--ui-speed, 1));
+  --ui-duration-loader: calc(800ms / var(--ui-speed, 1));
+  --ui-loader-width: 3px;
+
+  --ui-ease:      cubic-bezier(0.3, 0.6, 0.3, 1);
+  /* LA curva del pack: se pasa y vuelve. La mecánica ya la usa para todas las
+     ENTRADAS (el tilde del checkbox, el punto del radio, la rayita de tabs,
+     el tirador del toggle), así que con declararla acá rebota el sistema
+     entero sin tocar un solo componente. */
+  --ui-ease-out:  cubic-bezier(0.3, 1.7, 0.5, 1);
+
+  /* ⛔ LA CURVA PARA UNA ANIMACION CON PARADAS INTERMEDIAS.
+     Simetrica: arranca y termina QUIETA. Hace falta porque una curva se aplica
+     entre CADA PAR de keyframes, no a la animacion entera — ver el comentario
+     de ui-cl-drop-in. En una parada intermedia la pieza esta cambiando de
+     sentido, o sea que ahi su velocidad es cero, y la curva tiene que decir lo
+     mismo de los dos lados o se ve un tiron. */
+  --ui-ease-settle: cubic-bezier(0.45, 0, 0.55, 1);
+  --ui-ease-in:   cubic-bezier(0.6, -0.4, 0.8, 0.3);
+
+  /* ----------------------------------------------------------- Capas ---- */
+  --ui-z-base:     0;
+  --ui-z-dropdown: 1000;
+  --ui-z-sticky:   1100;
+  --ui-z-overlay:  1200;
+  --ui-z-modal:    1300;
+  --ui-z-toast:    1400;
+  --ui-z-tooltip:  1500;
+
+  /* ==================================================================== */
+  /*  NEUTROS — teñidos del brand, como siempre.                         */
+  /* ==================================================================== */
+  --ui-neutral-0:    hsl(from var(--ui-brand) h calc(s * 0.10) 100%);
+  --ui-neutral-50:   hsl(from var(--ui-brand) h calc(s * 0.16) 98%);
+  --ui-neutral-100:  hsl(from var(--ui-brand) h calc(s * 0.20) 95%);
+  --ui-neutral-200:  hsl(from var(--ui-brand) h calc(s * 0.22) 90%);
+  --ui-neutral-300:  hsl(from var(--ui-brand) h calc(s * 0.24) 80%);
+  --ui-neutral-400:  hsl(from var(--ui-brand) h calc(s * 0.24) 64%);
+  --ui-neutral-500:  hsl(from var(--ui-brand) h calc(s * 0.24) 48%);
+  --ui-neutral-600:  hsl(from var(--ui-brand) h calc(s * 0.26) 36%);
+  --ui-neutral-700:  hsl(from var(--ui-brand) h calc(s * 0.28) 26%);
+  --ui-neutral-800:  hsl(from var(--ui-brand) h calc(s * 0.32) 17%);
+  --ui-neutral-900:  hsl(from var(--ui-brand) h calc(s * 0.36) 11%);
+  --ui-neutral-950:  hsl(from var(--ui-brand) h calc(s * 0.42) 5%);
+
+  /* ==================================================================== */
+  /*  FAMILIA DE MARCA                                                   */
+  /* ==================================================================== */
+  --ui-brand-base:   var(--ui-brand);
+  --ui-brand-hover:  hsl(from var(--ui-brand) h s calc(l * 1.08));
+  --ui-brand-active: hsl(from var(--ui-brand) h s calc(l * 0.88));
+  --ui-brand-soft:   hsl(from var(--ui-brand) h calc(s * 0.70) 78%);
+  --ui-brand-subtle: hsl(from var(--ui-brand) h calc(s * 0.50) 93%);
+
+  /* ==================================================================== */
+  /*  ESTADOS — tono fijo, saturación aportada por el brand.             */
+  /* ==================================================================== */
+  --ui-red-100:   hsl(from var(--ui-brand) 8   calc(s * 0.40) 94%);
+  --ui-red-500:   hsl(from var(--ui-brand) 8   calc(s * 0.95) 62%);
+  --ui-red-600:   hsl(from var(--ui-brand) 6   calc(s * 0.95) 50%);
+  --ui-red-700:   hsl(from var(--ui-brand) 4   calc(s * 0.95) 40%);
+
+  --ui-green-100: hsl(from var(--ui-brand) 145 calc(s * 0.35) 93%);
+  --ui-green-500: hsl(from var(--ui-brand) 148 calc(s * 0.80) 46%);
+  --ui-green-600: hsl(from var(--ui-brand) 148 calc(s * 0.80) 36%);
+
+  --ui-amber-100: hsl(from var(--ui-brand) 44  calc(s * 0.45) 93%);
+  --ui-amber-500: hsl(from var(--ui-brand) 40  calc(s * 0.95) 56%);
+  --ui-amber-600: hsl(from var(--ui-brand) 36  calc(s * 0.95) 46%);
+
+  /* ==================================================================== */
+  /*  EL VOLUMEN DE LA PIEZA                                             */
+  /*  Tres capas: luz adentro arriba, sombra adentro abajo, y la sombra   */
+  /*  proyectada. Esa tercera es la que separa este pack de `soft`: acá   */
+  /*  la pieza está APOYADA sobre el fondo, no repujada en él.            */
+  /* ==================================================================== */
+  /* EL FIDEO DE PLASTILINA. Un relleno de este pack no es una franja de color:
+     es una pieza con volumen, o sea con luz arriba y sombra abajo. Se declara
+     una sola vez y lo comparten la barra, el aro y el slider — si cada uno se
+     armara el suyo, se despegarian sin que nadie lo note.
+
+     Los dos topes existen sueltos ademas del degrade porque el aro NO puede
+     llevar un degrade de CSS: la mecanica le arma uno adentro del SVG y le pide
+     los extremos por separado. */
+  --ui-clay-noodle-hi: hsl(from var(--ui-accent) h s calc(l * 1.18));
+  --ui-clay-noodle-lo: hsl(from var(--ui-accent) h s calc(l * 0.84));
+  --ui-clay-noodle: linear-gradient(
+    180deg,
+    var(--ui-clay-noodle-hi),
+    var(--ui-accent) 55%,
+    var(--ui-clay-noodle-lo)
+  );
+
+  /* EL SURCO, en dos topes. La barra lineal excava su canal con una sombra
+     hacia adentro: oscura arriba y clara abajo. Un `stroke` no acepta sombras
+     hacia adentro, asi que el aro consigue lo mismo con un degrade entre esos
+     dos tonos — el mismo hueco, dibujado de otra manera.
+     Salen del color del canal, no de uno nuevo: es LA MISMA lamina. */
+  --ui-clay-groove-hi: hsl(from var(--ui-bg-subtle) h s calc(l * 0.90));
+  --ui-clay-groove-lo: hsl(from var(--ui-bg-subtle) h s calc(l * 1.06));
+
+  --ui-clay-light: rgb(from var(--ui-neutral-0) r g b / 0.55);
+  --ui-clay-dark:  rgb(from var(--ui-neutral-950) r g b / 0.18);
+  --ui-clay-cast:  rgb(from var(--ui-neutral-950) r g b / 0.16);
+
+  --ui-clay-depth: 9px;    /* qué tan gruesa se ve la pieza */
+  --ui-clay-drop: 14px;    /* qué tan lejos cae su sombra */
+
+  --ui-clay-body:
+    inset 0 var(--ui-clay-depth) calc(var(--ui-clay-depth) * 1.4) calc(var(--ui-clay-depth) * -0.6)
+      var(--ui-clay-light),
+    inset 0 calc(var(--ui-clay-depth) * -1) calc(var(--ui-clay-depth) * 1.4) calc(var(--ui-clay-depth) * -0.6)
+      var(--ui-clay-dark),
+    0 var(--ui-clay-drop) calc(var(--ui-clay-drop) * 1.8) calc(var(--ui-clay-drop) * -0.5)
+      var(--ui-clay-cast);
+
+  /* Levantada: la sombra cae de más lejos. Es el hover. */
+  --ui-clay-lifted:
+    inset 0 var(--ui-clay-depth) calc(var(--ui-clay-depth) * 1.4) calc(var(--ui-clay-depth) * -0.6)
+      var(--ui-clay-light),
+    inset 0 calc(var(--ui-clay-depth) * -1) calc(var(--ui-clay-depth) * 1.4) calc(var(--ui-clay-depth) * -0.6)
+      var(--ui-clay-dark),
+    0 calc(var(--ui-clay-drop) * 1.7) calc(var(--ui-clay-drop) * 2.4) calc(var(--ui-clay-drop) * -0.5)
+      var(--ui-clay-cast);
+
+  /* Apretada: la sombra proyectada casi desaparece — la pieza está contra el
+     fondo — y la luz interior se da vuelta.
+     Ojo con la forma de la lista: las tres sombras están SIEMPRE, en el mismo
+     orden y con el mismo inset, porque CSS no interpola entre listas de forma
+     distinta. Es la misma lección que dejó el pack `soft`. */
+  --ui-clay-pressed:
+    inset 0 calc(var(--ui-clay-depth) * -1) calc(var(--ui-clay-depth) * 1.4) calc(var(--ui-clay-depth) * -0.6)
+      var(--ui-clay-light),
+    inset 0 var(--ui-clay-depth) calc(var(--ui-clay-depth) * 1.4) calc(var(--ui-clay-depth) * -0.6)
+      var(--ui-clay-dark),
+    0 2px 4px -2px var(--ui-clay-cast);
+
+  /* -------------------------------------------------------- Sombras ----- */
+  --ui-shadow-sm: var(--ui-clay-body);
+  --ui-shadow-md: var(--ui-clay-body);
+  --ui-shadow-lg: var(--ui-clay-lifted);
+
+  /* ------------------------------------------- Semánticos — tema claro -- */
+  --ui-bg:             var(--ui-neutral-100);
+  --ui-bg-subtle:      var(--ui-neutral-200);
+  --ui-surface:        var(--ui-neutral-50);
+  --ui-surface-hover:  var(--ui-neutral-0);
+  --ui-surface-active: var(--ui-neutral-200);
+
+  --ui-border:         rgb(from var(--ui-text) r g b / 0.08);
+  --ui-border-strong:  rgb(from var(--ui-text) r g b / 0.18);
+  --ui-line:           rgb(from var(--ui-text) r g b / 0.07);
+  --ui-line-soft:      rgb(from var(--ui-text) r g b / 0.04);
+  --ui-scroll-thumb:       rgb(from var(--ui-accent) r g b / 0.45);
+  --ui-scroll-thumb-hover: rgb(from var(--ui-accent) r g b / 0.75);
+
+  --ui-panel-from:     var(--ui-surface);
+  --ui-panel-to:       var(--ui-surface);
+
+  /* Medidos contra el peor fondo, no elegidos a ojo. Ojo con repartirlos:
+     bajar solo `subtle` lo dejaba a 4 puntos de `muted` y la jerarquia se
+     perdia — el guard de jerarquia pide al menos 5. */
+  --ui-text:           hsl(from var(--ui-brand) h calc(s * 0.40) 16%);
+  --ui-text-muted:     hsl(from var(--ui-brand) h calc(s * 0.32) 26%);
+  --ui-text-subtle:    hsl(from var(--ui-brand) h calc(s * 0.28) 34%);
+
+  --ui-accent:         hsl(from var(--ui-brand) h s calc(l * 0.82));
+  --ui-accent-hover:   hsl(from var(--ui-brand) h s calc(l * 0.72));
+  --ui-accent-active:  hsl(from var(--ui-brand) h s calc(l * 0.64));
+  --ui-accent-subtle:  rgb(from var(--ui-accent) r g b / 0.14);
+  --ui-accent-soft:    rgb(from var(--ui-accent) r g b / 0.45);
+  /* Como LETRA el verde necesita bastante mas oscuridad que como relleno:
+     al 26% daba 3.78:1 sobre la opcion elegida. */
+  --ui-accent-text:    hsl(from var(--ui-brand) h s 22%);
+  --ui-on-accent:      var(--ui-on-brand-light);
+
+  --ui-danger:         var(--ui-red-600);
+  --ui-danger-hover:   var(--ui-red-700);
+  --ui-danger-subtle:  var(--ui-red-100);
+  --ui-on-danger:      var(--ui-on-brand-light);
+
+  --ui-success:        var(--ui-green-600);
+  --ui-success-subtle: var(--ui-green-100);
+  --ui-warning:        var(--ui-amber-600);
+  --ui-warning-subtle: var(--ui-amber-100);
+
+  --ui-focus-ring:     var(--ui-accent);
+  --ui-focus-width:    3px;
+  --ui-focus-offset:   3px;
+
+  --ui-selection-bg:   rgb(from var(--ui-accent) r g b / 0.24);
+  --ui-selection-fg:   var(--ui-text);
+
+  --ui-ring-width:     4px;
+  --ui-ring:           rgb(from var(--ui-accent) r g b / 0.26);
+  --ui-ring-soft:      rgb(from var(--ui-accent) r g b / 0.14);
+}
+
+/* ===========================================================================
+   TEMA OSCURO
+   ---------------------------------------------------------------------------
+   La plastilina oscura no es la clara invertida: la luz de arriba deja de ser
+   casi blanca y pasa a ser un tono apenas más claro que la pieza. Con blanco
+   pleno sobre una pieza oscura, el volumen se ve como un borde pintado en vez
+   de como luz.
+   =========================================================================== */
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ui-clay-light: rgb(from var(--ui-neutral-0) r g b / 0.14);
+    --ui-clay-dark:  rgb(from var(--ui-neutral-950) r g b / 0.45);
+    --ui-clay-cast:  rgb(from var(--ui-neutral-950) r g b / 0.45);
+
+    --ui-bg:             hsl(from var(--ui-brand) h calc(s * 0.28) 11%);
+    --ui-bg-subtle:      hsl(from var(--ui-brand) h calc(s * 0.28) 8%);
+    --ui-surface:        hsl(from var(--ui-brand) h calc(s * 0.26) 16%);
+    --ui-surface-hover:  hsl(from var(--ui-brand) h calc(s * 0.26) 20%);
+    --ui-surface-active: hsl(from var(--ui-brand) h calc(s * 0.26) 24%);
+
+    --ui-border:         rgb(from var(--ui-text) r g b / 0.10);
+    --ui-border-strong:  rgb(from var(--ui-text) r g b / 0.22);
+    --ui-line:           rgb(from var(--ui-text) r g b / 0.08);
+    --ui-line-soft:      rgb(from var(--ui-text) r g b / 0.05);
+    --ui-scroll-thumb:       rgb(from var(--ui-accent) r g b / 0.45);
+    --ui-scroll-thumb-hover: rgb(from var(--ui-accent) r g b / 0.80);
+
+    --ui-panel-from:     var(--ui-surface);
+    --ui-panel-to:       var(--ui-surface);
+
+    --ui-text:           hsl(from var(--ui-brand) h calc(s * 0.18) 95%);
+    --ui-text-muted:     hsl(from var(--ui-brand) h calc(s * 0.20) 76%);
+    --ui-text-subtle:    hsl(from var(--ui-brand) h calc(s * 0.22) 64%);
+
+    --ui-accent:         var(--ui-brand);
+    --ui-accent-hover:   hsl(from var(--ui-brand) h s calc(l * 1.12));
+    --ui-accent-active:  hsl(from var(--ui-brand) h s calc(l * 0.9));
+    --ui-accent-subtle:  rgb(from var(--ui-accent) r g b / 0.18);
+    --ui-accent-soft:    rgb(from var(--ui-accent) r g b / 0.50);
+    --ui-accent-text:    hsl(from var(--ui-brand) h calc(s * 0.9) 72%);
+    --ui-on-accent:      var(--ui-on-brand-dark);
+
+    --ui-danger:         var(--ui-red-500);
+    --ui-danger-hover:   hsl(from var(--ui-red-500) h s calc(l * 1.12));
+    --ui-danger-subtle:  rgb(from var(--ui-red-500) r g b / 0.18);
+
+    --ui-success:        var(--ui-green-500);
+    --ui-success-subtle: rgb(from var(--ui-green-500) r g b / 0.18);
+    --ui-warning:        var(--ui-amber-500);
+    --ui-warning-subtle: rgb(from var(--ui-amber-500) r g b / 0.18);
+  }
+}
+
+:root[data-theme="dark"] {
+  --ui-clay-light: rgb(from var(--ui-neutral-0) r g b / 0.14);
+  --ui-clay-dark:  rgb(from var(--ui-neutral-950) r g b / 0.45);
+  --ui-clay-cast:  rgb(from var(--ui-neutral-950) r g b / 0.45);
+
+  --ui-bg:             hsl(from var(--ui-brand) h calc(s * 0.28) 11%);
+  --ui-bg-subtle:      hsl(from var(--ui-brand) h calc(s * 0.28) 8%);
+  --ui-surface:        hsl(from var(--ui-brand) h calc(s * 0.26) 16%);
+  --ui-surface-hover:  hsl(from var(--ui-brand) h calc(s * 0.26) 20%);
+  --ui-surface-active: hsl(from var(--ui-brand) h calc(s * 0.26) 24%);
+
+  --ui-border:         rgb(from var(--ui-text) r g b / 0.10);
+  --ui-border-strong:  rgb(from var(--ui-text) r g b / 0.22);
+  --ui-line:           rgb(from var(--ui-text) r g b / 0.08);
+  --ui-line-soft:      rgb(from var(--ui-text) r g b / 0.05);
+  --ui-scroll-thumb:       rgb(from var(--ui-accent) r g b / 0.45);
+  --ui-scroll-thumb-hover: rgb(from var(--ui-accent) r g b / 0.80);
+
+  --ui-panel-from:     var(--ui-surface);
+  --ui-panel-to:       var(--ui-surface);
+
+  --ui-text:           hsl(from var(--ui-brand) h calc(s * 0.18) 95%);
+  --ui-text-muted:     hsl(from var(--ui-brand) h calc(s * 0.20) 76%);
+  --ui-text-subtle:    hsl(from var(--ui-brand) h calc(s * 0.22) 64%);
+
+  --ui-accent:         var(--ui-brand);
+  --ui-accent-hover:   hsl(from var(--ui-brand) h s calc(l * 1.12));
+  --ui-accent-active:  hsl(from var(--ui-brand) h s calc(l * 0.9));
+  --ui-accent-subtle:  rgb(from var(--ui-accent) r g b / 0.18);
+  --ui-accent-soft:    rgb(from var(--ui-accent) r g b / 0.50);
+  --ui-accent-text:    hsl(from var(--ui-brand) h calc(s * 0.9) 72%);
+  --ui-on-accent:      var(--ui-on-brand-dark);
+
+  --ui-danger:         var(--ui-red-500);
+  --ui-danger-hover:   hsl(from var(--ui-red-500) h s calc(l * 1.12));
+  --ui-danger-subtle:  rgb(from var(--ui-red-500) r g b / 0.18);
+
+  --ui-success:        var(--ui-green-500);
+  --ui-success-subtle: rgb(from var(--ui-green-500) r g b / 0.18);
+  --ui-warning:        var(--ui-amber-500);
+  --ui-warning-subtle: rgb(from var(--ui-amber-500) r g b / 0.18);
+}

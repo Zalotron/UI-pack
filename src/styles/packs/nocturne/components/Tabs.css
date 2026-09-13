@@ -1,0 +1,27 @@
+/* -------------------------------------------- Tabs — PIEL del pack NOCTURNE */
+/* Interfaz: --tabs-fg | --tabs-fg-active | --tabs-bg-hover
+             --tabs-line | --tabs-indicator                                  */
+
+/* Sin línea de base y sin cajas: los rótulos flotan sobre el fondo y la
+   pestaña activa se marca con una rayita del degradé del pack. Es la misma
+   lógica que la navegación de un tablero — lo activo está mas ILUMINADO, no
+   encerrado. */
+.ui-tabs {
+  --tabs-fg: var(--ui-text-subtle);
+  --tabs-fg-active: var(--ui-text);
+  --tabs-bg-hover: var(--ui-surface-hover);
+  --tabs-line: transparent;
+  --tabs-indicator: var(--ui-accent);
+}
+
+.ui-tabs__tab {
+  border-radius: var(--ui-radius-md);
+  font-weight: var(--ui-weight-medium);
+}
+
+/* La rayita lleva el degradé y las puntas redondeadas: es la única pieza
+   pequeña que se permite brillar. */
+.ui-tabs__indicator {
+  background-image: var(--ui-nc-fill);
+  border-radius: var(--ui-radius-full);
+}

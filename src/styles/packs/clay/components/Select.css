@@ -1,0 +1,40 @@
+/* ----------------------------------------------- Select — PIEL del pack CLAY */
+/* Interfaz: --select-bg | --select-border | --select-menu-bg
+             --select-menu-border | --select-menu-shadow
+             --select-option-hover / -selected                                */
+
+/* El disparador es un OBJETO, no un hueco: se aprieta, no se escribe en él.
+   Por eso tiene volumen mientras que el Spinner y el TextField están
+   excavados. */
+.ui-select {
+  --select-bg: var(--ui-surface);
+  --select-border: transparent;
+  --select-menu-bg: var(--ui-surface);
+  --select-menu-border: transparent;
+  --select-menu-shadow: var(--ui-clay-lifted);
+  --select-option-hover: var(--ui-surface-active);
+  --select-option-selected: var(--ui-accent-subtle);
+}
+
+.ui-select__trigger {
+  box-shadow: var(--ui-clay-body);
+  transition:
+    box-shadow var(--ui-duration-fast) var(--ui-ease),
+    scale var(--ui-duration-fast) var(--ui-ease-out);
+}
+
+.ui-select:hover:not(.is-disabled) .ui-select__trigger {
+  box-shadow: var(--ui-clay-lifted);
+}
+
+/* Abierto = apretado: el disparador se aplasta y la lista sale de él. */
+.ui-select.is-open:not(.is-disabled) .ui-select__trigger {
+  box-shadow: var(--ui-clay-pressed);
+  scale: calc(1 + var(--ui-squash) * 0.5) calc(1 - var(--ui-squash) * 0.5);
+}
+
+.ui-select__option {
+  border-radius: var(--ui-radius-md);
+}
+
+.ui-select__option.is-selected { color: var(--ui-accent-text); }

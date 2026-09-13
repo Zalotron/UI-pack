@@ -1,0 +1,68 @@
+/* ===========================================================================
+   PACK "SOFT" — el movimiento
+   ---------------------------------------------------------------------------
+   Los keyframes del pack. Los VALORES viven en tokens.css: acá solo está la
+   coreografía.
+
+   La idea: el material es BLANDO. Nada arranca ni frena en seco, y lo que
+   aparece se pasa un poco antes de acomodarse — como algo que tiene masa.
+
+   Buena parte del movimiento de este pack NO está acá: sale de haber puesto
+   una curva con sobrepaso en `--ui-ease-out`, que es la que la mecánica ya usa
+   para las entradas (el tilde del Checkbox, el punto del Radio, la rayita de
+   Tabs). Con cambiar ese token, todo el sistema rebota sin tocar un componente.
+   Estos keyframes son para lo que la mecánica no cubre.
+   =========================================================================== */
+
+/* -- Emerger ---------------------------------------------------------------- */
+/* Para lo que APARECE ya siendo un objeto: un desplegable, un panel. No se
+   desvanece — se INFLA desde la lámina, como si el material se levantara.
+   El relieve entra después de la forma: primero crece, después toma volumen. */
+
+@keyframes ui-soft-emerge {
+  0% {
+    opacity: 0;
+    scale: 0.94;
+    box-shadow: var(--ui-soft-flat);
+  }
+  55% {
+    opacity: 1;
+    scale: 1.015;      /* el sobrepaso: se pasa de largo */
+    box-shadow: var(--ui-soft-out);
+  }
+  100% {
+    opacity: 1;
+    scale: 1;
+    box-shadow: var(--ui-soft-out);
+  }
+}
+
+/* -- Hundirse y volver ------------------------------------------------------ */
+/* El golpe de un control que se aprieta: se hunde de una y vuelve blando.
+   Se usa como remate cuando algo cambia de estado, no en cada hover. */
+
+@keyframes ui-soft-press {
+  0%   { box-shadow: var(--ui-soft-out-sm); }
+  35%  { box-shadow: var(--ui-soft-in-sm); }
+  100% { box-shadow: var(--ui-soft-out-sm); }
+}
+
+/* -- Darse vuelta ----------------------------------------------------------- */
+/* El gesto más importante del pack: un control que pasa de HUECO a OBJETO al
+   marcarse. Se pasa de largo antes de acomodarse, como algo que tiene masa.
+
+   Esto solo anima gracias a que las cuatro sombras están siempre presentes
+   (ver la nota en tokens.css): el par de adentro se apaga mientras el de
+   afuera crece, sin que la lista cambie de forma.
+
+   Las marcas chicas (el tilde, el punto) NO llevan keyframes: la mecánica ya
+   las anima con `scale`, y como este pack puso una curva con sobrepaso en
+   `--ui-ease-out`, ya entran rebotando solas. Animarles `rotate` acá sería un
+   error: el tilde del Checkbox usa `rotate: 45deg` como base y el keyframe se
+   lo llevaría puesto. */
+
+@keyframes ui-soft-swell {
+  0%   { box-shadow: var(--ui-soft-in-sm); }
+  60%  { box-shadow: var(--ui-soft-lift); }
+  100% { box-shadow: var(--ui-soft-out-sm); }
+}

@@ -1,0 +1,50 @@
+/* ------------------------------------------------- Tabs — PIEL del pack SOFT */
+/* Interfaz: --tabs-fg | --tabs-fg-active | --tabs-bg-hover
+             --tabs-line | --tabs-indicator                                  */
+
+/* La pestaña activa EMERGE de la fila. Es la manera del pack de decir
+   "estás acá": no se pinta distinto, sobresale.
+
+   SIN RAYITA. En un sistema plano la barra de abajo es la señal del estado
+   activo, pero acá pelea con el material: la pestaña ya está levantada, y una
+   barra pegada a su borde inferior se lee como otro lenguaje encima del
+   relieve. El estado lo llevan el relieve y el color del rótulo, que sí tiene
+   contraste medible — a diferencia de la sombra, que es un indicio débil.
+   Para volver a tenerla alcanza con darle un color a --tabs-indicator. */
+
+.ui-tabs {
+  --tabs-fg: var(--ui-text-muted);
+  --tabs-fg-active: var(--ui-accent-text);
+  --tabs-bg-hover: transparent;
+  --tabs-line: transparent;
+  --tabs-indicator: transparent;
+}
+
+/* ⚠ LA FILA NECESITA AIRE O RECORTA LAS SOMBRAS.
+   La mecánica fija `overflow-y: hidden` en la lista (sin eso, la rayita
+   apoyada abajo generaba una barra de scroll vertical). El recorte ocurre en
+   la caja de PADDING, y la lista no tenía padding: la sombra de la pestaña
+   levantada se cortaba en seco arriba y abajo.
+
+   El aire se calcula con las mismas perillas del relieve, así que si se
+   cambia el calibre de la sombra, el lugar que ocupa acompaña solo. */
+.ui-tabs__list {
+  padding: calc(var(--ui-soft-distance-sm) + var(--ui-soft-blur-sm))
+           var(--ui-soft-distance-sm);
+}
+
+.ui-tabs__tab {
+  border-radius: var(--ui-radius-md);
+  transition:
+    color var(--ui-duration-fast) var(--ui-ease),
+    box-shadow var(--ui-duration-base) var(--ui-ease);
+}
+
+.ui-tabs__tab.is-active {
+  box-shadow: var(--ui-soft-out-sm);
+}
+
+/* Al pasar el mouse por una inactiva, apenas se insinúa el hueco. */
+.ui-tabs__tab:hover:not(.is-disabled):not(.is-active) {
+  box-shadow: var(--ui-soft-in-sm);
+}

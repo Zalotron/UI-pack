@@ -1,0 +1,29 @@
+/* ------------------------------------------ RadioGroup — PIEL del pack CYBER */
+/* Interfaz: --radio-bg | --radio-border | --radio-fill | --radio-ring         */
+
+.ui-radiogroup {
+  --radio-bg: var(--ui-bg-subtle);
+  --radio-border: var(--ui-border-strong);
+  --radio-fill: var(--ui-accent);
+}
+
+.ui-radio:hover:not(.is-disabled) {
+  --radio-border: var(--ui-accent);
+  --radio-ring: var(--ui-ring-soft);
+}
+
+/* :not(.is-disabled) para empatarle la especificidad al hover de arriba. */
+.ui-radio.is-checked:not(.is-disabled) {
+  --radio-border: var(--ui-accent);
+}
+
+/* Elegido = encendido, igual que el checkbox: los dos significan lo mismo, así
+   que glitchean igual. */
+.ui-radio.is-checked:not(.is-disabled) .ui-radio__dot {
+  box-shadow: var(--ui-glow);
+  animation: var(--ui-glitch-anim-move);
+}
+
+.ui-radio.is-checked:not(.is-disabled) .ui-radio__label {
+  animation: var(--ui-glitch-anim-text);
+}

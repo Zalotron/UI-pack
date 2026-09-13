@@ -1,0 +1,52 @@
+/* ----------------------------------------------- Toggle — PIEL del pack RISO */
+/* Interfaz: --toggle-track | --toggle-track-on | --toggle-knob-bg
+             --toggle-border | --toggle-ring                                  */
+
+/* Un canal impreso y una plaqueta recortada que corre por adentro. Apagado el
+   canal es papel; encendido se imprime de tinta con su trama. */
+.ui-toggle {
+  --toggle-track: transparent;
+  --toggle-track-on: var(--ui-accent);
+  --toggle-border: var(--ui-border);
+  --toggle-knob-bg: var(--ui-surface);
+}
+
+/* ⚠ LA PLANCHA CORRIDA VA EN EL CANAL, QUE ES LA PIEZA DE AFUERA.
+   El canal es lo que el toggle ES: la plaqueta corre por adentro. Si la única
+   corrida está en la plaqueta, el control entero se lee como una pieza suelta
+   flotando y el canal no parece impreso. */
+.ui-toggle__track {
+  box-shadow: var(--ui-misprint);
+
+  /* Y la plaqueta imprime la SUYA, pero recortada por el canal: una segunda
+     tinta que se sale del canal se lee como suciedad, no como registro.
+     Recortarla adentro es además lo que pasa de verdad — las dos planchas
+     imprimen dentro de la misma forma. */
+  overflow: hidden;
+}
+
+/* El canal encendido lleva trama: es un relleno de color, y en este pack un
+   relleno de color nunca es macizo. */
+.ui-toggle.is-checked .ui-toggle__track {
+  /* LA TRAMA. Dos grillas corridas media celda: la diagonal a 45 grados.
+     Con longhands a proposito — ver tokens.css. */
+  background-image: var(--ui-riso-dot), var(--ui-riso-dot);
+  background-position: 0 0, var(--ui-halftone-half);
+  background-size: var(--ui-halftone-size), var(--ui-halftone-size);
+  background-blend-mode: multiply;
+}
+
+/* La plaqueta: su corrida existe pero vive recortada por el canal de arriba. */
+.ui-toggle__knob {
+  border: var(--ui-border-width) solid var(--ui-border);
+  box-shadow: var(--ui-misprint);
+  transition: box-shadow var(--ui-duration-fast) var(--ui-ease);
+}
+
+.ui-toggle:hover:not(.is-disabled) {
+  --toggle-knob-bg: var(--ui-surface);
+}
+
+.ui-toggle.is-disabled .ui-toggle__knob {
+  box-shadow: none;
+}

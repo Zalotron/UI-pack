@@ -1,0 +1,15 @@
+/* ------------------------------------- Container — PIEL del pack _template */
+/* Solo estética. La mecánica está en src/components/Container/Container.css.
+   Interfaz a rellenar:
+     --container-bg | --container-border-color | --container-shadow          */
+
+.ui-container--panel   { --container-bg: var(--ui-surface); --container-border-color: var(--ui-line); }
+.ui-container--solid   { --container-bg: var(--ui-surface); --container-border-color: var(--ui-line); }
+.ui-container--outline { --container-bg: transparent;       --container-border-color: var(--ui-border-strong); }
+.ui-container--ghost   { --container-bg: transparent;       --container-border-color: transparent; }
+
+.ui-container--no-border { --container-border-color: transparent; }
+
+.ui-container.is-interactive:hover {
+  --container-border-color: var(--ui-accent-soft);
+}

@@ -1,0 +1,22 @@
+/* ------------------------------------------ Select — PIEL del pack _template */
+/* Interfaz: --select-bg | --select-border | --select-menu-bg |
+             --select-menu-shadow | --select-option-hover/-selected          */
+
+.ui-select {
+  --select-bg: var(--ui-surface);
+  --select-border: var(--ui-border);
+  --select-menu-bg: var(--ui-surface);
+  --select-menu-border: var(--ui-border);
+  --select-menu-shadow: var(--ui-shadow-lg);
+  --select-option-hover: var(--ui-surface-hover);
+  --select-option-selected: var(--ui-accent-subtle);
+}
+
+.ui-select:hover:not(.is-disabled) { --select-border: var(--ui-border-strong); }
+/* Los estados activos llevan :not(.is-disabled) para empatarle la
+   especificidad al :hover de arriba. Sin eso el hover gana y el control
+   se ve MAS apagado con el mouse encima que sin el. */
+.ui-select.is-open:not(.is-disabled) { --select-border: var(--ui-accent); }
+
+.ui-select.is-open:not(.is-disabled) .ui-select__trigger { background: var(--ui-surface-hover); }
+.ui-select__option.is-selected { color: var(--ui-accent); }

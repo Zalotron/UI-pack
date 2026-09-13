@@ -1,0 +1,39 @@
+/* --------------------------------------------- Checkbox — PIEL del pack SOFT */
+/* Interfaz: --check-bg | --check-bg-on | --check-border | --check-mark
+             --check-ring                                                     */
+
+/* Sin marcar es un HUECO; marcado se da vuelta y se convierte en un OBJETO
+   que sobresale. Es el gesto central del pack, y se ve entero en 17 píxeles. */
+.ui-checkbox {
+  --check-bg: var(--ui-surface);
+  --check-bg-on: var(--ui-accent);
+  --check-border: var(--ui-line);
+  --check-mark: var(--ui-on-accent);
+}
+
+.ui-checkbox__box {
+  box-shadow: var(--ui-soft-in-sm);
+  transition:
+    background var(--ui-duration-fast) var(--ui-ease),
+    border-color var(--ui-duration-fast) var(--ui-ease),
+    box-shadow var(--ui-duration-base) var(--ui-ease);
+}
+
+.ui-checkbox:hover:not(.is-disabled) {
+  --check-border: var(--ui-border);
+}
+
+/* :not(.is-disabled) para empatarle la especificidad al hover de arriba. */
+.ui-checkbox.is-checked:not(.is-disabled),
+.ui-checkbox.is-indeterminate:not(.is-disabled) {
+  --check-border: transparent;
+}
+
+/* Darse vuelta: de hueco a objeto, pasándose de largo antes de acomodarse.
+   Solo anima porque las cuatro sombras están siempre presentes — ver la nota
+   en tokens.css. */
+.ui-checkbox.is-checked:not(.is-disabled) .ui-checkbox__box,
+.ui-checkbox.is-indeterminate:not(.is-disabled) .ui-checkbox__box {
+  box-shadow: var(--ui-soft-out-sm);
+  animation: ui-soft-swell var(--ui-duration-slow) var(--ui-ease-out) 1;
+}

@@ -1,0 +1,559 @@
+/* ===========================================================================
+   PACK "CYBER" — tokens
+   ---------------------------------------------------------------------------
+   Cyberpunk: negro de fondo, neón encima. Nada es suave — ni las esquinas, ni
+   los bordes, ni la tipografía.
+
+   RIGE LA MISMA REGLA DURA: acá hay UN SOLO color declarado (--ui-brand).
+   Todo lo demás sale de él con color relativo. Ni un #hex ni un rgb() literal.
+
+   Las piezas del estilo:
+
+     1. NEON COMPLEMENTARIO  El segundo color no se declara: es el brand corrido
+                             160° de tono. Con un brand cian da magenta — el par
+                             clásico del género — y sigue habiendo un solo color.
+     2. RESPLANDOR           Lo encendido no se pinta, se ILUMINA: halos de
+                             box-shadow del color del acento. Es lo que separa
+                             "azul sobre negro" de "neón".
+     3. SCANLINES            Rayas horizontales finísimas sobre las superficies.
+                             Le dan textura de monitor CRT.
+     4. ESQUINAS HUD         Corchetes en dos esquinas, como una mira. Se dibujan
+                             con capas de `background`, NO con pseudo-elementos
+                             ni clip-path: así no recortan nada de adentro (un
+                             desplegable abierto tiene que poder salirse).
+     5. TIPOGRAFIA MONO      Todo en monoespaciada y con más espaciado entre
+                             letras. Es lo que hace que se lea como terminal.
+
+   Requiere color relativo (Chrome 119+, Safari 16.4+, Firefox 128+).
+   =========================================================================== */
+
+:root {
+  color-scheme: light dark;
+
+  /* ==================================================================== */
+  /*  =============   EL UNICO COLOR DECLARADO   ======================== */
+  /* ==================================================================== */
+  --ui-brand: #00f0ff;      /* pack settings -> BRAND_COLOR */
+
+  /* Cero curvas. El cyberpunk no tiene esquinas blandas.
+     Es el fallback: manda pack settings -> ROUNDNESS */
+  --ui-roundness: 0;
+
+  /* Sobre un neón pleno el texto va OSCURO: un cian saturado tiene demasiada
+     luminancia para sostener texto blanco. Lo decide config.js midiendo. */
+  --ui-on-brand-light: hsl(from var(--ui-brand) h calc(s * 0.10) 97%);
+  --ui-on-brand-dark:  hsl(from var(--ui-brand) h calc(s * 0.60) 6%);
+  --ui-on-brand: var(--ui-on-brand-dark);
+
+  /* ------------------------------------------------------ Tipografía ---- */
+  /* Monoespaciada en TODO, no solo en los valores: es la mitad del carácter
+     del estilo. Se eligen familias que existen en cualquier sistema — este
+     proyecto no carga fuentes externas. */
+  --ui-font-sans: ui-monospace, "JetBrains Mono", "Cascadia Mono", Consolas,
+                  "DejaVu Sans Mono", monospace;
+  --ui-font-mono: ui-monospace, "JetBrains Mono", "Cascadia Mono", Consolas,
+                  "DejaVu Sans Mono", monospace;
+
+  --ui-text-xs:   0.6875rem;
+  --ui-text-sm:   0.8125rem;
+  --ui-text-md:   0.875rem;
+  --ui-text-lg:   1rem;
+  --ui-text-xl:   1.25rem;
+  --ui-text-2xl:  1.5rem;
+  --ui-text-3xl:  2rem;
+
+  --ui-weight-regular:  400;
+  --ui-weight-medium:   500;
+  --ui-weight-semibold: 600;
+  --ui-weight-bold:     700;
+
+  --ui-leading-tight:   1.2;
+  --ui-leading-normal:  1.5;
+  --ui-leading-relaxed: 1.7;
+
+  /* Letras separadas: le da el aire de rótulo de máquina. */
+  --ui-tracking-tight: 0.01em;
+  --ui-tracking-wide:  0.12em;
+
+  /* -------------------------------------------- Espaciado (escala 4px) -- */
+  --ui-space-0:  0;
+  --ui-space-1:  0.25rem;
+  --ui-space-2:  0.5rem;
+  --ui-space-3:  0.75rem;
+  --ui-space-4:  1rem;
+  --ui-space-5:  1.25rem;
+  --ui-space-6:  1.5rem;
+  --ui-space-8:  2rem;
+  --ui-space-10: 2.5rem;
+  --ui-space-12: 3rem;
+  --ui-space-16: 4rem;
+
+  /* --------------------------------------- Espaciado fluido ------------- */
+  /* Más apretado que los otros packs: una consola aprovecha el espacio. */
+  --ui-pad-block-xs:  clamp(8px, 1vw, 12px);
+  --ui-pad-inline-xs: clamp(8px, 1vw, 12px);
+  --ui-pad-block-sm:  clamp(14px, 1.8vw, 18px);
+  --ui-pad-inline-sm: clamp(12px, 1.5vw, 16px);
+  --ui-pad-block-md:  clamp(20px, 2.8vw, 28px);
+  --ui-pad-inline-md: clamp(16px, 2.2vw, 24px);
+  --ui-pad-block-lg:  clamp(28px, 3.6vw, 40px);
+  --ui-pad-inline-lg: clamp(22px, 2.8vw, 34px);
+  --ui-pad-block-xl:  clamp(40px, 5vw, 64px);
+  --ui-pad-inline-xl: clamp(28px, 3.6vw, 48px);
+
+  --ui-gap-none: 0;
+  --ui-gap-xs:   var(--ui-space-2);
+  --ui-gap-sm:   clamp(10px, 1.2vw, 14px);
+  --ui-gap-md:   clamp(14px, 1.8vw, 20px);
+  --ui-gap-lg:   clamp(20px, 2.6vw, 32px);
+  --ui-gap-xl:   clamp(28px, 3.6vw, 48px);
+
+  --ui-col-min: 240px;
+
+  /* ------------------------------------------------ Separadores ---------- */
+  --ui-sep-space-none: 0;
+  --ui-sep-space-xs:   var(--ui-space-1);
+  --ui-sep-space-sm:   var(--ui-space-3);
+  --ui-sep-space-md:   clamp(16px, 2.5vh, 24px);
+  --ui-sep-space-lg:   clamp(24px, 4vh, 40px);
+  --ui-sep-space-xl:   clamp(32px, 5.5vh, 56px);
+
+  /* Corto: la línea llega casi hasta la punta, como un trazo de circuito. */
+  --ui-sep-fade: 6%;
+
+  /* ------------------------------------------- Controles ----------------- */
+  --ui-control-h-sm:    26px;
+  --ui-control-h-md:    34px;
+  --ui-control-h-lg:    42px;
+  --ui-control-pad-sm:  var(--ui-space-3);
+  --ui-control-pad-md:  var(--ui-space-4);
+  --ui-control-pad-lg:  var(--ui-space-6);
+  --ui-control-font-sm: var(--ui-text-xs);
+  --ui-control-font-md: var(--ui-text-sm);
+  --ui-control-font-lg: var(--ui-text-md);
+  --ui-control-gap-sm:  var(--ui-space-1);
+  --ui-control-gap-md:  var(--ui-space-2);
+  --ui-control-gap-lg:  var(--ui-space-2);
+  --ui-control-radius-sm: var(--ui-radius-sm);
+  --ui-control-radius-md: var(--ui-radius-md);
+  --ui-control-radius-lg: var(--ui-radius-lg);
+  /* Piso del spinner. NO es su ancho: el ancho lo reserva el propio
+     control segun sus limites. Esto es para que uno de un solo digito
+     siga siendo agarrable. */
+  --ui-spinner-min-w: 3ch;
+  /* Respiro sobre los caracteres reservados: la coma, el signo y el
+     cursor no miden lo que mide un cero, que es lo que mide `ch`. */
+--ui-spinner-slack: 0.75;
+
+  --ui-slider-track-ratio: 0.24;   /* canal fino, de instrumento */
+  --ui-slider-thumb-ratio: 0.7;
+  --ui-slider-thumb-w: 4px;        /* cursor angosto, como una aguja */
+  --ui-slider-value-w: 5ch;
+
+  --ui-select-menu-max-h: 260px;
+  --ui-select-arrow: 8px;
+
+  --ui-toggle-track-ratio: 0.52;
+  --ui-toggle-aspect: 2;           /* más rectangular: es un interruptor */
+  --ui-toggle-knob-inset: 2px;
+  --ui-check-ratio: 0.46;
+
+  --ui-scroll-size: 10px;
+  --ui-scroll-inset: 3px;
+  --ui-scroll-size-regular: 14px;
+  --ui-scroll-inset-regular: 4px;
+
+  /* Window. ⛔ EL MARCO DE UNA VENTANA ES CUADRADO, SIEMPRE. Acá además cae
+     de maduro: todo el pack es de esquina viva. */
+  --ui-window-radius: 0;
+  /* El oscurecido detras de una ventana modal. Sale de la marca como
+     todo lo demas: un negro puro no pertenece a ningun pack. */
+  --ui-window-scrim: hsl(from var(--ui-brand) h calc(s * 0.30) 6% / 0.62);
+  --ui-window-bar-h: 32px;
+  --ui-window-control-w: 44px;
+  --ui-window-glyph: 10px;
+
+  /* Progress. Fina y larga, como la barra de carga de una consola. */
+  --ui-progress-h-sm: 3px;
+  --ui-progress-h-md: 5px;
+  --ui-progress-h-lg: 8px;
+  --ui-progress-ring-sm: 30px;
+  --ui-progress-ring-md: 42px;
+  --ui-progress-ring-lg: 60px;
+  /* ⚠ ESTO NO SON PIXELES: es el PORCENTAJE DEL DIAMETRO.
+     El aro se dibuja en un SVG con `viewBox="0 0 100 100"`, asi que una unidad
+     del trazo vale un centesimo del diametro. Escrito como `px` el numero
+     mentia: un `16px` sobre un aro de 64 se dibujaba de 10. Y ademas asi es
+     como tiene que ser — el trazo acompana al tamano del aro en las tres
+     variantes en vez de quedarse fijo. */
+  --ui-progress-ring-width: 10;
+
+  /* Iconos. Son de TRAZO, asi que lo que los hace de este pack es el grosor:
+     el mismo dibujo con otro calibre ya es otro icono. */
+  --ui-icon-sm: 16px;
+  --ui-icon-md: 20px;
+  --ui-icon-lg: 24px;
+  --ui-icon-stroke: 1.5px;
+
+  --ui-tabs-indicator-h: 2px;
+
+  --ui-swatch-w: 2.6em;
+  --ui-picker-w: 232px;
+  --ui-picker-area-h: 136px;
+  --ui-picker-cursor: 12px;
+
+  --ui-press-shift: 1px;
+  --ui-hover-lift: -1px;
+  --ui-disabled-opacity: 0.35;
+
+  /* ---------------------------------------------------------- Radios ---- */
+  /* La escala existe y respeta ROUNDNESS, pero el pack arranca en 0: todo
+     recto. Si alguien sube ROUNDNESS, el sistema acompaña. */
+  --ui-radius-xs:   calc(2px * var(--ui-roundness));
+  --ui-radius-sm:   calc(3px * var(--ui-roundness));
+  --ui-radius-md:   calc(4px * var(--ui-roundness));
+  --ui-radius-lg:   calc(6px * var(--ui-roundness));
+  --ui-radius-xl:   calc(8px * var(--ui-roundness));
+  --ui-radius-full: calc(999px * min(var(--ui-roundness), 1));
+  --ui-radius-circle: 50%;
+
+  /* -------------------------------------------------------- Bordes ------ */
+  --ui-border-width: 1px;
+
+  /* ------------------------------------------------------ Movimiento ---- */
+  /* Rápido y seco: una consola responde al instante, no se desliza. */
+  --ui-duration-fast: 80ms;
+  --ui-duration-base: 140ms;
+  --ui-duration-slow: 240ms;
+  --ui-duration-loader: 500ms;
+  --ui-loader-width: 2px;
+  --ui-ease:      cubic-bezier(0.2, 0, 0, 1);
+  --ui-ease-out:  cubic-bezier(0.1, 0.9, 0.2, 1);
+  --ui-ease-in:   cubic-bezier(0.7, 0, 0.9, 0.3);
+
+  /* ----------------------------------------------------------- Capas ---- */
+  --ui-z-base:     0;
+  --ui-z-dropdown: 1000;
+  --ui-z-sticky:   1100;
+  --ui-z-overlay:  1200;
+  --ui-z-modal:    1300;
+  --ui-z-toast:    1400;
+  --ui-z-tooltip:  1500;
+
+  /* ==================================================================== */
+  /*  NEUTROS — casi negros, teñidos del brand.                          */
+  /* ==================================================================== */
+  --ui-neutral-0:    hsl(from var(--ui-brand) h calc(s * 0.05) 100%);
+  --ui-neutral-50:   hsl(from var(--ui-brand) h calc(s * 0.08) 97%);
+  --ui-neutral-100:  hsl(from var(--ui-brand) h calc(s * 0.10) 93%);
+  --ui-neutral-200:  hsl(from var(--ui-brand) h calc(s * 0.12) 86%);
+  --ui-neutral-300:  hsl(from var(--ui-brand) h calc(s * 0.14) 74%);
+  --ui-neutral-400:  hsl(from var(--ui-brand) h calc(s * 0.16) 58%);
+  --ui-neutral-500:  hsl(from var(--ui-brand) h calc(s * 0.18) 44%);
+  --ui-neutral-600:  hsl(from var(--ui-brand) h calc(s * 0.20) 33%);
+  --ui-neutral-700:  hsl(from var(--ui-brand) h calc(s * 0.24) 23%);
+  --ui-neutral-800:  hsl(from var(--ui-brand) h calc(s * 0.28) 14%);
+  --ui-neutral-900:  hsl(from var(--ui-brand) h calc(s * 0.34) 8%);
+  --ui-neutral-950:  hsl(from var(--ui-brand) h calc(s * 0.42) 3%);
+
+  /* ==================================================================== */
+  /*  EL PAR DE NEONES                                                   */
+  /*  El segundo no se declara: es el brand corrido 160°. Con un brand    */
+  /*  cian sale magenta. Cambiá BRAND_COLOR y el par se recalcula solo.   */
+  /* ==================================================================== */
+  --ui-neon-1:       var(--ui-brand);
+  --ui-neon-2:       hsl(from var(--ui-brand) calc(h + 160) calc(s * 1.0) 58%);
+  --ui-neon-3:       hsl(from var(--ui-brand) calc(h + 70)  calc(s * 1.0) 55%);
+
+  --ui-brand-base:   var(--ui-brand);
+  --ui-brand-hover:  hsl(from var(--ui-brand) h s calc(l * 1.15));
+  --ui-brand-active: hsl(from var(--ui-brand) h s calc(l * 0.82));
+  --ui-brand-soft:   hsl(from var(--ui-brand) h calc(s * 0.8) 62%);
+  --ui-brand-subtle: hsl(from var(--ui-brand) h calc(s * 0.5) 88%);
+
+  /* ==================================================================== */
+  /*  ESTADOS — tono fijo, saturación aportada por el brand.             */
+  /* ==================================================================== */
+  --ui-red-100:   hsl(from var(--ui-brand) 348 calc(s * 0.40) 92%);
+  --ui-red-500:   hsl(from var(--ui-brand) 348 calc(s * 1.0)  58%);
+  --ui-red-600:   hsl(from var(--ui-brand) 346 calc(s * 1.0)  48%);
+  --ui-red-700:   hsl(from var(--ui-brand) 344 calc(s * 1.0)  40%);
+
+  --ui-green-100: hsl(from var(--ui-brand) 145 calc(s * 0.35) 92%);
+  --ui-green-500: hsl(from var(--ui-brand) 145 calc(s * 1.0)  50%);
+  --ui-green-600: hsl(from var(--ui-brand) 145 calc(s * 1.0)  40%);
+
+  --ui-amber-100: hsl(from var(--ui-brand) 48  calc(s * 0.45) 92%);
+  --ui-amber-500: hsl(from var(--ui-brand) 48  calc(s * 1.0)  55%);
+  --ui-amber-600: hsl(from var(--ui-brand) 44  calc(s * 1.0)  46%);
+
+  /* ==================================================================== */
+  /*  ===============   CALIBRE DEL NEON   ============================= */
+  /*  Las perillas del estilo. Para subir o bajar el "voltaje" se tocan   */
+  /*  ESTOS números, no los degradés y sombras de abajo.                  */
+  /* ==================================================================== */
+
+  /* Intensidad de los halos. 0 apaga todo el neón de una.
+     Este es el valor del tema CLARO (que es el que define :root). El oscuro
+     lo sube a 0.55 en su propio bloque: sobre negro el neón puede ir pleno,
+     sobre un fondo pálido el mismo halo solo ensucia. */
+  --ui-glow-strength: 0.22;
+  --ui-glow-reach: 10px;      /* cuánto se derrama el halo */
+
+  /* Las rayas de monitor. */
+  --ui-scan-opacity: 0.20;
+  --ui-scan-step: 3px;        /* cada cuánto se repite la raya */
+
+  /* Los corchetes de esquina. */
+  --ui-hud-size: 14px;        /* largo de cada brazo */
+  --ui-hud-weight: 2px;       /* grosor */
+
+  /* El glitch. Dispara en el CAMBIO DE ESTADO y dura un suspiro: permanente
+     sería ruido. Subir la duración lo vuelve aparatoso enseguida. */
+  --ui-glitch-duration: 260ms;
+  --ui-glitch-shift: 2px;     /* cuánto se corre cada copia de color */
+
+  /* ==================================================================== */
+  /*  LAS PIEZAS — se arman UNA vez con el calibre de arriba.            */
+  /* ==================================================================== */
+
+  /* Halo de neón. Dos capas: un contorno pegado y un derrame amplio. */
+  --ui-glow: 0 0 0 var(--ui-border-width) rgb(from var(--ui-accent) r g b / calc(var(--ui-glow-strength) * 0.9)),
+             0 0 var(--ui-glow-reach) rgb(from var(--ui-accent) r g b / var(--ui-glow-strength));
+
+  /* Versión discreta, para lo que está en reposo. */
+  --ui-glow-soft: 0 0 calc(var(--ui-glow-reach) * 0.7)
+                  rgb(from var(--ui-accent) r g b / calc(var(--ui-glow-strength) * 0.4));
+
+  /* Halo hacia adentro: el borde de una caja hundida que brilla por dentro. */
+  --ui-glow-inset: inset 0 0 calc(var(--ui-glow-reach) * 0.8)
+                   rgb(from var(--ui-accent) r g b / calc(var(--ui-glow-strength) * 0.28));
+
+  /* Halo del neón complementario, para lo destructivo. */
+  --ui-glow-alt: 0 0 var(--ui-glow-reach) rgb(from var(--ui-neon-2) r g b / var(--ui-glow-strength));
+
+  /* Textura de monitor. Va como capa de `background`, encima del relleno. */
+  --ui-scanlines: repeating-linear-gradient(
+    180deg,
+    rgb(from var(--ui-neutral-950) r g b / var(--ui-scan-opacity)) 0 1px,
+    rgb(from var(--ui-neutral-950) r g b / 0) 1px var(--ui-scan-step)
+  );
+
+  /* Los corchetes de esquina ya no son capas de `background`: eran barras
+     rectas y ROUNDNESS las recortaba. Ahora son un borde enmascarado en la
+     piel del Container, que se curva junto con el contenedor. Acá quedan
+     solo sus medidas: --ui-hud-size y --ui-hud-weight, arriba en el calibre. */
+
+  /* Relleno de barras: el neón se degrada hacia su complementario. */
+  --ui-fill-from: var(--ui-accent);
+  --ui-fill-to:   hsl(from var(--ui-accent) calc(h + 42) s calc(l * 1.05));
+
+  /* ==================================================================== */
+  /*  LAS PIEZAS DEL GLITCH                                              */
+  /*  La aberración cromática usa los DOS NEONES del pack, que salen del  */
+  /*  brand. Un glitch rojo/cian hardcodeado rompería la regla de un      */
+  /*  solo color y además no acompañaría al cambiar BRAND_COLOR.          */
+  /* ==================================================================== */
+  --ui-glitch-rgb-a:
+    drop-shadow(calc(var(--ui-glitch-shift) * -1) 0 var(--ui-neon-2))
+    drop-shadow(var(--ui-glitch-shift) 0 var(--ui-neon-1));
+  --ui-glitch-rgb-b:
+    drop-shadow(var(--ui-glitch-shift) 0 var(--ui-neon-2))
+    drop-shadow(calc(var(--ui-glitch-shift) * -1) 0 var(--ui-neon-1));
+
+  /* En texto la aberración va con text-shadow: sigue la forma de las letras
+     en vez del rectángulo de la caja. */
+  --ui-glitch-text-a:
+    calc(var(--ui-glitch-shift) * -1) 0 var(--ui-neon-2),
+    var(--ui-glitch-shift) 0 var(--ui-neon-1);
+  --ui-glitch-text-b:
+    var(--ui-glitch-shift) 0 var(--ui-neon-2),
+    calc(var(--ui-glitch-shift) * -1) 0 var(--ui-neon-1);
+
+  /* Coreografías listas. `steps(1, end)` es lo que las hace SALTAR en vez de
+     deslizarse: cada keyframe sostiene su valor y salta al siguiente.
+     Interpolado, el desplazamiento de color queda como un bamboleo suave —
+     lo contrario de una falla de señal. */
+  --ui-glitch-anim:      ui-cy-glitch var(--ui-glitch-duration) steps(1, end) 1;
+  --ui-glitch-anim-move: ui-cy-glitch var(--ui-glitch-duration) steps(1, end) 1,
+                         ui-cy-jitter var(--ui-glitch-duration) steps(1, end) 1;
+  --ui-glitch-anim-text: ui-cy-glitch-text var(--ui-glitch-duration) steps(1, end) 1;
+  --ui-glitch-anim-boot: ui-cy-boot var(--ui-glitch-duration) steps(1, end) 1;
+
+  /* -------------------------------------------------------- Sombras ----- */
+  /* Duras y cortas: acá la profundidad la da la luz, no el desenfoque. */
+  --ui-shadow-sm: 0 1px 0 rgb(from var(--ui-neutral-950) r g b / 0.7);
+  --ui-shadow-md: 0 2px 0 rgb(from var(--ui-neutral-950) r g b / 0.8),
+                  0 4px 16px rgb(from var(--ui-neutral-950) r g b / 0.6);
+  --ui-shadow-lg: 0 3px 0 rgb(from var(--ui-neutral-950) r g b / 0.9),
+                  0 10px 34px rgb(from var(--ui-neutral-950) r g b / 0.75);
+
+  /* ------------------------------------------- Semánticos — tema claro -- */
+  /* "Consola de día": fondo pálido y frío, tinta casi negra. El neón pleno no
+     sirve como texto sobre claro — no tiene contraste — así que en este tema
+     el acento se oscurece y el brillo se reduce (--ui-glow-strength, arriba
+     en el calibre). El carácter lo sostienen la tipografía, los corchetes y
+     las esquinas vivas. */
+  --ui-bg:             hsl(from var(--ui-brand) h calc(s * 0.12) 95%);
+  --ui-bg-subtle:      hsl(from var(--ui-brand) h calc(s * 0.14) 91%);
+  --ui-surface:        hsl(from var(--ui-brand) h calc(s * 0.10) 99%);
+  --ui-surface-hover:  hsl(from var(--ui-brand) h calc(s * 0.16) 93%);
+  --ui-surface-active: hsl(from var(--ui-brand) h calc(s * 0.20) 87%);
+
+  --ui-border:         hsl(from var(--ui-brand) h calc(s * 0.25) 72%);
+  --ui-border-strong:  hsl(from var(--ui-brand) h calc(s * 0.40) 52%);
+  --ui-line:           rgb(from var(--ui-text) r g b / 0.20);
+  --ui-line-soft:      rgb(from var(--ui-text) r g b / 0.12);
+  --ui-scroll-thumb:       rgb(from var(--ui-accent) r g b / 0.45);
+  --ui-scroll-thumb-hover: rgb(from var(--ui-accent) r g b / 0.75);
+
+  --ui-panel-from:     hsl(from var(--ui-brand) h calc(s * 0.10) 99%);
+  --ui-panel-to:       hsl(from var(--ui-brand) h calc(s * 0.16) 94%);
+
+  --ui-text:           hsl(from var(--ui-brand) h calc(s * 0.55) 10%);
+  --ui-text-muted:     hsl(from var(--ui-brand) h calc(s * 0.45) 22%);
+  --ui-text-subtle:    hsl(from var(--ui-brand) h calc(s * 0.40) 31%);
+
+  /* Acento MUY oscurecido. El cian engaña: a igual claridad tiene mucha
+     mas luminancia que un gris, asi que un 32% que parece oscuro rendia
+     2.46:1 como letra y 3.09:1 como fondo de boton con texto blanco.
+     Al 20% las dos cosas pasan. Medido, no estimado. */
+  --ui-accent:         hsl(from var(--ui-brand) h calc(s * 1.0) 20%);
+  --ui-accent-hover:   hsl(from var(--ui-brand) h calc(s * 1.0) 14%);
+  --ui-accent-active:  hsl(from var(--ui-brand) h calc(s * 1.0) 10%);
+  /* El acento cuando es LETRA, no relleno. Un acento vivo puede no tener
+     luminancia para leerse; este esta medido contra los fondos del pack. */
+  --ui-accent-text:    var(--ui-accent);   /* 4.93:1 al 20% */
+  --ui-accent-subtle:  rgb(from var(--ui-accent) r g b / 0.14);
+  --ui-accent-soft:    rgb(from var(--ui-accent) r g b / 0.45);
+  --ui-on-accent:      var(--ui-on-brand-light);
+
+  --ui-danger:         var(--ui-red-600);
+  --ui-danger-hover:   var(--ui-red-700);
+  --ui-danger-subtle:  var(--ui-red-100);
+  --ui-on-danger:      var(--ui-on-brand-light);
+
+  --ui-success:        var(--ui-green-600);
+  --ui-success-subtle: var(--ui-green-100);
+  --ui-warning:        var(--ui-amber-600);
+  --ui-warning-subtle: var(--ui-amber-100);
+
+  --ui-focus-ring:     var(--ui-accent);
+  --ui-focus-width:    2px;
+  --ui-focus-offset:   2px;
+
+  --ui-selection-bg:   rgb(from var(--ui-accent) r g b / 0.25);
+  --ui-selection-fg:   var(--ui-text);
+
+  --ui-ring-width:     2px;
+  --ui-ring:           rgb(from var(--ui-accent) r g b / 0.40);
+  --ui-ring-soft:      rgb(from var(--ui-accent) r g b / 0.20);
+}
+
+/* ===========================================================================
+   TEMA OSCURO — el estado natural de este pack.
+   Acá el neón va pleno: fondo casi negro, acento sin oscurecer y halos al
+   máximo. El tema claro es la excepción, no al revés.
+   =========================================================================== */
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ui-glow-strength: 0.55;
+
+    --ui-bg:             hsl(from var(--ui-brand) h calc(s * 0.45) 3%);
+    --ui-bg-subtle:      hsl(from var(--ui-brand) h calc(s * 0.40) 6%);
+    --ui-surface:        hsl(from var(--ui-brand) h calc(s * 0.38) 7%);
+    --ui-surface-hover:  hsl(from var(--ui-brand) h calc(s * 0.36) 12%);
+    --ui-surface-active: hsl(from var(--ui-brand) h calc(s * 0.34) 17%);
+
+    --ui-border:         rgb(from var(--ui-accent) r g b / 0.30);
+    --ui-border-strong:  rgb(from var(--ui-accent) r g b / 0.60);
+    --ui-line:           rgb(from var(--ui-accent) r g b / 0.22);
+    --ui-line-soft:      rgb(from var(--ui-accent) r g b / 0.12);
+    --ui-scroll-thumb:       rgb(from var(--ui-accent) r g b / 0.40);
+    --ui-scroll-thumb-hover: rgb(from var(--ui-accent) r g b / 0.85);
+
+    --ui-panel-from:     hsl(from var(--ui-brand) h calc(s * 0.38) 9%);
+    --ui-panel-to:       hsl(from var(--ui-brand) h calc(s * 0.42) 5%);
+
+    --ui-text:           hsl(from var(--ui-brand) h calc(s * 0.22) 95%);
+    --ui-text-muted:     hsl(from var(--ui-brand) h calc(s * 0.40) 74%);
+    --ui-text-subtle:    hsl(from var(--ui-brand) h calc(s * 0.50) 58%);
+
+    /* Neón pleno, sin oscurecer. */
+    --ui-accent:         var(--ui-brand);
+    --ui-accent-hover:   hsl(from var(--ui-brand) h s calc(l * 1.18));
+    --ui-accent-active:  hsl(from var(--ui-brand) h s calc(l * 0.85));
+    /* Sobre negro el neon pleno da 7.24:1 como letra: va tal cual. */
+    --ui-accent-text:    var(--ui-accent);
+    --ui-accent-subtle:  rgb(from var(--ui-accent) r g b / 0.16);
+    --ui-accent-soft:    rgb(from var(--ui-accent) r g b / 0.50);
+    --ui-on-accent:      var(--ui-on-brand-dark);
+
+    --ui-danger:         var(--ui-neon-2);
+    --ui-danger-hover:   hsl(from var(--ui-neon-2) h s calc(l * 1.18));
+    --ui-danger-subtle:  rgb(from var(--ui-neon-2) r g b / 0.18);
+    --ui-on-danger:      var(--ui-on-brand-dark);
+
+    --ui-success:        var(--ui-green-500);
+    --ui-success-subtle: rgb(from var(--ui-green-500) r g b / 0.16);
+    --ui-warning:        var(--ui-amber-500);
+    --ui-warning-subtle: rgb(from var(--ui-amber-500) r g b / 0.16);
+
+    --ui-selection-bg:   rgb(from var(--ui-accent) r g b / 0.35);
+    --ui-selection-fg:   var(--ui-on-brand-dark);
+
+    --ui-ring:           rgb(from var(--ui-accent) r g b / 0.45);
+    --ui-ring-soft:      rgb(from var(--ui-accent) r g b / 0.22);
+  }
+}
+
+:root[data-theme="dark"] {
+  --ui-glow-strength: 0.55;
+
+  --ui-bg:             hsl(from var(--ui-brand) h calc(s * 0.45) 3%);
+  --ui-bg-subtle:      hsl(from var(--ui-brand) h calc(s * 0.40) 6%);
+  --ui-surface:        hsl(from var(--ui-brand) h calc(s * 0.38) 7%);
+  --ui-surface-hover:  hsl(from var(--ui-brand) h calc(s * 0.36) 12%);
+  --ui-surface-active: hsl(from var(--ui-brand) h calc(s * 0.34) 17%);
+
+  --ui-border:         rgb(from var(--ui-accent) r g b / 0.30);
+  --ui-border-strong:  rgb(from var(--ui-accent) r g b / 0.60);
+  --ui-line:           rgb(from var(--ui-accent) r g b / 0.22);
+  --ui-line-soft:      rgb(from var(--ui-accent) r g b / 0.12);
+  --ui-scroll-thumb:       rgb(from var(--ui-accent) r g b / 0.40);
+  --ui-scroll-thumb-hover: rgb(from var(--ui-accent) r g b / 0.85);
+
+  --ui-panel-from:     hsl(from var(--ui-brand) h calc(s * 0.38) 9%);
+  --ui-panel-to:       hsl(from var(--ui-brand) h calc(s * 0.42) 5%);
+
+  --ui-text:           hsl(from var(--ui-brand) h calc(s * 0.22) 95%);
+  --ui-text-muted:     hsl(from var(--ui-brand) h calc(s * 0.40) 74%);
+  --ui-text-subtle:    hsl(from var(--ui-brand) h calc(s * 0.50) 58%);
+
+  /* Neón pleno, sin oscurecer. */
+  --ui-accent:         var(--ui-brand);
+  --ui-accent-hover:   hsl(from var(--ui-brand) h s calc(l * 1.18));
+  --ui-accent-active:  hsl(from var(--ui-brand) h s calc(l * 0.85));
+  /* Sobre negro el neon pleno da 7.24:1 como letra: va tal cual. */
+  --ui-accent-text:    var(--ui-accent);
+  --ui-accent-subtle:  rgb(from var(--ui-accent) r g b / 0.16);
+  --ui-accent-soft:    rgb(from var(--ui-accent) r g b / 0.50);
+  --ui-on-accent:      var(--ui-on-brand-dark);
+
+  --ui-danger:         var(--ui-neon-2);
+  --ui-danger-hover:   hsl(from var(--ui-neon-2) h s calc(l * 1.18));
+  --ui-danger-subtle:  rgb(from var(--ui-neon-2) r g b / 0.18);
+  --ui-on-danger:      var(--ui-on-brand-dark);
+
+  --ui-success:        var(--ui-green-500);
+  --ui-success-subtle: rgb(from var(--ui-green-500) r g b / 0.16);
+  --ui-warning:        var(--ui-amber-500);
+  --ui-warning-subtle: rgb(from var(--ui-amber-500) r g b / 0.16);
+
+  --ui-selection-bg:   rgb(from var(--ui-accent) r g b / 0.35);
+  --ui-selection-fg:   var(--ui-on-brand-dark);
+
+  --ui-ring:           rgb(from var(--ui-accent) r g b / 0.45);
+  --ui-ring-soft:      rgb(from var(--ui-accent) r g b / 0.22);
+}

@@ -1,0 +1,21 @@
+/* -------------------------------------------- TextField — PIEL del pack SOFT */
+/* Interfaz: --field-bg | --field-fg | --field-border | --field-ring
+             --field-placeholder                                              */
+
+/* Hueco, igual que el Spinner: los dos son campos donde se escribe. */
+.ui-textfield {
+  --field-bg: var(--ui-surface);
+  --field-border: var(--ui-line);
+  box-shadow: var(--ui-soft-in-sm);
+  transition: box-shadow var(--ui-duration-base) var(--ui-ease);
+}
+
+.ui-textfield:hover:not(.is-disabled) {
+  --field-border: var(--ui-border);
+}
+
+/* :not(.is-disabled) para empatarle la especificidad al hover de arriba. */
+.ui-textfield:focus-within:not(.is-disabled) {
+  --field-border: var(--ui-accent);
+  box-shadow: var(--ui-soft-in);
+}

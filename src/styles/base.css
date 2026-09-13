@@ -1,0 +1,164 @@
+/* ===========================================================================
+   Base — OPCIONAL.
+   Reset suave + tipografía de página. Si el proyecto que consume la librería
+   ya tiene su propio reset, NO importes este archivo: alcanza con
+   `tokens.css` + `components.css`.
+   =========================================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--ui-bg);
+  color: var(--ui-text);
+  font-family: var(--ui-font-sans);
+  font-size: var(--ui-text-md);
+  line-height: var(--ui-leading-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ---------------------------------------------------------------------------
+   SELECCION DE TEXTO — apagada por defecto.
+   Una UI no es un documento: arrastrar no debería pintar texto de azul.
+   Lo que SÍ se selecciona se declara explícitamente: campos editables, y
+   cualquier cosa marcada con .ui-selectable (valores, códigos, texto de
+   lectura). Es opt-in, nunca opt-out.
+   --------------------------------------------------------------------------- */
+
+/* ⛔ TAMBIEN EL <dialog>, Y NO ES REDUNDANTE.
+   Una ventana modal se dibuja en la CAPA SUPERIOR del navegador. La herencia
+   sigue el arbol del documento, asi que en teoria alcanzaria con `body` — pero
+   basta que algo se meta en el medio para que un modal ENTERO quede
+   seleccionable, y un modal es justamente donde mas texto hay junto: una
+   documentacion, una ayuda, una confirmacion larga.
+
+   Declararlo en el elemento no depende de que la herencia llegue: cuesta una
+   linea y saca la duda. */
+body,
+dialog {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+input,
+textarea,
+[contenteditable="true"],
+.ui-selectable,
+.ui-selectable * {
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+/* El [hidden] del navegador es `display: none` con especificidad casi nula:
+   cualquier componente que declare su propio `display` (flex, grid) lo pisa
+   sin querer y el elemento sigue a la vista. Esto lo blinda de una vez para
+   todo el sistema. */
+[hidden] {
+  display: none !important;
+}
+
+/* La barra de scroll de TODA la página, con el mismo aspecto que la de una
+   región con .ui-scroll. Si no, el scroll del documento desentona con el de
+   los componentes.
+
+   OJO con el orden: en Chromium, declarar `scrollbar-width` DESCARTA todas
+   las reglas ::-webkit-scrollbar. Por eso el estándar va dentro de un
+   @supports que solo entra donde esos pseudo-elementos no existen. */
+
+*::-webkit-scrollbar {
+  width: var(--ui-scroll-size);
+  height: var(--ui-scroll-size);
+}
+/* ⛔ EL RIEL NO LLEGA HASTA LAS PUNTAS CUANDO HAY ESQUINA REDONDEADA.
+   Una barra nativa recorre TODO el alto (o el ancho) del elemento, asi que en
+   una caja con las esquinas redondeadas sus extremos caen sobre la curva: la
+   barra se ve pisando el borde, y con ROUNDNESS alto parece salirse de la caja.
+
+   `--scroll-ends` es cuanto se corre el riel desde cada punta, y lo que hay
+   que darle es LO QUE MIDE LA ESQUINA: ahi termina la curva y empieza el lado
+   recto. Como los radios del sistema ya siguen a ROUNDNESS, con ROUNDNESS 0 el
+   corrimiento es 0 y no cambia nada en ningun lado.
+
+   Sin declarar, vale 0: solo lo pide quien tiene esquina. */
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-track:vertical { margin-block: var(--scroll-ends, 0px); }
+*::-webkit-scrollbar-track:horizontal { margin-inline: var(--scroll-ends, 0px); }
+*::-webkit-scrollbar-corner { background: transparent; }
+
+*::-webkit-scrollbar-thumb {
+  border: var(--ui-scroll-inset) solid transparent;
+  /* Sigue ROUNDNESS como todo lo demás: con 0 la barra queda recta. */
+  border-radius: var(--ui-radius-full);
+  background: var(--ui-scroll-thumb);
+  background-clip: padding-box;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--ui-scroll-thumb-hover);
+  background-clip: padding-box;
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--ui-scroll-thumb) transparent;
+  }
+}
+
+::selection {
+  background: var(--ui-selection-bg);
+  color: var(--ui-selection-fg);
+}
+
+h1, h2, h3, h4, h5, h6, p, figure, blockquote {
+  margin: 0;
+}
+
+ul, ol {
+  margin: 0;
+  padding: 0;
+}
+
+img, svg, video, canvas {
+  display: block;
+  max-width: 100%;
+}
+
+button, input, select, textarea {
+  font: inherit;
+  color: inherit;
+}
+
+a {
+  color: var(--ui-accent-text);
+  text-decoration: none;
+}
+
+code, pre, kbd, samp {
+  font-family: var(--ui-font-mono);
+  font-size: 0.9em;
+}
+
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: var(--ui-focus-width) solid var(--ui-focus-ring);
+  outline-offset: var(--ui-focus-offset);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

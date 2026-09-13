@@ -1,0 +1,271 @@
+/* ------------------------------------------------- ColorPicker — ESTRUCTURA */
+/* Mecánica. Los colores del marco los pone el pack; lo que se muestra sale
+   del valor del componente: --swatch-color y --picker-hue.                   */
+
+.ui-colorpicker {
+  --cp-h: var(--ui-control-h-md);
+  --cp-pad: var(--ui-control-pad-md);
+  --cp-font: var(--ui-control-font-md);
+  --cp-radius: var(--ui-control-radius-md);
+  --cp-swatch-w: var(--ui-swatch-w);
+  --cp-swatch-inset: var(--ui-space-1);
+
+  --cp-bg: transparent;
+  --cp-fg: var(--ui-text);
+  --cp-value-fg: var(--ui-text-muted);
+  --cp-border: transparent;
+  --cp-ring: transparent;
+  --cp-panel-bg: transparent;
+  --cp-panel-shadow: none;
+  /* El panel NO sigue el estado del disparador: si compartiera --cp-border,
+     al abrirse se pintaria de acento junto con el boton. */
+  --cp-panel-border: transparent;
+
+  box-sizing: border-box;
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+/* -- Disparador ------------------------------------------------------------ */
+
+.ui-colorpicker__trigger {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: var(--ui-space-3);
+  width: 100%;
+  height: var(--cp-h);
+  /* El lado de la pastilla lleva menos aire: queda pegada al borde. */
+  padding: 0 var(--cp-pad) 0 var(--cp-swatch-inset);
+
+  border: var(--ui-border-width) solid var(--cp-border);
+  border-radius: var(--cp-radius);
+  background: var(--cp-bg);
+  color: var(--cp-fg);
+  box-shadow: 0 0 0 var(--ui-ring-width) var(--cp-ring);
+
+  cursor: pointer;
+  transition:
+    border-color var(--ui-duration-fast) var(--ui-ease),
+    box-shadow var(--ui-duration-fast) var(--ui-ease),
+    background var(--ui-duration-fast) var(--ui-ease),
+    transform var(--ui-duration-fast) var(--ui-ease);
+}
+
+.ui-colorpicker__trigger:active:not(:disabled) {
+  transform: translateY(var(--ui-press-shift));
+}
+
+.ui-colorpicker__trigger:focus-visible {
+  outline: var(--ui-focus-width) solid var(--ui-focus-ring);
+  outline-offset: var(--ui-focus-offset);
+}
+
+/* -- La pastilla ----------------------------------------------------------- */
+
+.ui-colorpicker__swatch {
+  flex: none;
+  width: var(--cp-swatch-w);
+  align-self: stretch;
+  margin-block: var(--cp-swatch-inset);
+  border-radius: calc(var(--cp-radius) - var(--ui-border-width));
+
+  /* Brillo arriba y sombra abajo, derivados del color mismo: le dan cuerpo
+     sin agregar ningún color declarado. */
+  background: linear-gradient(
+    180deg,
+    hsl(from var(--swatch-color) h s calc(l * 1.18)) 0%,
+    var(--swatch-color) 52%,
+    hsl(from var(--swatch-color) h s calc(l * 0.84)) 100%
+  );
+
+  /* Borde por dentro: un color claro no se pierde contra el fondo. */
+  box-shadow: inset 0 0 0 var(--ui-border-width)
+    rgb(from var(--ui-neutral-950) r g b / 0.22);
+}
+
+/* Sin valor a la vista, la pastilla ocupa todo: si no, queda un hueco. */
+.ui-colorpicker:not(.ui-colorpicker--with-value) .ui-colorpicker__swatch {
+  flex: 1;
+  width: auto;
+}
+
+/* -- El valor -------------------------------------------------------------- */
+
+.ui-colorpicker__value {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--cp-value-fg);
+  font-family: var(--ui-font-mono);
+  font-size: var(--ui-text-xs);
+  letter-spacing: var(--ui-tracking-wide);
+  text-align: start;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: color var(--ui-duration-fast) var(--ui-ease);
+}
+
+/* -- El panel -------------------------------------------------------------- */
+
+.ui-colorpicker__panel {
+  position: absolute;
+  z-index: var(--ui-z-dropdown);
+  inset-inline-start: 0;
+  top: calc(100% + var(--ui-space-2));
+  width: max(100%, var(--ui-picker-w));
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--ui-space-3);
+  padding: var(--ui-space-3);
+
+  border: var(--ui-border-width) solid var(--cp-panel-border);
+  border-radius: var(--cp-radius);
+  background: var(--cp-panel-bg);
+  box-shadow: var(--cp-panel-shadow);
+}
+
+/* Este `display: flex` pisaria el [hidden] del navegador: hay que repetirlo.
+   base.css ya lo cubre globalmente, pero el componente no debe depender de
+   que ese archivo este importado. */
+.ui-colorpicker__panel[hidden] {
+  display: none;
+}
+
+/* Si no entra para abajo, se abre para arriba. */
+.ui-colorpicker--flip .ui-colorpicker__panel {
+  top: auto;
+  bottom: calc(100% + var(--ui-space-2));
+}
+
+/* -- Área de saturación y brillo ------------------------------------------- */
+/* Las tres capas son el modelo HSV, no una decisión estética: matiz puro al
+   fondo, blanco de izquierda a derecha (saturación) y negro de abajo hacia
+   arriba (brillo). El blanco y el negro salen del propio matiz desaturado
+   con calc(s * 0), así no hay ningún color declarado. */
+
+.ui-colorpicker__area {
+  position: relative;
+  height: var(--ui-picker-area-h);
+  border-radius: calc(var(--cp-radius) - var(--ui-border-width));
+  cursor: crosshair;
+  touch-action: none;
+  overflow: hidden;
+
+  box-shadow: inset 0 0 0 var(--ui-border-width)
+    rgb(from var(--ui-neutral-950) r g b / 0.22);
+}
+
+/* ⛔ LA PINTURA DEL AREA VA EN UNA CAPA, NO EN EL FONDO DEL ELEMENTO.
+   El area CONTIENE el cursor. Un pack que quiera darle textura a la superficie
+   no puede hacerlo sobre el elemento: una mascara alcanza a todo el subarbol y
+   se llevaria puesta la marca, que es justo lo que tiene que quedar duro para
+   poder leerse contra cualquier color. Con la pintura en su propia capa el pack
+   tiene de donde agarrarse sin tocar el cursor.
+
+   El degrade en si es DOMINIO DEL COMPONENTE y no una decision de estilo: un
+   selector de color tiene que mostrar saturacion y valor, en todos los packs. */
+.ui-colorpicker__area::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+
+  background:
+    linear-gradient(to top,
+      hsl(from var(--picker-hue) h calc(s * 0) 0%),
+      transparent),
+    linear-gradient(to right,
+      hsl(from var(--picker-hue) h calc(s * 0) 100%),
+      transparent),
+    var(--picker-hue);
+}
+
+.ui-colorpicker__area:focus-visible {
+  outline: var(--ui-focus-width) solid var(--ui-focus-ring);
+  outline-offset: var(--ui-focus-offset);
+}
+
+/* El cursor sí es un círculo: marca un punto, no una superficie. */
+.ui-colorpicker__cursor {
+  position: absolute;
+  left: var(--picker-x);
+  top: var(--picker-y);
+  width: var(--ui-picker-cursor);
+  height: var(--ui-picker-cursor);
+  margin: calc(var(--ui-picker-cursor) / -2) 0 0 calc(var(--ui-picker-cursor) / -2);
+  border-radius: var(--ui-radius-circle);
+  background: var(--swatch-color);
+  pointer-events: none;
+
+  /* Doble aro: uno claro y uno oscuro, para que se vea sobre cualquier color. */
+  box-shadow:
+    0 0 0 2px rgb(from var(--ui-neutral-0) r g b / 0.9),
+    0 0 0 3px rgb(from var(--ui-neutral-950) r g b / 0.35);
+}
+
+/* -- Matiz ----------------------------------------------------------------- */
+/* El Slider de matiz reemplaza el relleno de su pista por la rueda completa. */
+
+.ui-colorpicker__hue {
+  --slider-track-ratio: 0.5;
+  width: 100%;
+}
+
+/* -- Pie: el hex ----------------------------------------------------------- */
+
+.ui-colorpicker__foot {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-space-2);
+}
+
+.ui-colorpicker__hex {
+  flex: 1;
+  min-width: 0;
+  height: var(--ui-control-h-sm);
+  padding: 0 var(--ui-space-2);
+  border: var(--ui-border-width) solid var(--cp-panel-border);
+  border-radius: var(--ui-control-radius-sm);
+  background: var(--cp-bg);
+  color: var(--cp-fg);
+  font-family: var(--ui-font-mono);
+  font-size: var(--ui-text-xs);
+  letter-spacing: var(--ui-tracking-wide);
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.ui-colorpicker__hex:focus-visible {
+  outline: var(--ui-focus-width) solid var(--ui-focus-ring);
+  outline-offset: 1px;
+}
+
+/* -- Tamaños --------------------------------------------------------------- */
+
+.ui-colorpicker--sm {
+  --cp-h: var(--ui-control-h-sm);
+  --cp-pad: var(--ui-control-pad-sm);
+  --cp-font: var(--ui-control-font-sm);
+  --cp-radius: var(--ui-control-radius-sm);
+}
+.ui-colorpicker--md {
+  --cp-h: var(--ui-control-h-md);
+  --cp-pad: var(--ui-control-pad-md);
+  --cp-font: var(--ui-control-font-md);
+  --cp-radius: var(--ui-control-radius-md);
+}
+.ui-colorpicker--lg {
+  --cp-h: var(--ui-control-h-lg);
+  --cp-pad: var(--ui-control-pad-lg);
+  --cp-font: var(--ui-control-font-lg);
+  --cp-radius: var(--ui-control-radius-lg);
+}
+
+/* -- Estados --------------------------------------------------------------- */
+
+.ui-colorpicker.is-disabled { opacity: var(--ui-disabled-opacity); }
+.ui-colorpicker.is-disabled .ui-colorpicker__trigger { cursor: not-allowed; }

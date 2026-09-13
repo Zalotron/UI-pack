@@ -1,0 +1,19 @@
+/* -------------------------------------- RadioGroup — PIEL del pack EDITORIAL */
+/* Interfaz: --radio-bg | --radio-border | --radio-fill | --radio-ring         */
+
+/* El mismo lenguaje que el Checkbox, porque significan lo mismo: filete, y al
+   elegirlo, tinta. */
+.ui-radiogroup {
+  --radio-bg: transparent;
+  --radio-border: var(--ui-border);
+  --radio-fill: var(--ui-text);
+}
+
+.ui-radio:hover:not(.is-disabled) {
+  --radio-border: var(--ui-text-muted);
+}
+
+/* :not(.is-disabled) para empatarle la especificidad al hover de arriba. */
+.ui-radio.is-checked:not(.is-disabled) {
+  --radio-border: var(--ui-text);
+}

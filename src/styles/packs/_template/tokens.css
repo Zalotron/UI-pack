@@ -1,0 +1,26 @@
+/* ===========================================================================
+   PACK "_template" — tokens
+   Acá vive TODA la estética del pack. Arrancá copiando
+   packs/default/tokens.css y cambiando valores.
+
+   REGLA DURA: un solo color declarado (--ui-brand). Todo lo demás se calcula
+   con hsl(from var(--ui-brand) ...). Nunca un #hex ni un rgb() literal más.
+
+   El set completo de tokens que los componentes esperan está documentado en
+   packs/default/tokens.css. Si falta alguno, el componente cae al fallback
+   del navegador (normalmente "sin estilo"), así que conviene copiar el
+   archivo entero y editarlo, no escribirlo desde cero.
+   =========================================================================== */
+
+:root {
+  /* EL UNICO color que se declara. Todo lo demas se deriva de el. */
+  --ui-brand: #1262e2;
+  --ui-roundness: 0;
+
+  /* Texto sobre el brand: los dos candidatos salen del brand. */
+  --ui-on-brand-light: hsl(from var(--ui-brand) h calc(s * 0.10) 98%);
+  --ui-on-brand-dark:  hsl(from var(--ui-brand) h calc(s * 0.30) 9%);
+  --ui-on-brand: var(--ui-on-brand-light);
+
+  /* ...copiar el resto desde packs/default/tokens.css y ajustar... */
+}

@@ -1,0 +1,287 @@
+/* ===========================================================================
+   Progress — ESTRUCTURA
+   ---------------------------------------------------------------------------
+   Caja, medidas y mecanica. Ni un color: todo sale de las variables de abajo,
+   que rellena la PIEL de cada pack.
+
+   Interfaz para las pieles:
+     --progress-track        fondo del canal / del aro
+     --progress-fill         la parte llena  (acepta degrade en la lineal)
+     --progress-ring-from    tope inicial del degrade del aro (cae al fill)
+     --progress-ring-to      tope final    (idem) — con los dos iguales, plano
+     --progress-ring-track-from / -to   lo mismo para el CANAL vacio
+     --progress-ring-fill    la parte llena del aro (es un `stroke`, o sea que
+                             NO acepta degrade: ahi va un color)
+     --progress-label-fg     color del rotulo
+     --progress-value-fg     color del porcentaje
+     --progress-track-shadow sombreado del canal, POR ENCIMA del relleno
+     --progress-radius       redondeo del CANAL
+     --progress-fill-radius  redondeo del RELLENO (0: una medida no se redondea)
+     --progress-cap          remate del trazo del aro: butt | round | square
+
+   Geometria util para las pieles (solo en la forma radial):
+     --progress-ring-outer   diametro del borde EXTERNO del aro
+     --progress-ring-inner   diametro del hueco que deja adentro
+
+   Medidas (tienen default en tokens.css de cada pack):
+     --progress-h-sm|md|lg   alto de la barra lineal
+     --progress-ring-sm|md|lg   diametro del aro
+     --progress-ring-width   grosor del trazo del aro, en PORCENTAJE del
+                             diametro: el viewBox mide 100 unidades, asi que el
+                             numero NO son pixeles (ver el comentario del token)
+   =========================================================================== */
+
+.ui-progress {
+  --progress-track: transparent;
+  --progress-fill: transparent;
+  --progress-ring-fill: var(--progress-fill);
+  --progress-label-fg: var(--ui-text-muted);
+  --progress-value-fg: var(--ui-text);
+  /* ⛔ EL SOMBREADO DEL CANAL VA ENCIMA DEL RELLENO, NO DEBAJO.
+     Puesto en el canal mismo, un `inset` se pinta sobre SU fondo pero DEBAJO de
+     sus hijos — y el relleno es un hijo. O sea que el surco se ve hundido
+     mientras la barra esta vacia y se aplana en cuanto se llena, que es
+     exactamente al reves de lo que uno espera de un canal excavado. Es el mismo
+     arreglo que ya tiene el Slider con --slider-track-shadow.
+     Apagado con `0 0 0 0` y no con `none`: va en una lista de box-shadow. */
+  --progress-track-shadow: 0 0 0 0 transparent;
+  --progress-radius: var(--ui-radius-full);
+  --progress-cap: butt;
+  /* ⛔ EL RELLENO NO SE REDONDEA, y va aparte del radio del canal a proposito.
+     El canal es un recipiente y puede tener la forma que quiera; el relleno es
+     una MEDIDA, y una medida con las puntas redondeadas miente sobre donde
+     termina. Es la misma razon por la que el remate del arco es `butt`.
+     Queda expuesto por si un pack necesita lo contrario, pero el default es 0. */
+  --progress-fill-radius: 0;
+
+  /* Lo escribe el JS. Aca vive su default para que el CSS solo tambien sirva. */
+  --progress-value: 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--ui-space-2);
+  min-width: 0;
+}
+
+/* -- Rotulo y porcentaje ---------------------------------------------------- */
+
+.ui-progress__caption {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--ui-space-3);
+  font-size: var(--ui-text-sm);
+  line-height: var(--ui-leading-tight);
+}
+
+.ui-progress__label {
+  color: var(--progress-label-fg);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ui-progress__value {
+  color: var(--progress-value-fg);
+  font-variant-numeric: tabular-nums;
+  font-family: var(--ui-font-mono);
+  font-size: var(--ui-text-xs);
+}
+
+/* ===========================================================================
+   FORMA LINEAL
+   =========================================================================== */
+
+.ui-progress--linear .ui-progress__track {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: var(--progress-h);
+  border-radius: var(--progress-radius);
+  background: var(--progress-track);
+}
+
+/* La capa del sombreado: encima del relleno y sin robar clicks. */
+.ui-progress--linear .ui-progress__track::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: var(--progress-track-shadow);
+  pointer-events: none;
+}
+
+.ui-progress--linear .ui-progress__fill {
+  width: calc(var(--progress-value) * 100%);
+  height: 100%;
+  border-radius: var(--progress-fill-radius);
+  background: var(--progress-fill);
+  transition: width var(--ui-duration-base) var(--ui-ease);
+}
+
+/* Sin valor conocido: una pieza corta que recorre el canal. El ancho lo fija
+   la mecanica (un tercio) porque es lo que hace que se LEA como indeterminado
+   y no como un valor que va y viene. */
+.ui-progress--linear.is-indeterminate .ui-progress__fill {
+  width: 33%;
+  animation: ui-progress-sweep var(--ui-duration-loader) var(--ui-ease) infinite;
+  transition: none;
+}
+
+@keyframes ui-progress-sweep {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(300%); }
+}
+
+.ui-progress--linear.ui-progress--sm { --progress-h: var(--ui-progress-h-sm); }
+.ui-progress--linear.ui-progress--md { --progress-h: var(--ui-progress-h-md); }
+.ui-progress--linear.ui-progress--lg { --progress-h: var(--ui-progress-h-lg); }
+
+/* ===========================================================================
+   FORMA RADIAL
+   ---------------------------------------------------------------------------
+   Un circulo con `stroke-dasharray`: el primer tramo del guion es la parte
+   llena y el segundo el resto de la vuelta. Se gira -90 grados para que el
+   cero quede arriba y no a la derecha.
+   =========================================================================== */
+
+.ui-progress--radial {
+  /* `relative` para el porcentaje de adentro del aro, que va absoluto. */
+  position: relative;
+  align-items: center;
+  width: max-content;
+
+  /* ⚠ DONDE CAEN DE VERDAD LOS BORDES DEL ARO.
+     Un `stroke` se dibuja CENTRADO sobre la linea, o sea que la mitad del
+     grosor queda para afuera del circulo y la otra mitad para adentro. El
+     circulo tiene radio `--progress-ring-r` (42) en un viewBox de 100, asi
+     que el aro NO mide `--progress-d`: mide mas por fuera y deja un hueco mas
+     grande por dentro.
+
+     Una piel que quiera dibujar algo que calce con el aro —un pozo detras, un
+     disco en el hueco— tiene que usar estas dos medidas y no el diametro. Se
+     calculan aca y no en cada pack porque es geometria, no estetica. */
+  --progress-ring-outer: calc(
+    var(--progress-d) * (2 * var(--progress-ring-r) + var(--ui-progress-ring-width)) / 100
+  );
+  --progress-ring-inner: calc(
+    var(--progress-d) * (2 * var(--progress-ring-r) - var(--ui-progress-ring-width)) / 100
+  );
+}
+
+/* El porcentaje adentro del hueco del aro. Se centra sobre la caja DEL ARO y
+   no sobre el componente entero: si hay rotulo abajo, el componente es mas
+   alto y el numero quedaria corrido hacia abajo. */
+.ui-progress__value--inside {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: var(--progress-d);
+  pointer-events: none;
+  font-size: var(--progress-inside-font);
+}
+
+/* El cuerpo sale de la escala de texto y no de una fraccion del diametro: un
+   `calc` sobre el diametro da tamanos que no estan en la escala del pack. */
+.ui-progress--radial.ui-progress--md .ui-progress__value--inside {
+  --progress-inside-font: var(--ui-text-sm);
+}
+.ui-progress--radial.ui-progress--lg .ui-progress__value--inside {
+  --progress-inside-font: var(--ui-text-md);
+}
+
+.ui-progress__ring {
+  display: block;
+  width: var(--progress-d);
+  height: var(--progress-d);
+  transform: rotate(-90deg);
+  overflow: visible;
+}
+
+.ui-progress__ring-track,
+.ui-progress__ring-fill {
+  fill: none;
+  stroke-width: var(--ui-progress-ring-width);
+  stroke-linecap: var(--progress-cap);
+}
+
+/* Los topes del degrade del aro. `stop-color` SI es una propiedad de CSS, asi
+   que se puede leer de una variable — que es lo que permite que un pack pinte
+   el aro con el mismo corrimiento de tono que su barra lineal.
+   Los dos caen a --progress-ring-fill: sin declarar nada, el aro es plano y se
+   ve igual que siempre. */
+/* ⛔ EL TOPE DEL MEDIO CAE AL PUNTO MEDIO, NO A UN EXTREMO.
+   Un degrade de dos topes no alcanza para un bisel —vidrio, metal— que es claro
+   en un borde, oscuro en el medio y vuelve a aclararse en el otro. Pero sumar
+   un tercero que caiga a uno de los extremos CAMBIARIA los packs que solo
+   declaran dos: la primera mitad se les volveria plana.
+   Cayendo al punto medio exacto, un degrade de tres topes se ve idéntico a uno
+   de dos. El que necesita el bisel declara el del medio y nada mas. */
+.ui-progress__ring-from { stop-color: var(--progress-ring-from, var(--progress-ring-fill)); }
+.ui-progress__ring-mid  {
+  stop-color: var(--progress-ring-mid, color-mix(in srgb,
+    var(--progress-ring-from, var(--progress-ring-fill)),
+    var(--progress-ring-to, var(--progress-ring-fill))));
+}
+.ui-progress__ring-to   { stop-color: var(--progress-ring-to, var(--progress-ring-fill)); }
+
+/* Y lo mismo para el canal vacio: los dos topes caen a --progress-track, asi
+   que un pack que solo declare un color lo ve plano, igual que siempre. */
+.ui-progress__ring-track-from { stop-color: var(--progress-ring-track-from, var(--progress-track)); }
+.ui-progress__ring-track-mid  {
+  stop-color: var(--progress-ring-track-mid, color-mix(in srgb,
+    var(--progress-ring-track-from, var(--progress-track)),
+    var(--progress-ring-track-to, var(--progress-track))));
+}
+.ui-progress__ring-track-to   { stop-color: var(--progress-ring-track-to, var(--progress-track)); }
+
+
+/* ⛔ EL COLOR NO SE DECLARA ACA: LO TRAE EL DEGRADE.
+   `stroke` puesto en el CSS le GANA al atributo del elemento, y el atributo es
+   justo el que apunta al degrade que la mecanica define adentro del SVG. Con
+   esta linea puesta, el degrade del aro no se veia NUNCA — ningun pack podia
+   pintar su aro como pinta su barra, por mas que declarara los topes.
+   El color sigue saliendo de --progress-ring-fill: ahora via los topes, que
+   caen a el cuando el pack no declara un degrade. */
+.ui-progress__ring-fill {
+  /* En centesimos de vuelta: ver `pathLength` en Progress.js. */
+  stroke-dasharray: calc(var(--progress-value) * 100) 100;
+  transition: stroke-dasharray var(--ui-duration-base) var(--ui-ease);
+}
+
+/* Sin valor conocido: un arco corto que da vueltas. El arco mide un cuarto de
+   la circunferencia — mas corto se lee como un punto, mas largo como un valor.
+
+   ⛔ EL ARCO VIAJA POR EL TRAZO; NO GIRA LA PIEZA.
+   Antes esto rotaba el <svg> entero, y con el giraba TODO: el canal vacio, y
+   sobre todo las luces y las sombras que le dan volumen. En un pack con
+   relieve —clay, soft— eso se ve mal de inmediato: la fuente de luz da vueltas
+   alrededor de la pieza, que es algo que no pasa en la realidad.
+
+   Corriendo el `stroke-dashoffset` el arco recorre la circunferencia sin que
+   nada rote: el canal se queda quieto, la luz viene de donde siempre, y lo
+   unico que se mueve es lo que tiene que moverse. */
+.ui-progress--radial.is-indeterminate .ui-progress__ring-fill {
+  /* ⛔ EL PATRON TIENE QUE MEDIR EXACTAMENTE UNA VUELTA.
+     Si el guion mas el hueco no suman lo que se corre en cada ciclo, la vuelta
+     no empalma y el arco pega un salto en cada repeticion: se ve como un
+     titileo en el lugar, no como un giro. En centesimos, 25 + 75 = 100 = una
+     vuelta, y se corren 100. No hay cuenta que pueda salir mal. */
+  stroke-dasharray: 25 75;
+  transition: none;
+  animation: ui-progress-arc var(--ui-duration-loader) linear infinite;
+}
+
+@keyframes ui-progress-arc {
+  from { stroke-dashoffset: 0; }
+  to   { stroke-dashoffset: -100; }
+}
+
+.ui-progress--radial.ui-progress--sm { --progress-d: var(--ui-progress-ring-sm); }
+.ui-progress--radial.ui-progress--md { --progress-d: var(--ui-progress-ring-md); }
+.ui-progress--radial.ui-progress--lg { --progress-d: var(--ui-progress-ring-lg); }

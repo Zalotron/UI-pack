@@ -1,0 +1,38 @@
+/* ===========================================================================
+   PACK "GLASS"
+   ---------------------------------------------------------------------------
+   Un pack = una estética completa. Este archivo es su único punto de entrada:
+
+     <link rel="stylesheet" href="RUTA/packs/glass/pack.css">
+
+   Cambiar de pack es cambiar este link (o config.STYLE_PACK). La lógica de los
+   componentes no se entera: las clases son las mismas.
+
+   Un pack NO define estructura ni layout — eso vive en src/components/ y se
+   comparte. Un pack define VALORES y APARIENCIA.
+
+   Este pack es el que estrena `backdrop-filter`: la estructura no lo conoce
+   ni lo necesita, es apariencia y la escribe cada piel por su cuenta.
+   =========================================================================== */
+
+@import url("./tokens.css");
+/* Entradas y salidas de ciclo de vida (.is-entering / .is-leaving).
+   Van antes de las pieles: una piel puede querer matizarlas. */
+@import url("./motion.css");
+
+@import url("./components/Container.css");
+@import url("./components/Separator.css");
+@import url("./components/Spinner.css");
+@import url("./components/Slider.css");
+@import url("./components/Select.css");
+@import url("./components/ColorPicker.css");
+@import url("./components/Toggle.css");
+@import url("./components/Checkbox.css");
+@import url("./components/RadioGroup.css");
+@import url("./components/TextField.css");
+@import url("./components/Window.css");
+@import url("./components/Tabs.css");
+@import url("./components/Scroll.css");
+@import url("./components/Button.css");
+@import url("./components/Progress.css");
+@import url("./components/Icon.css");

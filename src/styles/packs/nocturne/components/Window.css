@@ -1,0 +1,44 @@
+/* ------------------------------------------ Window — PIEL del pack NOCTURNE */
+/* Interfaz: --window-bg | --window-bar-bg | --window-border | --window-line
+             --window-title-fg | --window-control-hover
+             --window-close-hover | --window-close-fg | --window-shadow      */
+
+/* La capa más alta del tablero: la que más sube y la que más proyecta.
+
+   ⛔ ESQUINAS CUADRADAS, SIEMPRE — regla del proyecto, no del pack. Este es un
+   pack donde TODO es una tarjeta redonda y aun así la ventana va recta: no es
+   negociable. La forma la sostiene la sombra, que acá es la más ancha de todas. */
+
+.ui-window {
+  /* ⚠ LA VENTANA NO ES UNA TARJETA: ES OTRO TABLERO.
+     Por eso su cuerpo lleva `--ui-bg`, el mismo fondo que la página. Una
+     ventana no es una pieza apoyada sobre el tablero, es el LUGAR donde se
+     apoyan las piezas — y lo que va adentro tiene que poder subir escalones
+     sobre ella igual que sobre la página. Si estuviera en el nivel de una
+     superficie, su contenido se quedaría sin margen para separarse.
+
+     La barra sí sube una capa: entre las dos queda un escalón, que es lo único
+     que las separa — acá no hay líneas. */
+  --window-bg: var(--ui-bg);
+  --window-bar-bg: var(--ui-surface);
+  --window-border: transparent;
+  /* La barra no se separa con una línea: se separa con un escalón de luz, que
+     es como se separa todo en este pack. */
+  --window-line: transparent;
+  --window-title-fg: var(--ui-text-muted);
+  --window-control-hover: var(--ui-surface-active);
+  --window-shadow: var(--ui-shadow-lg);
+
+  --window-close-hover: var(--ui-danger);
+  --window-close-fg: var(--ui-on-danger);
+}
+
+.ui-window--elev-sm { --window-shadow: var(--ui-shadow-sm); }
+.ui-window--elev-md { --window-shadow: var(--ui-shadow-md); }
+.ui-window--elev-lg { --window-shadow: var(--ui-shadow-lg); }
+
+/* Maximizada deja de ser una capa: llena el cajón y no tiene contra qué
+   proyectar. */
+.ui-window.is-maximized {
+  --window-shadow: none;
+}

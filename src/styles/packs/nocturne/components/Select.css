@@ -1,0 +1,34 @@
+/* ------------------------------------------ Select — PIEL del pack NOCTURNE */
+/* Interfaz: --select-bg | --select-border | --select-menu-bg
+             --select-menu-border | --select-menu-shadow
+             --select-option-hover / -selected                                */
+
+/* El disparador es una CAPA, no un hueco: se aprieta, no se escribe en él. Por
+   eso sube mientras el Spinner y el TextField bajan. */
+.ui-select {
+  --select-bg: var(--ui-surface-hover);
+  --select-border: transparent;
+  /* La lista flota por encima de todo: es la capa más alta que hay, así que se
+     aclara más y proyecta más. */
+  --select-menu-bg: var(--ui-surface-active);
+  --select-menu-border: transparent;
+  --select-menu-shadow: var(--ui-shadow-lg);
+  --select-option-hover: var(--ui-surface-hover);
+  --select-option-selected: transparent;
+}
+
+.ui-select:hover:not(.is-disabled) { --select-bg: var(--ui-surface-active); }
+
+/* Abierto = hundido: la capa baja mientras la lista está arriba. */
+.ui-select.is-open:not(.is-disabled) { --select-bg: var(--ui-bg-subtle); }
+
+.ui-select__option {
+  border-radius: var(--ui-radius-md);
+}
+
+/* Lo elegido lleva el degradé apagado: sigue siendo el acento del pack, pero
+   sin robarle la atención al contenido de la lista. */
+.ui-select__option.is-selected {
+  background-image: var(--ui-nc-fill-soft);
+  color: var(--ui-accent-text);
+}

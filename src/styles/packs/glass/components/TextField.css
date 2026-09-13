@@ -1,0 +1,22 @@
+/* ------------------------------------------- TextField — PIEL del pack GLASS */
+/* Interfaz: --field-bg | --field-fg | --field-border | --field-ring
+             --field-placeholder                                              */
+
+.ui-textfield {
+  --field-bg: var(--ui-glass-control);
+  --field-border: transparent;
+
+  backdrop-filter: var(--ui-glass-blur-sm);
+  -webkit-backdrop-filter: var(--ui-glass-blur-sm);
+}
+
+.ui-textfield:hover:not(.is-disabled) {
+  --field-bg: var(--ui-glass-control-on);
+  --field-ring: var(--ui-ring-soft);
+}
+
+/* :not(.is-disabled) para empatarle la especificidad al hover de arriba. */
+.ui-textfield:focus-within:not(.is-disabled) {
+  --field-bg: var(--ui-glass-control-on);
+  --field-ring: var(--ui-ring);
+}

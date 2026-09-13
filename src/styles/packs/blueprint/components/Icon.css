@@ -1,0 +1,12 @@
+/* ---------------------------------------- Icon — PIEL del pack BLUEPRINT */
+/* Interfaz: --icon-color | --icon-stroke | --icon-cap | --icon-join        */
+
+/* Trazo fino y esquinas VIVAS. Un plano no tiene remates redondeados: una
+   linea termina donde termina, y dos lineas se cruzan en punta. Es la unica
+   piel del sistema que usa `miter`, y es lo que hace que el mismo dibujo se
+   lea como delineado tecnico y no como icono de aplicacion. */
+.ui-icon {
+  --icon-color: currentColor;
+  --icon-cap: butt;
+  --icon-join: miter;
+}

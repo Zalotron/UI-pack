@@ -1,0 +1,36 @@
+/* ---------------------------------------------- Select — PIEL del pack GLASS */
+/* Interfaz: --select-bg | --select-border | --select-menu-bg
+             --select-menu-border | --select-menu-shadow
+             --select-option-hover / -selected                                */
+
+.ui-select {
+  --select-bg: var(--ui-glass-control);
+  --select-border: transparent;
+
+  /* La lista flota SOBRE el contenido: va con el cristal denso y el desenfoque
+     fuerte. Un desplegable demasiado translúcido no se puede leer. */
+  --select-menu-bg: var(--ui-glass-surface-dense);
+  --select-menu-border: transparent;
+  --select-menu-shadow: var(--ui-glass-inner), var(--ui-shadow-lg);
+  --select-option-hover: rgb(from var(--ui-glass-tint) r g b / var(--ui-glass-film-mid));
+  --select-option-selected: var(--ui-accent-subtle);
+}
+
+.ui-select__trigger {
+  backdrop-filter: var(--ui-glass-blur-sm);
+  -webkit-backdrop-filter: var(--ui-glass-blur-sm);
+}
+
+.ui-select__list {
+  backdrop-filter: var(--ui-glass-blur-lg);
+  -webkit-backdrop-filter: var(--ui-glass-blur-lg);
+}
+
+.ui-select:hover:not(.is-disabled) { --select-bg: var(--ui-glass-control-on); }
+
+/* Los estados activos llevan :not(.is-disabled) para empatarle la
+   especificidad al :hover de arriba. Sin eso el hover gana y el control
+   se ve MAS apagado con el mouse encima que sin el. */
+.ui-select.is-open:not(.is-disabled) { --select-bg: var(--ui-glass-control-on); }
+
+.ui-select__option.is-selected { color: var(--ui-accent-text); }

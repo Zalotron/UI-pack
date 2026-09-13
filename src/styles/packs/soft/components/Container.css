@@ -1,0 +1,60 @@
+/* -------------------------------------------- Container — PIEL del pack SOFT */
+/* Interfaz: --container-bg | --container-border-color | --container-shadow    */
+
+/* Todas las variantes comparten el MISMO fondo — es la premisa del estilo, una
+   sola lámina. Lo único que las distingue es el relieve. */
+
+/* Un panel sobresale de la página. */
+.ui-container--panel {
+  --container-bg: var(--ui-surface);
+  --container-border-color: var(--ui-line);
+  --container-shadow: var(--ui-soft-out);
+}
+
+/* `solid` va más contenido: sobresale menos, para anidar sin que se apilen
+   dos relieves grandes y el resultado quede embarrado. */
+.ui-container--solid {
+  --container-bg: var(--ui-surface);
+  --container-border-color: var(--ui-line);
+  --container-shadow: var(--ui-soft-out-sm);
+}
+
+/* `outline` es el hueco: no es una caja apoyada, es una zona excavada en la
+   lámina. Es lo que mejor muestra la gramática del pack. */
+.ui-container--outline {
+  --container-bg: var(--ui-surface);
+  --container-border-color: var(--ui-line-soft);
+  --container-shadow: var(--ui-soft-in);
+}
+
+/* Al ras de la lámina. */
+.ui-container--ghost {
+  --container-bg: transparent;
+  --container-border-color: transparent;
+  --container-shadow: var(--ui-soft-flat);
+}
+
+.ui-container--no-border {
+  --container-border-color: transparent;
+}
+
+/* -- Elevación ------------------------------------------------------------- */
+
+.ui-container--elev-sm { --container-shadow: var(--ui-soft-out-sm); }
+.ui-container--elev-md { --container-shadow: var(--ui-soft-out); }
+.ui-container--elev-lg { --container-shadow: var(--ui-soft-lift); }
+
+/* -- Reacción al mouse ----------------------------------------------------- */
+/* No cambia de color: se DESPEGA. La luz cae desde más lejos. */
+
+.ui-container.is-interactive:hover {
+  --container-shadow: var(--ui-soft-lift);
+  transform: translateY(var(--ui-hover-lift));
+}
+
+/* Y al apretarlo se hunde del todo. Esto anima —no salta— porque las cuatro
+   sombras están siempre presentes: ver la nota en tokens.css. */
+.ui-container.is-interactive:active {
+  --container-shadow: var(--ui-soft-in);
+  transform: translateY(0);
+}

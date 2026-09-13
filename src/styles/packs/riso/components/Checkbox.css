@@ -1,0 +1,45 @@
+/* --------------------------------------------- Checkbox — PIEL del pack RISO */
+/* Interfaz: --check-bg | --check-bg-on | --check-border | --check-mark
+             --check-ring                                                     */
+
+/* Sin marcar es papel con un contorno de tinta; marcado se imprime un cuadrito
+   lleno con su segunda plancha corrida. Es la pieza más chica del pack y aun
+   así muestra las dos tintas. */
+.ui-checkbox {
+  --check-bg: transparent;
+  --check-bg-on: var(--ui-accent);
+  --check-border: var(--ui-border);
+  --check-mark: var(--ui-on-accent);
+}
+
+/* La casilla lleva su propia corrida: a este tamaño la trama no entra (los
+   puntos serían más grandes que la caja), así que lo que queda para decir
+   "esto está impreso a dos tintas" es la plancha corrida. */
+.ui-checkbox__box {
+  box-shadow: var(--ui-misprint);
+  transition: box-shadow var(--ui-duration-fast) var(--ui-ease);
+}
+
+.ui-checkbox:hover:not(.is-disabled) {
+  --check-bg: var(--ui-accent-subtle);
+}
+
+/* :not(.is-disabled) para empatarle la especificidad al hover de arriba. */
+.ui-checkbox.is-checked:not(.is-disabled),
+.ui-checkbox.is-indeterminate:not(.is-disabled) {
+  --check-border: var(--ui-border);
+}
+
+.ui-checkbox.is-checked .ui-checkbox__box,
+.ui-checkbox.is-indeterminate .ui-checkbox__box {
+  /* LA TRAMA. Dos grillas corridas media celda: la diagonal a 45 grados.
+     Con longhands a proposito — ver tokens.css. */
+  background-image: var(--ui-riso-dot), var(--ui-riso-dot);
+  background-position: 0 0, var(--ui-halftone-half);
+  background-size: var(--ui-halftone-size), var(--ui-halftone-size);
+  background-blend-mode: multiply;
+}
+
+.ui-checkbox.is-disabled .ui-checkbox__box {
+  box-shadow: none;
+}

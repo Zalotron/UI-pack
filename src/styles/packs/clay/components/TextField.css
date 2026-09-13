@@ -1,0 +1,23 @@
+/* -------------------------------------------- TextField — PIEL del pack CLAY */
+/* Interfaz: --field-bg | --field-fg | --field-border | --field-ring
+             --field-placeholder                                              */
+
+/* Un hueco excavado, igual que el Spinner: los dos son campos donde se
+   escribe, y en este pack eso se lee como "acá el material está hundido". */
+.ui-textfield {
+  --field-bg: var(--ui-bg-subtle);
+  --field-border: transparent;
+  --field-placeholder: var(--ui-text-subtle);
+  box-shadow: var(--ui-clay-pressed);
+  transition: box-shadow var(--ui-duration-fast) var(--ui-ease);
+}
+
+.ui-textfield:hover:not(.is-disabled) {
+  --field-bg: var(--ui-surface-active);
+}
+
+/* :not(.is-disabled) para empatarle la especificidad al hover de arriba. */
+.ui-textfield:focus-within:not(.is-disabled) {
+  --field-bg: var(--ui-accent-subtle);
+  box-shadow: var(--ui-clay-pressed), 0 0 0 var(--ui-ring-width) var(--ui-ring);
+}

@@ -1,0 +1,32 @@
+/* ------------------------------------------- Separator — PIEL del pack CYBER */
+/* Interfaz: --separator-color, --separator-thickness.
+   --separator-color se usa como `background`, así que acepta un degradé.     */
+
+.ui-separator--soft   { --separator-color: var(--ui-line-soft); }
+.ui-separator--base   { --separator-color: var(--ui-line); }
+
+/* Trazo de circuito: la línea arranca encendida y se apaga hacia el final,
+   como una pista de cobre que se pierde. */
+.ui-separator--strong {
+  --separator-color: linear-gradient(
+    90deg,
+    var(--ui-accent) 0%,
+    rgb(from var(--ui-accent) r g b / 0.25) 55%,
+    rgb(from var(--ui-accent) r g b / 0.08) 100%
+  );
+}
+
+.ui-separator--strong.ui-separator--vertical {
+  --separator-color: linear-gradient(
+    180deg,
+    var(--ui-accent) 0%,
+    rgb(from var(--ui-accent) r g b / 0.25) 55%,
+    rgb(from var(--ui-accent) r g b / 0.08) 100%
+  );
+}
+
+/* El acento va pleno y encendido de punta a punta. */
+.ui-separator--accent {
+  --separator-color: var(--ui-accent);
+  box-shadow: 0 0 var(--ui-glow-reach) rgb(from var(--ui-accent) r g b / var(--ui-glow-strength));
+}

@@ -1,0 +1,60 @@
+/* ===========================================================================
+   Icon — ESTRUCTURA
+   ---------------------------------------------------------------------------
+   Caja y calibre del trazo. Ni un color.
+
+   Interfaz para las pieles:
+     --icon-color    color del trazo. `currentColor` por defecto, o sea que un
+                     icono adentro de un boton toma el color del boton solo.
+     --icon-stroke   grosor
+     --icon-cap      remate: butt | round | square
+     --icon-join     union: miter | round | bevel
+     --icon-size     medida, si no se usa una de las tres variantes
+     --icon-halo        color del halo — el trazo que va DETRAS del dibujo.
+                        `none` (apagado) por defecto.
+     --icon-halo-stroke grosor de ese halo
+
+   ⚠ TODO EL SET ES DE TRAZO, SIN RELLENO. `fill: none` va acá y no en cada
+   icono: si un path trajera relleno propio, se vería un manchón negro.
+   =========================================================================== */
+
+.ui-icon {
+  --icon-color: currentColor;
+  --icon-stroke: var(--ui-icon-stroke);
+  --icon-cap: round;
+  --icon-join: round;
+  --icon-size: var(--ui-icon-md);
+  /* Apagado: un icono es un dibujo de linea, no un dibujo con contorno. Lo
+     enciende el pack que lo necesite. */
+  --icon-halo: none;
+  --icon-halo-stroke: var(--icon-stroke);
+
+  display: inline-block;
+  flex: none;
+  width: var(--icon-size);
+  height: var(--icon-size);
+  vertical-align: middle;
+
+  fill: none;
+  stroke: var(--icon-color);
+  stroke-width: var(--icon-stroke);
+  stroke-linecap: var(--icon-cap);
+  stroke-linejoin: var(--icon-join);
+
+  /* El trazo se dibuja CENTRADO sobre la línea, así que medio grosor cae
+     afuera del viewBox y se corta en los bordes. Con esto no se corta. */
+  overflow: visible;
+
+  transition: stroke var(--ui-duration-fast) var(--ui-ease);
+}
+
+/* El halo va DETRAS: primero en el documento, asi lo pinta antes. Lleva su
+   propio grosor para poder sobresalir del dibujo. */
+.ui-icon__halo {
+  stroke: var(--icon-halo);
+  stroke-width: var(--icon-halo-stroke);
+}
+
+.ui-icon--sm { --icon-size: var(--ui-icon-sm); }
+.ui-icon--md { --icon-size: var(--ui-icon-md); }
+.ui-icon--lg { --icon-size: var(--ui-icon-lg); }

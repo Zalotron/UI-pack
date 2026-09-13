@@ -1,0 +1,25 @@
+/* -------------------------------------------- Tabs — PIEL del pack BLUEPRINT */
+/* Interfaz: --tabs-fg | --tabs-fg-active | --tabs-bg-hover
+             --tabs-line | --tabs-indicator                                  */
+
+/* Acá la rayita SI corresponde: es una línea de referencia subrayando el
+   rótulo activo, que es exactamente lo que se hace en un plano. En el pack
+   neumórfico hubo que sacarla porque peleaba con el relieve; en este el
+   lenguaje ES la línea, así que es la señal natural. */
+.ui-tabs {
+  --tabs-fg: var(--ui-text-subtle);
+  --tabs-fg-active: var(--ui-accent-text);
+  --tabs-bg-hover: transparent;
+  --tabs-line: var(--ui-line-soft);
+  --tabs-indicator: var(--ui-accent);
+}
+
+.ui-tabs__tab {
+  text-transform: uppercase;
+  letter-spacing: var(--ui-tracking-wide);
+  font-weight: var(--ui-weight-medium);
+}
+
+.ui-tabs__tab:hover:not(.is-disabled):not(.is-active) {
+  color: var(--ui-text-muted);
+}

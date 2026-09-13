@@ -1,0 +1,11 @@
+/* -------------------------------------------------- Tabs — PIEL del pack _template */
+/* Interfaz: --tabs-fg | --tabs-fg-active | --tabs-bg-hover
+             --tabs-line | --tabs-indicator                                  */
+
+.ui-tabs {
+  --tabs-fg: var(--ui-text-muted);
+  --tabs-fg-active: var(--ui-text);
+  --tabs-bg-hover: var(--ui-surface-hover);
+  --tabs-line: var(--ui-line);
+  --tabs-indicator: var(--ui-accent);
+}

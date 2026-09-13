@@ -1,0 +1,124 @@
+/* ===========================================================================
+   PACK "CYBER" — entradas y salidas
+   ---------------------------------------------------------------------------
+   Contrato de `UIComponent`: la mecánica pone `.is-entering` al montar y
+   `.is-leaving` en `leave()`, y espera a que termine lo que corra acá.
+
+   Va en un archivo aparte de glitch.css a propósito: ahí están los efectos de
+   INTERACCION (lo que pasa al marcar, al tocar, al abrir); acá está el ciclo
+   de vida. Comparten el vocabulario pero no el momento.
+
+   La idea: acá nada aparece ni se va — ENGANCHA SEÑAL y la PIERDE. La entrada
+   es el tubo prendiéndose; la salida es el apagón de un CRT: la imagen colapsa
+   a una línea horizontal y esa línea se apaga.
+
+   La salida es MAS CORTA que la entrada: lo que aparece se presenta, lo que se
+   va no debe hacerte esperar.
+   =========================================================================== */
+
+/* -- Perder señal: el apagón del tubo -------------------------------------- */
+/* Colapsa a una línea y recién ahí se apaga. Es el gesto exacto de un monitor
+   de tubo cortándose, y se lee al instante como "esto dejó de existir". */
+
+@keyframes ui-cy-signal-out {
+  0% {
+    opacity: 1;
+    scale: 1 1;
+    filter: none;
+  }
+  40% {
+    opacity: 1;
+    scale: 1.02 1;
+    filter: var(--ui-glitch-rgb-a);
+  }
+  70% {
+    opacity: 1;
+    scale: 1 0.04;          /* colapsa a una línea */
+    filter: var(--ui-glitch-rgb-b);
+  }
+  100% {
+    opacity: 0;
+    scale: 0.4 0.02;
+    filter: none;
+  }
+}
+
+/* -- Enganchar señal: la entrada de un control ------------------------------ */
+/* OJO: no sirve reusar `ui-cy-glitch` de glitch.css para entrar. Ese arranca y
+   termina VISIBLE — es un efecto de interacción, para algo que ya está en
+   pantalla. Como entrada haría que el elemento aparezca de golpe y recién
+   después glitchee. Una entrada tiene que arrancar apagada. */
+
+@keyframes ui-cy-signal-in {
+  0%   { opacity: 0;   clip-path: inset(46% 0 46% 0); filter: none; }
+  30%  { opacity: 1;   clip-path: inset(0);           filter: var(--ui-glitch-rgb-a); }
+  55%  { opacity: 0.6; clip-path: inset(18% 0 52% 0); filter: var(--ui-glitch-rgb-b); }
+  80%  { opacity: 1;   clip-path: inset(0);           filter: var(--ui-glitch-rgb-a); }
+  100% { opacity: 1;   clip-path: inset(0);           filter: none; }
+}
+
+/* -- Versión corta de la salida, para controles ---------------------------- */
+
+@keyframes ui-cy-cut-out {
+  0%   { opacity: 1; filter: none; }
+  45%  { opacity: 1; filter: var(--ui-glitch-rgb-b); }
+  100% { opacity: 0; filter: none; }
+}
+
+/* ===========================================================================
+   Asignación por componente
+   =========================================================================== */
+
+/* -- Superficies y flotantes: encienden como un tubo ----------------------- */
+/* La entrada reusa `ui-cy-boot`, el mismo encendido que ya usan los
+   desplegables al abrirse: en este pack aparecer SIEMPRE es prender algo. */
+
+.ui-container.is-entering,
+.ui-window.is-entering,
+.ui-select.is-entering,
+.ui-colorpicker.is-entering {
+  animation: ui-cy-boot var(--ui-duration-base) steps(1, end) 1 both;
+  /* Escalonado: lo reparte UIComponent al montar. Va DESPUES del shorthand,
+     que resetea animation-delay a 0. */
+  animation-delay: var(--ui-enter-delay, 0ms);
+}
+.ui-container.is-leaving,
+.ui-window.is-leaving,
+.ui-select.is-leaving,
+.ui-colorpicker.is-leaving {
+  animation: ui-cy-signal-out var(--ui-duration-base) var(--ui-ease-in) both;
+}
+
+/* -- Controles y estructura: enganchan con un tirón ------------------------ */
+
+.ui-btn.is-entering,
+.ui-spinner.is-entering,
+.ui-slider.is-entering,
+.ui-toggle.is-entering,
+.ui-checkbox.is-entering,
+.ui-radiogroup.is-entering,
+.ui-textfield.is-entering,
+.ui-tabs.is-entering,
+.ui-scroll.is-entering,
+.ui-progress.is-entering,
+.ui-icon.is-entering,
+.ui-separator.is-entering {
+  animation: ui-cy-signal-in var(--ui-duration-base) steps(1, end) both;
+  /* Escalonado: lo reparte UIComponent al montar. Va DESPUES del shorthand,
+     que resetea animation-delay a 0. */
+  animation-delay: var(--ui-enter-delay, 0ms);
+}
+.ui-btn.is-leaving,
+.ui-spinner.is-leaving,
+.ui-slider.is-leaving,
+.ui-toggle.is-leaving,
+.ui-checkbox.is-leaving,
+.ui-radiogroup.is-leaving,
+.ui-textfield.is-leaving,
+.ui-tabs.is-leaving,
+.ui-scroll.is-leaving,
+.ui-progress.is-leaving,
+.ui-icon.is-leaving,
+.ui-separator.is-leaving {
+  animation: ui-cy-cut-out var(--ui-duration-fast) steps(1, end) both;
+}

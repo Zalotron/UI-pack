@@ -1,0 +1,34 @@
+/* ===========================================================================
+   PACK "_template" — MOLDE. Copiar esta carpeta y renombrar.
+
+   Checklist:
+     1. cp -r src/styles/packs/_template src/styles/packs/<nombre>
+     2. Cambiar los valores de tokens.css (ahí está el 90% de la estética).
+     3. Ajustar la piel de los componentes en components/.
+     4. Registrar el pack en src/styles/packs/index.js
+     5. configure({ STYLE_PACK: '<nombre>' })
+
+   NO tocar src/components/ ni src/styles/structure.css: eso es mecánica
+   compartida entre todos los packs.
+   =========================================================================== */
+
+@import url("./tokens.css");
+/* OBLIGATORIO: entradas y salidas de ciclo de vida. Ver el archivo. */
+@import url("./lifecycle.css");
+
+@import url("./components/Container.css");
+@import url("./components/Separator.css");
+@import url("./components/Spinner.css");
+@import url("./components/Slider.css");
+@import url("./components/Select.css");
+@import url("./components/ColorPicker.css");
+@import url("./components/Toggle.css");
+@import url("./components/Checkbox.css");
+@import url("./components/RadioGroup.css");
+@import url("./components/TextField.css");
+@import url("./components/Window.css");
+@import url("./components/Tabs.css");
+@import url("./components/Scroll.css");
+@import url("./components/Button.css");
+@import url("./components/Progress.css");
+@import url("./components/Icon.css");

@@ -1,0 +1,11 @@
+/* ----------------------------------------------- Scroll — PIEL del pack RISO */
+/* Interfaz: --scroll-track | --scroll-thumb | --scroll-thumb-hover          */
+
+/* Una barra de la segunda tinta. Un pseudo-elemento nativo no acepta ni trama
+   ni segunda plancha, así que acá la pieza se resuelve con lo único que queda:
+   tinta maciza y ancho. */
+.ui-scroll {
+  --scroll-track: transparent;
+  --scroll-thumb: var(--ui-scroll-thumb);
+  --scroll-thumb-hover: var(--ui-scroll-thumb-hover);
+}

@@ -1,0 +1,135 @@
+/* ===========================================================================
+   PACK "RISO" — entradas y salidas
+   ---------------------------------------------------------------------------
+   Contrato de `UIComponent`: la mecánica pone `.is-entering` al montar y
+   `.is-leaving` en `leave()`, y espera a que termine lo que corra acá.
+
+   La idea: LAS PLANCHAS ENTRAN EN REGISTRO. La pieza no se desliza ni crece:
+   llega con las dos tintas muy separadas —como una prueba mal calzada— y las
+   planchas convergen hasta la corrida de reposo. Al irse se vuelven a separar
+   y el papel sale de la máquina.
+
+   Todo eso sale de UN SOLO número, --ui-riso-press, que multiplica la corrida
+   (ver tokens.css). En reposo vale 1, que es la corrida normal del pack; en la
+   entrada arranca mucho más alto. Dos consecuencias que importan:
+
+     · La animación no fija ninguna sombra. Solo escala la corrida que cada
+       pieza ya tiene, así que termina EXACTAMENTE en el reposo y no hay nada
+       a lo que saltar al sacarse la clase.
+     · Como hereda, las piezas de adentro convergen junto con su padre: la
+       casilla de un checkbox, el tirador de un toggle y el pulgar de un
+       slider entran en registro con la pieza que los contiene.
+
+   El desplazamiento del papel (--ui-riso-shift) sale del mismo número y da 0
+   en reposo, así que tampoco hay que declararlo dos veces.
+
+   La salida es MAS CORTA que la entrada: lo que aparece se presenta, lo que se
+   va no debe hacerte esperar.
+   =========================================================================== */
+
+/* -- Entrar en registro ----------------------------------------------------- */
+/* La opacidad sube rápido y temprano: una impresión no se desvanece, se
+   estampa. Lo que dura es la convergencia de las planchas. */
+
+@keyframes ui-ri-register-in {
+  0% {
+    opacity: 0;
+    --ui-riso-press: 6;
+  }
+  22% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    --ui-riso-press: 1;
+  }
+}
+
+@keyframes ui-ri-register-out {
+  0% {
+    opacity: 1;
+    --ui-riso-press: 1;
+  }
+  100% {
+    opacity: 0;
+    --ui-riso-press: 5;
+  }
+}
+
+/* -- Versión de control ---------------------------------------------------- */
+/* Una pieza chica con las planchas a 6 veces la corrida es una mancha: lo que
+   se acorta es la separación de arranque, no el gesto. */
+
+@keyframes ui-ri-register-in-sm {
+  0%   { opacity: 0; --ui-riso-press: 3.5; }
+  25%  { opacity: 1; }
+  100% { opacity: 1; --ui-riso-press: 1; }
+}
+
+@keyframes ui-ri-register-out-sm {
+  0%   { opacity: 1; --ui-riso-press: 1; }
+  100% { opacity: 0; --ui-riso-press: 3; }
+}
+
+/* ===========================================================================
+   Asignación por componente
+   =========================================================================== */
+
+/* -- Las piezas grandes ---------------------------------------------------- */
+/* `translate` va en la regla y NO en el keyframe: así lo recalcula el
+   navegador cada vez que cambia --ui-riso-press, que es lo único animado. En
+   reposo --ui-riso-shift da 0, así que no desplaza nada. */
+
+.ui-container.is-entering,
+.ui-window.is-entering,
+.ui-select.is-entering,
+.ui-colorpicker.is-entering {
+  animation: ui-ri-register-in var(--ui-duration-slow) var(--ui-ease-out) both;
+  /* Escalonado: lo reparte UIComponent al montar. Va DESPUES del shorthand,
+     que resetea animation-delay a 0. */
+  animation-delay: var(--ui-enter-delay, 0ms);
+  translate: var(--ui-riso-shift) 0;
+}
+.ui-container.is-leaving,
+.ui-window.is-leaving,
+.ui-select.is-leaving,
+.ui-colorpicker.is-leaving {
+  animation: ui-ri-register-out var(--ui-duration-base) var(--ui-ease-in) both;
+  translate: var(--ui-riso-shift) 0;
+}
+
+/* -- Controles y estructura ------------------------------------------------ */
+
+.ui-btn.is-entering,
+.ui-spinner.is-entering,
+.ui-slider.is-entering,
+.ui-toggle.is-entering,
+.ui-checkbox.is-entering,
+.ui-radiogroup.is-entering,
+.ui-textfield.is-entering,
+.ui-tabs.is-entering,
+.ui-scroll.is-entering,
+.ui-progress.is-entering,
+.ui-icon.is-entering,
+.ui-separator.is-entering {
+  animation: ui-ri-register-in-sm var(--ui-duration-base) var(--ui-ease-out) both;
+  /* Escalonado: lo reparte UIComponent al montar. Va DESPUES del shorthand,
+     que resetea animation-delay a 0. */
+  animation-delay: var(--ui-enter-delay, 0ms);
+  translate: var(--ui-riso-shift) 0;
+}
+.ui-btn.is-leaving,
+.ui-spinner.is-leaving,
+.ui-slider.is-leaving,
+.ui-toggle.is-leaving,
+.ui-checkbox.is-leaving,
+.ui-radiogroup.is-leaving,
+.ui-textfield.is-leaving,
+.ui-tabs.is-leaving,
+.ui-scroll.is-leaving,
+.ui-progress.is-leaving,
+.ui-icon.is-leaving,
+.ui-separator.is-leaving {
+  animation: ui-ri-register-out-sm var(--ui-duration-fast) var(--ui-ease-in) both;
+  translate: var(--ui-riso-shift) 0;
+}

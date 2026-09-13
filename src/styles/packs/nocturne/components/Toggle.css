@@ -1,0 +1,26 @@
+/* ------------------------------------------ Toggle — PIEL del pack NOCTURNE */
+/* Interfaz: --toggle-track | --toggle-track-on | --toggle-knob-bg
+             --toggle-border | --toggle-ring                                  */
+
+/* Un canal hundido y una pastilla que sube. Apagado el canal es un hueco;
+   encendido se convierte en la pieza que brilla, con el degradé del pack. */
+.ui-toggle {
+  --toggle-track: var(--ui-bg-subtle);
+  --toggle-track-on: var(--ui-accent);
+  --toggle-border: transparent;
+  --toggle-knob-bg: var(--ui-neutral-0);
+}
+
+.ui-toggle.is-checked .ui-toggle__track {
+  background-image: var(--ui-nc-fill);
+}
+
+/* La pastilla es la capa más alta del control: es lo único que se mueve, así
+   que es lo único que proyecta. */
+.ui-toggle__knob {
+  box-shadow: var(--ui-shadow-sm);
+}
+
+.ui-toggle.is-disabled .ui-toggle__knob {
+  box-shadow: none;
+}

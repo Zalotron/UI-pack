@@ -1,0 +1,11 @@
+/* ------------------------------------------ Scroll — PIEL del pack NOCTURNE */
+/* Interfaz: --scroll-track | --scroll-thumb | --scroll-thumb-hover          */
+
+/* Una barra fina y sin carril. Un pseudo-elemento nativo no acepta ni sombra
+   ni degradé, así que acá la pieza se resuelve con lo único que queda: un gris
+   translúcido que se aclara al tocarlo. */
+.ui-scroll {
+  --scroll-track: transparent;
+  --scroll-thumb: var(--ui-scroll-thumb);
+  --scroll-thumb-hover: var(--ui-scroll-thumb-hover);
+}

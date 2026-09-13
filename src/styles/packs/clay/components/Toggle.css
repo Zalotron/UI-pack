@@ -1,0 +1,36 @@
+/* ----------------------------------------------- Toggle — PIEL del pack CLAY */
+/* Interfaz: --toggle-track | --toggle-track-on | --toggle-knob-bg
+             --toggle-border | --toggle-ring                                  */
+
+/* Canal excavado y una bolita gorda adentro. El tirador ya rebota solo: la
+   mecánica lo desliza con --ui-ease-out, y este pack puso ahí la curva con
+   sobrepaso más marcada de todo el sistema. */
+.ui-toggle {
+  --toggle-track: var(--ui-bg-subtle);
+  --toggle-track-on: var(--ui-accent);
+  --toggle-border: transparent;
+  --toggle-knob-bg: var(--ui-surface-hover);
+}
+
+.ui-toggle__track {
+  box-shadow: var(--ui-clay-pressed);
+}
+
+/* La bolita es una pieza apoyada dentro del canal. */
+.ui-toggle__knob {
+  box-shadow: var(--ui-clay-body);
+}
+
+.ui-toggle:hover:not(.is-disabled) {
+  --toggle-knob-bg: var(--ui-neutral-0);
+}
+
+/* :not(.is-disabled) para empatarle la especificidad al hover de arriba. */
+.ui-toggle.is-checked:not(.is-disabled) {
+  --toggle-knob-bg: var(--ui-on-accent);
+}
+
+/* Al apretarlo, la bolita se achata contra el canal antes de salir. */
+.ui-toggle:active:not(.is-disabled) .ui-toggle__knob {
+  scale: calc(1 + var(--ui-squash)) calc(1 - var(--ui-squash));
+}

@@ -1,0 +1,31 @@
+/* ---------------------------------------- Checkbox — PIEL del pack NOCTURNE */
+/* Interfaz: --check-bg | --check-bg-on | --check-border | --check-mark
+             --check-ring                                                     */
+
+/* Sin marcar es un HUECO —una capa que baja— y marcado se convierte en la
+   pieza que brilla. Es el mismo cambio que hace el botón primario, en 17
+   píxeles. */
+.ui-checkbox {
+  --check-bg: var(--ui-bg-subtle);
+  --check-bg-on: var(--ui-accent);
+  --check-border: transparent;
+  --check-mark: var(--ui-on-accent);
+}
+
+.ui-checkbox:hover:not(.is-disabled) {
+  --check-bg: var(--ui-bg);
+}
+
+/* :not(.is-disabled) para empatarle la especificidad al hover de arriba. */
+.ui-checkbox.is-checked:not(.is-disabled),
+.ui-checkbox.is-indeterminate:not(.is-disabled) {
+  --check-border: transparent;
+}
+
+/* El degradé va como IMAGEN sobre el relleno: el color de abajo queda de
+   fallback y la transición de fondo de la mecánica sigue funcionando. */
+.ui-checkbox.is-checked .ui-checkbox__box,
+.ui-checkbox.is-indeterminate .ui-checkbox__box {
+  background-image: var(--ui-nc-fill);
+  box-shadow: var(--ui-shadow-sm);
+}

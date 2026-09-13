@@ -1,0 +1,13 @@
+node_modules/
+dist/
+.DS_Store
+Thumbs.db
+*.log
+npm-debug.log*
+.vscode/
+!.vscode/extensions.json
+.idea/
+.cache/
+
+# El respaldo que deja el linker de Go al recompilar.
+*.exe~

@@ -1,0 +1,11 @@
+/* ------------------------------------------- Icon — PIEL del pack DEFAULT */
+/* Interfaz: --icon-color | --icon-stroke | --icon-cap | --icon-join        */
+
+/* Hereda el color de donde este: adentro de un boton primario sale del color
+   del boton, en un parrafo sale del texto. Es lo que hace que un icono no
+   necesite saber donde lo pusieron. */
+.ui-icon {
+  --icon-color: currentColor;
+  --icon-cap: round;
+  --icon-join: round;
+}

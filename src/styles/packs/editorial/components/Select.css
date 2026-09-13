@@ -1,0 +1,54 @@
+/* ------------------------------------------ Select — PIEL del pack EDITORIAL */
+/* Interfaz: --select-bg | --select-border | --select-menu-bg
+             --select-menu-border | --select-menu-shadow
+             --select-option-hover / -selected                                */
+
+/* El disparador es un renglon, como los demas campos. */
+.ui-select {
+  --select-bg: transparent;
+  --select-border: transparent;
+
+  /* La lista SI necesita papel propio: flota sobre el texto de la pagina y
+     hay que poder leerla. Se separa con un filete, no con una sombra — en
+     este pack nada proyecta sombra. */
+  --select-menu-bg: var(--ui-surface);
+  --select-menu-border: var(--ui-border);
+  --select-menu-shadow: none;
+  --select-option-hover: var(--ui-surface-hover);
+  --select-option-selected: transparent;
+}
+
+.ui-select__trigger {
+  border-bottom-color: var(--ui-border);
+  padding-inline: 0;
+}
+
+.ui-select:hover:not(.is-disabled) .ui-select__trigger {
+  border-bottom-color: var(--ui-text-muted);
+}
+
+/* Los estados activos llevan :not(.is-disabled) para empatarle la
+   especificidad al :hover de arriba. */
+.ui-select.is-open:not(.is-disabled) .ui-select__trigger {
+  border-bottom-color: var(--ui-accent);
+}
+
+/* Lo elegido no se pinta: se marca con una vineta al margen, como en un
+   indice. El espacio ya esta reservado para que no salte al elegir. */
+.ui-select__option {
+  padding-inline-start: var(--ui-space-6);
+  position: relative;
+}
+
+.ui-select__option.is-selected {
+  color: var(--ui-accent-text);
+}
+
+.ui-select__option.is-selected::before {
+  /* La viñeta va como CARACTER y no como escape CSS (`2`): un escape
+     mal copiado deja un carácter de control invisible, que el navegador
+     dibuja como un cuadrado vacío pegado al texto. Pasó exactamente eso. */
+  content: "•";
+  position: absolute;
+  inset-inline-start: var(--ui-space-3);
+}

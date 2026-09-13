@@ -1,0 +1,38 @@
+/* ----------------------------------------------- Window — PIEL del pack RISO */
+/* Interfaz: --window-bg | --window-bar-bg | --window-border | --window-line
+             --window-title-fg | --window-control-hover
+             --window-close-hover | --window-close-fg | --window-shadow      */
+
+/* Una hoja suelta del fanzine, con la barra impresa en la segunda tinta.
+
+   ⛔ ESQUINAS CUADRADAS, SIEMPRE — regla del proyecto, no del pack. Acá encima
+   cae de maduro: una hoja se corta con guillotina. */
+
+.ui-window {
+  --window-bg: var(--ui-surface);
+  --window-bar-bg: var(--ui-accent-subtle);
+  --window-border: var(--ui-border);
+  --window-line: var(--ui-border);
+  --window-title-fg: var(--ui-text);
+  --window-control-hover: var(--ui-accent-subtle);
+  --window-shadow: var(--ui-misprint-lg);
+
+  --window-close-hover: var(--ui-danger);
+  --window-close-fg: var(--ui-on-danger);
+}
+
+/* ⛔ NI LA BARRA NI EL CUERPO LLEVAN TRAMA.
+   Una ventana es la pieza mas grande del sistema y encima contiene TODO lo
+   demas, que ya viene tramado. Tramarla a ella tambien deja dos grillas
+   superpuestas que no coinciden, y lo que se ve es muare, no impresion. La
+   barra se distingue por su tinta y por la linea, que alcanza de sobra. */
+
+.ui-window--elev-sm { --window-shadow: var(--ui-misprint); }
+.ui-window--elev-md { --window-shadow: var(--ui-misprint); }
+.ui-window--elev-lg { --window-shadow: var(--ui-misprint-lg); }
+
+/* Maximizada la hoja queda apoyada del todo: no hay segunda plancha que
+   sobresalga del borde de la pantalla. */
+.ui-window.is-maximized {
+  --window-shadow: none;
+}

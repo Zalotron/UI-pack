@@ -1,0 +1,41 @@
+/* ----------------------------------------------- Select — PIEL del pack SOFT */
+/* Interfaz: --select-bg | --select-border | --select-menu-bg
+             --select-menu-border | --select-menu-shadow
+             --select-option-hover / -selected                                */
+
+/* El disparador es un OBJETO (se aprieta), así que sobresale. Ojo con la
+   tentación de hundirlo por parecerse a un campo de texto: no se escribe en
+   él, se toca. */
+.ui-select {
+  --select-bg: var(--ui-surface);
+  --select-border: var(--ui-line);
+  --select-menu-bg: var(--ui-surface);
+  --select-menu-border: var(--ui-line);
+  --select-menu-shadow: var(--ui-soft-out);
+  --select-option-hover: var(--ui-surface-hover);
+  --select-option-selected: var(--ui-accent-subtle);
+}
+
+.ui-select__trigger {
+  box-shadow: var(--ui-soft-out-sm);
+  transition: box-shadow var(--ui-duration-base) var(--ui-ease);
+}
+
+.ui-select:hover:not(.is-disabled) { --select-border: var(--ui-border); }
+
+/* Abierto = apretado: el disparador se hunde y la lista emerge de la lámina. */
+.ui-select.is-open:not(.is-disabled) { --select-border: var(--ui-accent); }
+.ui-select.is-open:not(.is-disabled) .ui-select__trigger {
+  box-shadow: var(--ui-soft-in-sm);
+}
+
+/* La lista no aparece de golpe: se INFLA desde la lámina, con sobrepaso. */
+.ui-select__list {
+  animation: ui-soft-emerge var(--ui-duration-base) var(--ui-ease-out) 1;
+}
+
+.ui-select__option {
+  border-radius: var(--ui-radius-md);
+}
+
+.ui-select__option.is-selected { color: var(--ui-accent-text); }

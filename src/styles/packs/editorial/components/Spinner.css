@@ -1,0 +1,38 @@
+/* ----------------------------------------- Spinner — PIEL del pack EDITORIAL */
+/* Interfaz: --spinner-bg | --spinner-fg | --spinner-border | --spinner-ring   */
+
+/* ⚠ UN CAMPO ACA NO ES UNA CAJA: ES UN RENGLON.
+   Es el gesto que mas distingue a este pack. En una pagina impresa uno no
+   escribe adentro de un rectangulo — escribe SOBRE una linea. Por eso los tres
+   bordes laterales se van y queda solo el de abajo, y el padding horizontal
+   tambien, para que el valor se apoye en el margen como el resto del texto. */
+.ui-spinner {
+  --spinner-bg: transparent;
+  --spinner-border: transparent;
+  border-bottom-color: var(--ui-border);
+  padding-inline: 0;
+}
+
+.ui-spinner:hover:not(.is-disabled) {
+  border-bottom-color: var(--ui-text-muted);
+}
+
+/* Los estados activos llevan :not(.is-disabled) para empatarle la
+   especificidad al :hover de arriba. Sin eso el hover gana y el control
+   se ve MAS apagado con el mouse encima que sin el. */
+.ui-spinner.is-dragging:not(.is-disabled) {
+  border-bottom-color: var(--ui-text);
+}
+
+/* Editando, el renglon se dobla: es el unico cambio de grosor del pack. */
+.ui-spinner.is-editing:not(.is-disabled) {
+  border-bottom-color: var(--ui-accent);
+  /* El filete se DOBLA sin tocar el borde: engrosarlo de verdad achica el
+     area de contenido y el texto salta un pixel justo cuando lo estas
+     escribiendo. Una sombra interior dibuja el segundo filete encima.
+     El halo va en la misma lista porque `box-shadow` se reemplaza entera. */
+  box-shadow:
+    inset 0 calc(var(--ui-border-width) * -1) 0 0 var(--ui-accent),
+    0 0 0 var(--ui-ring-width) var(--spinner-ring);
+  --spinner-caret: var(--ui-accent);
+}

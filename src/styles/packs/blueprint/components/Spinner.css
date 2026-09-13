@@ -1,0 +1,31 @@
+/* ----------------------------------------- Spinner — PIEL del pack BLUEPRINT */
+/* Interfaz: --spinner-bg | --spinner-fg | --spinner-border | --spinner-ring   */
+
+/* Un campo es un rectángulo dibujado sobre el papel, sin relleno. El estado se
+   marca engrosando el trazo, nunca pintándolo. */
+.ui-spinner {
+  --spinner-bg: transparent;
+  --spinner-border: var(--ui-line);
+  --spinner-fg: var(--ui-text);
+}
+
+.ui-spinner:hover:not(.is-disabled) {
+  --spinner-border: var(--ui-border);
+}
+
+/* Los estados activos llevan :not(.is-disabled) para empatarle la
+   especificidad al :hover de arriba. Sin eso el hover gana y el control
+   se ve MAS apagado con el mouse encima que sin el. */
+.ui-spinner.is-dragging:not(.is-disabled) {
+  --spinner-border: var(--ui-accent);
+}
+
+/* Editando: trazo de objeto, el más grueso del sistema. Crece hacia adentro
+   (con el padding compensado) para que el control no cambie de tamaño. */
+.ui-spinner.is-editing:not(.is-disabled) {
+  --spinner-border: var(--ui-accent);
+  --spinner-caret: var(--ui-accent);
+  /* El trazo engrosa en la capa del contorno, no en el elemento: así el campo
+     no cambia de ancho ni corre el texto que se está escribiendo. */
+  --bp-edge-width: var(--ui-bp-bold);
+}

@@ -1,0 +1,122 @@
+/* ===========================================================================
+   PACK "NOCTURNE" — entradas y salidas
+   ---------------------------------------------------------------------------
+   Contrato de `UIComponent`: la mecánica pone `.is-entering` al montar y
+   `.is-leaving` en `leave()`, y espera a que termine lo que corra acá.
+
+   La idea: LAS CAPAS SE ASIENTAN. La pieza no llega de un costado ni crece:
+   aparece pegada al fondo —al ras, sin sombra, del mismo tono que lo que tiene
+   debajo— y SUBE a su nivel. Mientras sube, la sombra se abre y el escalón de
+   luz aparece.
+
+   Todo eso sale de un solo número, `--ui-nc-settle`, que multiplica las dos
+   medidas de las que está hecho el pack: el escalón de luz entre capas y el
+   alcance de la sombra (ver tokens.css). Dos consecuencias:
+
+     · La animación no fija ninguna sombra ni ningún color propio. Solo escala
+       lo que la pieza ya tiene, así que termina EXACTAMENTE en el reposo y no
+       queda nada a lo que saltar al sacarse la clase.
+     · Como hereda, toda la rama se asienta junta: una tarjeta y los controles
+       que tiene adentro suben como un bloque, que es lo que hace un tablero.
+
+   La salida es MAS CORTA que la entrada: lo que aparece se presenta, lo que se
+   va no debe hacerte esperar.
+   =========================================================================== */
+
+/* -- Asentarse --------------------------------------------------------------- */
+
+@keyframes ui-nc-settle-in {
+  0% {
+    opacity: 0;
+    translate: 0 10px;
+    --ui-nc-settle: 0;
+  }
+  100% {
+    opacity: 1;
+    translate: 0 0;
+    --ui-nc-settle: 1;
+  }
+}
+
+@keyframes ui-nc-settle-out {
+  0% {
+    opacity: 1;
+    translate: 0 0;
+    --ui-nc-settle: 1;
+  }
+  100% {
+    opacity: 0;
+    translate: 0 6px;
+    --ui-nc-settle: 0;
+  }
+}
+
+/* -- Versión de control ---------------------------------------------------- */
+/* El mismo gesto, con menos recorrido: un control de 40px que sube 10 se lee
+   como un salto. Lo que hace el camino completo es el asentado. */
+
+@keyframes ui-nc-settle-in-sm {
+  0%   { opacity: 0; translate: 0 4px; --ui-nc-settle: 0; }
+  100% { opacity: 1; translate: 0 0;   --ui-nc-settle: 1; }
+}
+
+@keyframes ui-nc-settle-out-sm {
+  0%   { opacity: 1; translate: 0 0;   --ui-nc-settle: 1; }
+  100% { opacity: 0; translate: 0 3px; --ui-nc-settle: 0; }
+}
+
+/* ===========================================================================
+   Asignación por componente
+   =========================================================================== */
+
+/* -- Las tarjetas ---------------------------------------------------------- */
+
+.ui-container.is-entering,
+.ui-window.is-entering,
+.ui-select.is-entering,
+.ui-colorpicker.is-entering {
+  animation: ui-nc-settle-in var(--ui-duration-slow) var(--ui-ease-out) both;
+  /* Escalonado: lo reparte UIComponent al montar. Va DESPUES del shorthand,
+     que resetea animation-delay a 0. */
+  animation-delay: var(--ui-enter-delay, 0ms);
+}
+.ui-container.is-leaving,
+.ui-window.is-leaving,
+.ui-select.is-leaving,
+.ui-colorpicker.is-leaving {
+  animation: ui-nc-settle-out var(--ui-duration-base) var(--ui-ease-in) both;
+}
+
+/* -- Controles y estructura ------------------------------------------------ */
+
+.ui-btn.is-entering,
+.ui-spinner.is-entering,
+.ui-slider.is-entering,
+.ui-toggle.is-entering,
+.ui-checkbox.is-entering,
+.ui-radiogroup.is-entering,
+.ui-textfield.is-entering,
+.ui-tabs.is-entering,
+.ui-scroll.is-entering,
+.ui-progress.is-entering,
+.ui-icon.is-entering,
+.ui-separator.is-entering {
+  animation: ui-nc-settle-in-sm var(--ui-duration-base) var(--ui-ease-out) both;
+  /* Escalonado: lo reparte UIComponent al montar. Va DESPUES del shorthand,
+     que resetea animation-delay a 0. */
+  animation-delay: var(--ui-enter-delay, 0ms);
+}
+.ui-btn.is-leaving,
+.ui-spinner.is-leaving,
+.ui-slider.is-leaving,
+.ui-toggle.is-leaving,
+.ui-checkbox.is-leaving,
+.ui-radiogroup.is-leaving,
+.ui-textfield.is-leaving,
+.ui-tabs.is-leaving,
+.ui-scroll.is-leaving,
+.ui-progress.is-leaving,
+.ui-icon.is-leaving,
+.ui-separator.is-leaving {
+  animation: ui-nc-settle-out-sm var(--ui-duration-fast) var(--ui-ease-in) both;
+}

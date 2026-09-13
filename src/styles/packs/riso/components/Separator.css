@@ -1,0 +1,46 @@
+/* -------------------------------------------- Separator — PIEL del pack RISO */
+/* Interfaz: --separator-color, --separator-thickness.
+   --separator-color se usa como `background`, así que acepta un degradé.     */
+
+/* Una regla impresa: gorda, maciza y RECTA. Lo característico del pack es que
+   la regla también sale a dos tintas — el degradé no va de claro a oscuro,
+   va de una tinta a la otra. */
+
+.ui-separator--soft,
+.ui-separator--base,
+.ui-separator--strong {
+  --separator-thickness: var(--ui-border-width);
+}
+
+.ui-separator--soft {
+  --separator-color: var(--ui-line-soft);
+}
+
+.ui-separator--base {
+  --separator-color: var(--ui-line);
+}
+
+/* La fuerte es la que muestra las dos tintas, partidas al medio y sin
+   transición: dos planchas, no un degradé. */
+.ui-separator--strong {
+  --separator-thickness: calc(var(--ui-border-width) * 2);
+  --separator-color: linear-gradient(
+    90deg,
+    var(--ui-ink-1) 0 50%,
+    var(--ui-ink-2) 50% 100%
+  );
+}
+
+.ui-separator--strong.ui-separator--vertical {
+  --separator-color: linear-gradient(
+    180deg,
+    var(--ui-ink-1) 0 50%,
+    var(--ui-ink-2) 50% 100%
+  );
+}
+
+/* El acento es una barra de tinta llena. */
+.ui-separator--accent {
+  --separator-thickness: calc(var(--ui-border-width) * 2);
+  --separator-color: var(--ui-accent);
+}

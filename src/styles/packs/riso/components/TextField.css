@@ -1,0 +1,26 @@
+/* -------------------------------------------- TextField — PIEL del pack RISO */
+/* Interfaz: --field-bg | --field-fg | --field-border | --field-ring
+             --field-placeholder                                              */
+
+/* Un campo es una RESERVA: el hueco que la plancha dejó sin imprimir para que
+   se pueda escribir ahí a mano. Por eso no lleva ni trama ni plancha corrida —
+   las dos cosas ensuciarían lo que se escribe— y lo que lo define es el
+   contorno de tinta. */
+.ui-textfield {
+  --field-bg: var(--ui-surface);
+  --field-border: var(--ui-border);
+  --field-placeholder: var(--ui-text-subtle);
+  transition: box-shadow var(--ui-duration-fast) var(--ui-ease);
+}
+
+.ui-textfield:hover:not(.is-disabled) {
+  --field-bg: var(--ui-surface-active);
+}
+
+/* Al enfocarse SÍ aparece la segunda plancha: es la marca de "acá estás". El
+   anillo de foco de la mecánica sale de --field-ring, que también es
+   box-shadow, así que se lo deja a él cuando hay foco de teclado. */
+.ui-textfield:focus-within:not(.is-disabled) {
+  --field-border: var(--ui-accent);
+  --field-bg: var(--ui-surface);
+}

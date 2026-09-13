@@ -1,0 +1,15 @@
+/* -------------------------------------------- Icon — PIEL del pack CYBER */
+/* Interfaz: --icon-color | --icon-stroke | --icon-cap | --icon-join        */
+
+/* Trazo duro, esquinas en punta y resplandor. Igual que en blueprint las
+   uniones van en `miter`, pero por el motivo contrario: alla es precision de
+   plano, aca es que un HUD no dibuja nada blando.
+
+   El resplandor va con `drop-shadow` y no con `box-shadow`: un SVG de trazo
+   no tiene caja que encender, tiene FORMA. */
+.ui-icon {
+  --icon-color: currentColor;
+  --icon-cap: butt;
+  --icon-join: miter;
+  filter: drop-shadow(0 0 var(--ui-glow-reach) rgb(from var(--icon-color) r g b / 0.55));
+}

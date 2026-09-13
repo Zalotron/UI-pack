@@ -1,0 +1,15 @@
+/* --------------------------------------------- Icon — PIEL del pack SOFT */
+/* Interfaz: --icon-color | --icon-stroke | --icon-cap | --icon-join        */
+
+/* Trazo grueso y blando, con la MISMA luz que el resto del pack: una sombra
+   abajo-derecha y un brillo arriba-izquierda, pero siguiendo la forma del
+   dibujo y no una caja. Es lo que hace que el icono se vea repujado en la
+   lamina y no pegado encima. */
+.ui-icon {
+  --icon-color: currentColor;
+  --icon-cap: round;
+  --icon-join: round;
+  filter:
+    drop-shadow(1px 1px 1px var(--ui-soft-dark))
+    drop-shadow(-1px -1px 1px var(--ui-soft-light));
+}

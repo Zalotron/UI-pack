@@ -1,0 +1,15 @@
+/* ------------------------------------------ Slider — PIEL del pack default */
+/* Interfaz: --slider-track | --slider-fill | --slider-thumb | --slider-ring */
+
+.ui-slider {
+  --slider-track: var(--ui-surface-active);
+  --slider-track-border: var(--ui-line);
+  --slider-fill: var(--ui-accent);
+  --slider-thumb: var(--ui-accent);
+  --slider-ring: var(--ui-ring-soft);
+}
+
+.ui-slider:hover:not(.is-disabled) { --slider-thumb: var(--ui-accent-hover); }
+
+/* Arrastrando: mismo halo pleno que usa el Spinner al editarse. */
+.ui-slider.is-dragging { --slider-ring: var(--ui-ring); }

@@ -1,0 +1,23 @@
+/* --------------------------------------- TextField — PIEL del pack BLUEPRINT */
+/* Interfaz: --field-bg | --field-fg | --field-border | --field-ring
+             --field-placeholder                                              */
+
+.ui-textfield {
+  --field-bg: transparent;
+  --field-border: var(--ui-line);
+  --field-placeholder: var(--ui-text-subtle);
+}
+
+.ui-textfield:hover:not(.is-disabled) {
+  --field-border: var(--ui-border);
+}
+
+/* :not(.is-disabled) para empatarle la especificidad al hover de arriba. */
+.ui-textfield:focus-within:not(.is-disabled) {
+  --field-border: var(--ui-accent);
+}
+
+/* El texto tecleado es una anotación: monoespaciada, como en un plano. */
+.ui-textfield__input {
+  font-family: var(--ui-font-mono);
+}

@@ -1,0 +1,32 @@
+/* ------------------------------------------ Slider — PIEL del pack EDITORIAL */
+/* Interfaz: --slider-track | --slider-track-border | --slider-fill
+             --slider-thumb | --slider-ring                                   */
+
+/* Un filete con una marca encima, como el indicador de un margen. La pista es
+   finísima (--ui-slider-track-ratio 0.08) y el cursor mide 2px: en este pack
+   un control no puede pesar más que el texto que tiene al lado. */
+.ui-slider {
+  --slider-track: var(--ui-line);
+  --slider-track-border: transparent;
+  --slider-fill: var(--ui-text);
+  --slider-thumb: var(--ui-text);
+  --slider-ring: transparent;
+}
+
+.ui-slider:hover:not(.is-disabled) { --slider-thumb: var(--ui-accent); }
+
+/* El cursor no lleva halo. Aun así hay que contestar los TRES estados que la
+   mecánica pinta con box-shadow — si no, su regla gana por especificidad y
+   deja un aro de 1px que en este pack no significa nada. */
+.ui-slider__thumb,
+.ui-slider:hover .ui-slider__thumb,
+.ui-slider__input:focus-visible ~ .ui-slider__thumb,
+.ui-slider.is-dragging .ui-slider__thumb {
+  box-shadow: none;
+}
+
+/* El valor al costado es un folio: chico y espaciado. */
+.ui-slider__value {
+  font-size: var(--ui-text-xs);
+  letter-spacing: var(--ui-tracking-wide);
+}

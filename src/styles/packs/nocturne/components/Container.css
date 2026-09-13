@@ -1,0 +1,61 @@
+/* --------------------------------------- Container — PIEL del pack NOCTURNE */
+/* Interfaz: --container-bg | --container-border-color | --container-shadow    */
+
+/* Una TARJETA. No tiene borde: se separa del fondo porque es más clara y
+   porque proyecta. Esas dos cosas juntas son todo el pack. */
+
+.ui-container--panel {
+  --container-bg: var(--ui-surface);
+  --container-border-color: transparent;
+  --container-shadow: var(--ui-shadow-md);
+}
+
+/* Una capa MAS: para anidar. Sube otro escalón sobre la tarjeta que la
+   contiene, así que una tarjeta adentro de otra se sigue leyendo sin que
+   aparezca ninguna línea entre las dos. */
+.ui-container--solid {
+  --container-bg: var(--ui-surface-hover);
+  --container-border-color: transparent;
+  --container-shadow: var(--ui-shadow-sm);
+}
+
+/* Un hueco: BAJA un escalón en vez de subirlo. Es la única manera honesta de
+   hacer un "outline" en un pack sin contornos — no se dibuja el borde, se
+   hunde la superficie. */
+.ui-container--outline {
+  --container-bg: var(--ui-bg-subtle);
+  --container-border-color: transparent;
+  --container-shadow: none;
+}
+
+.ui-container--ghost {
+  --container-bg: transparent;
+  --container-border-color: transparent;
+  --container-shadow: none;
+}
+
+.ui-container--no-border {
+  --container-border-color: transparent;
+}
+
+/* -- Elevación ------------------------------------------------------------- */
+
+.ui-container--elev-sm { --container-shadow: var(--ui-shadow-sm); }
+.ui-container--elev-md { --container-shadow: var(--ui-shadow-md); }
+.ui-container--elev-lg { --container-shadow: var(--ui-shadow-lg); }
+
+/* -- Reacción al mouse ----------------------------------------------------- */
+/* Sube una capa: más clara y con la sombra más abierta. Apretarla la baja de
+   vuelta. No hay ningún color de estado — la jerarquía ES el estado. */
+
+.ui-container.is-interactive:hover {
+  --container-bg: var(--ui-surface-hover);
+  --container-shadow: var(--ui-shadow-lg);
+  transform: translateY(var(--ui-hover-lift));
+}
+
+.ui-container.is-interactive:active {
+  --container-bg: var(--ui-surface-active);
+  --container-shadow: var(--ui-shadow-sm);
+  transform: translateY(var(--ui-press-shift));
+}

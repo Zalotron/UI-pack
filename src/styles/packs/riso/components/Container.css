@@ -1,0 +1,78 @@
+/* -------------------------------------------- Container — PIEL del pack RISO */
+/* Interfaz: --container-bg | --container-border-color | --container-shadow    */
+
+/* Una hoja impresa: papel tramado, contorno de tinta y la segunda plancha
+   corrida abajo a la derecha. Esa plancha hace el trabajo que en otros packs
+   hace la sombra — separa la pieza del fondo — pero no es una sombra: es la
+   otra tinta, que no coincide. */
+
+.ui-container--panel {
+  --container-bg: var(--ui-surface);
+  --container-border-color: var(--ui-border);
+  --container-shadow: var(--ui-misprint-lg);
+  /* LA TRAMA. Dos grillas corridas media celda: la diagonal a 45 grados.
+     Con longhands a proposito — ver tokens.css. Es la superficie mas grande
+     de la pagina, o sea donde la perilla HALFTONE se ve de verdad. */
+  background-image: var(--ui-riso-dot-soft), var(--ui-riso-dot-soft);
+  background-position: 0 0, var(--ui-halftone-half);
+  background-size: var(--ui-halftone-size), var(--ui-halftone-size);
+  background-blend-mode: multiply;
+}
+
+/* Igual pero sin la plancha corrida: para anidar sin que se apilen dos
+   corridas, que se leerían como suciedad. */
+.ui-container--solid {
+  --container-bg: var(--ui-surface);
+  --container-border-color: var(--ui-border);
+  --container-shadow: none;
+  /* LA TRAMA. Dos grillas corridas media celda: la diagonal a 45 grados.
+     Con longhands a proposito — ver tokens.css. Es la superficie mas grande
+     de la pagina, o sea donde la perilla HALFTONE se ve de verdad. */
+  background-image: var(--ui-riso-dot-soft), var(--ui-riso-dot-soft);
+  background-position: 0 0, var(--ui-halftone-half);
+  background-size: var(--ui-halftone-size), var(--ui-halftone-size);
+  background-blend-mode: multiply;
+}
+
+/* Solo el contorno: papel a la vista, nada impreso adentro. */
+.ui-container--outline {
+  --container-bg: transparent;
+  --container-border-color: var(--ui-border);
+  --container-shadow: none;
+}
+
+/* Papel a la vista: ni tinta ni contorno. */
+.ui-container--ghost {
+  --container-bg: transparent;
+  --container-border-color: transparent;
+  --container-shadow: none;
+}
+
+.ui-container--no-border {
+  --container-border-color: transparent;
+}
+
+/* -- Elevación ------------------------------------------------------------- */
+/* No hay elevación: hay CORRIDA. Una hoja impresa no flota, así que lo que
+   cambia entre los tres niveles es cuánto se separan las dos planchas. */
+
+.ui-container--elev-sm { --container-shadow: var(--ui-misprint); }
+.ui-container--elev-md { --container-shadow: var(--ui-misprint); }
+.ui-container--elev-lg { --container-shadow: var(--ui-misprint-lg); }
+
+/* -- Reacción al mouse ----------------------------------------------------- */
+/* Pasar el mouse SEPARA las planchas; apretar las junta del todo y por un
+   momento la impresión sale perfecta. Es el gesto del pack: no hay altura que
+   cambiar, hay registro. */
+
+.ui-container.is-interactive {
+  transition: box-shadow var(--ui-duration-fast) var(--ui-ease);
+}
+
+.ui-container.is-interactive:hover {
+  --container-shadow: var(--ui-misprint-lg);
+}
+
+.ui-container.is-interactive:active {
+  --container-shadow: none;
+}

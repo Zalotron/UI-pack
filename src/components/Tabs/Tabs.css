@@ -1,0 +1,152 @@
+/* -------------------------------------------------------- Tabs — ESTRUCTURA */
+/* Mecánica. Los colores los pone el pack.
+   La rayita se posiciona con dos variables que escribe el JS midiendo el
+   botón activo: se desliza sin re-renderizar nada.                          */
+
+.ui-tabs {
+  --tabs-h: var(--ui-control-h-md);
+  --tabs-font: var(--ui-control-font-md);
+  --tabs-pad: var(--ui-control-pad-md);
+
+  --tabs-fg: var(--ui-text-muted);
+  --tabs-fg-active: var(--ui-text);
+  --tabs-bg-hover: transparent;
+  --tabs-line: transparent;
+  --tabs-indicator: transparent;
+
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* -- La lista -------------------------------------------------------------- */
+
+.ui-tabs__list {
+  --tabs-indicator-x: 0px;
+  --tabs-indicator-w: 0px;
+
+  display: flex;
+
+  /* overflow-x: auto haría que overflow-y pase de `visible` a `auto` por
+     spec. Con la rayita apoyada en el borde inferior, ese píxel de más
+     generaba una barra vertical. Explícito: acá solo scrollea el eje X. */
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  border-bottom: var(--ui-border-width) solid var(--tabs-line);
+}
+
+/* ⛔ EL CARRIL: ES LO QUE IMPIDE QUE LA DECORACION MUEVA EL SCROLL.
+   La marca activa es `absolute` y su caja cuenta para el ancho scrolleable del
+   contenedor. Con un pack de rebote —clay— al llegar a la ultima pestaña se
+   pasa de largo antes de acomodarse, y en esa fraccion de segundo la barra
+   horizontal aparecia y desaparecia de golpe.
+
+   `overflow-x: clip` corta esa cuenta: lo que se pase no llega al scroller. Y
+   `overflow-clip-margin` le deja pintar igual hacia afuera, asi que el rebote
+   SE SIGUE VIENDO. Son la unica combinacion que separa las dos cosas.
+
+   ⚠ `overflow-y: visible` explicito: `clip` es el unico valor que puede convivir
+   con `visible` en el otro eje. Sin eso el eje Y pasaria a `clip` tambien y la
+   marca, apoyada en el borde de abajo, quedaria cortada.
+
+   El carril es tambien el ancla de la marca (`position: relative`), asi que el
+   `offsetLeft` que mide el JS sigue dando lo mismo. */
+.ui-tabs__rail {
+  position: relative;
+  display: flex;
+  flex-wrap: nowrap;
+  /* Al menos todo el ancho, y crece con las pestañas: eso es lo que el
+     contenedor scrollea. */
+  flex: 1 0 auto;
+
+  overflow-x: clip;
+  overflow-y: visible;
+  overflow-clip-margin: var(--ui-space-8);
+}
+
+.ui-tabs--stretch .ui-tabs__tab { flex: 1; }
+
+.ui-tabs__tab {
+  flex: none;
+  height: var(--tabs-h);
+  padding: 0 var(--tabs-pad);
+  border: 0;
+  border-radius: var(--ui-control-radius-sm) var(--ui-control-radius-sm) 0 0;
+  background: none;
+  color: var(--tabs-fg);
+
+  font-family: var(--ui-font-sans);
+  font-size: var(--tabs-font);
+  font-weight: var(--ui-weight-medium);
+  line-height: 1;
+  white-space: nowrap;
+
+  cursor: pointer;
+  transition:
+    color var(--ui-duration-fast) var(--ui-ease),
+    background var(--ui-duration-fast) var(--ui-ease);
+}
+
+.ui-tabs__tab:hover:not(.is-disabled):not(.is-active) {
+  background: var(--tabs-bg-hover);
+  color: var(--tabs-fg-active);
+}
+
+.ui-tabs__tab.is-active { color: var(--tabs-fg-active); }
+
+.ui-tabs__tab.is-disabled {
+  opacity: var(--ui-disabled-opacity);
+  cursor: not-allowed;
+}
+
+.ui-tabs__tab:focus-visible {
+  outline: var(--ui-focus-width) solid var(--ui-focus-ring);
+  outline-offset: calc(var(--ui-focus-width) * -1);
+}
+
+/* -- La rayita ------------------------------------------------------------- */
+
+.ui-tabs__indicator {
+  position: absolute;
+  /* Apoyada dentro de la caja, no colgando 1px afuera: con overflow-y
+     oculto quedaría recortada, y antes provocaba scroll vertical. */
+  bottom: 0;
+  left: 0;
+  width: var(--tabs-indicator-w);
+  height: var(--ui-tabs-indicator-h);
+  border-radius: var(--ui-radius-full);
+  background: var(--tabs-indicator);
+  translate: var(--tabs-indicator-x) 0;
+  transition:
+    translate var(--ui-duration-base) var(--ui-ease-out),
+    width var(--ui-duration-base) var(--ui-ease-out);
+}
+
+/* -- Los paneles ----------------------------------------------------------- */
+
+.ui-tabs__panels {
+  min-width: 0;
+  padding-top: var(--ui-space-4);
+}
+
+/* `display` propio pisaría el [hidden] del navegador: hay que repetirlo. */
+.ui-tabs__panel[hidden] { display: none; }
+
+/* -- Tamaños --------------------------------------------------------------- */
+
+.ui-tabs--sm {
+  --tabs-h: var(--ui-control-h-sm);
+  --tabs-font: var(--ui-control-font-sm);
+  --tabs-pad: var(--ui-control-pad-sm);
+}
+.ui-tabs--md {
+  --tabs-h: var(--ui-control-h-md);
+  --tabs-font: var(--ui-control-font-md);
+  --tabs-pad: var(--ui-control-pad-md);
+}
+.ui-tabs--lg {
+  --tabs-h: var(--ui-control-h-lg);
+  --tabs-font: var(--ui-control-font-lg);
+  --tabs-pad: var(--ui-control-pad-lg);
+}

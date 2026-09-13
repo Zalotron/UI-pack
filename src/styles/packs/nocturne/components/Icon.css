@@ -1,0 +1,11 @@
+/* -------------------------------------------- Icon — PIEL del pack NOCTURNE */
+/* Interfaz: --icon-color | --icon-stroke | --icon-cap | --icon-join        */
+
+/* Trazo fino y todo redondeado: el icono de un tablero acompaña al rótulo, no
+   compite con él. Sin sombra ni resplandor — en este pack lo único que
+   proyecta son las capas, y un icono no es una capa. */
+.ui-icon {
+  --icon-color: currentColor;
+  --icon-cap: round;
+  --icon-join: round;
+}

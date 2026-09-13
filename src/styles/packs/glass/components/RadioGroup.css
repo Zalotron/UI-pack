@@ -1,0 +1,23 @@
+/* ------------------------------------------ RadioGroup — PIEL del pack GLASS */
+/* Interfaz: --radio-bg | --radio-border | --radio-fill | --radio-ring         */
+
+.ui-radiogroup {
+  --radio-bg: var(--ui-glass-control);
+  --radio-border: transparent;
+  /* El punto va pleno: es demasiado chico para leerse translúcido. */
+  --radio-fill: var(--ui-accent);
+}
+
+/* Sin backdrop-filter, por lo mismo que el Checkbox: a este tamaño no se
+   percibe y cuesta una capa de composición por cada radio de la pantalla. */
+
+.ui-radio:hover:not(.is-disabled) {
+  --radio-bg: var(--ui-glass-control-on);
+  --radio-ring: var(--ui-ring-soft);
+}
+
+/* :not(.is-disabled) para empatarle la especificidad al hover de arriba. */
+.ui-radio.is-checked:not(.is-disabled) {
+  --radio-bg: var(--ui-glass-control-on);
+  --radio-ring: var(--ui-ring-soft);
+}

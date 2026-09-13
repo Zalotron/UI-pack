@@ -1,0 +1,42 @@
+/* -------------------------------------------- Checkbox — PIEL del pack CYBER */
+/* Interfaz: --check-bg | --check-bg-on | --check-border | --check-mark
+             --check-ring                                                     */
+
+.ui-checkbox {
+  --check-bg: var(--ui-bg-subtle);
+  --check-bg-on: var(--ui-accent);
+  --check-border: var(--ui-border-strong);
+  --check-mark: var(--ui-on-accent);
+}
+
+.ui-checkbox:hover:not(.is-disabled) {
+  --check-border: var(--ui-accent);
+  --check-ring: var(--ui-ring-soft);
+}
+
+/* :not(.is-disabled) para empatarle la especificidad al hover de arriba. */
+.ui-checkbox.is-checked:not(.is-disabled),
+.ui-checkbox.is-indeterminate:not(.is-disabled) {
+  --check-border: var(--ui-accent);
+}
+
+/* Marcado = encendido. El halo es el que da el golpe visual. */
+.ui-checkbox.is-checked:not(.is-disabled) .ui-checkbox__box,
+.ui-checkbox.is-indeterminate:not(.is-disabled) .ui-checkbox__box {
+  box-shadow: var(--ui-glow);
+  animation: var(--ui-glitch-anim);
+}
+
+/* El tilde entra con la señal fallando. Lleva el sacudón además del corte
+   cromático porque acá `translate` está libre: la mecánica mueve el tilde con
+   `scale` y `rotate`, no con `translate`. */
+.ui-checkbox.is-checked .ui-checkbox__mark,
+.ui-checkbox.is-indeterminate .ui-checkbox__mark {
+  animation: var(--ui-glitch-anim-move);
+}
+
+/* La etiqueta acompaña con aberración cromática. */
+.ui-checkbox.is-checked:not(.is-disabled) .ui-checkbox__label,
+.ui-checkbox.is-indeterminate:not(.is-disabled) .ui-checkbox__label {
+  animation: var(--ui-glitch-anim-text);
+}

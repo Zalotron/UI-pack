@@ -1,0 +1,12 @@
+/* ----------------------------------------------- Scroll — PIEL del pack SOFT */
+/* Interfaz: --scroll-track | --scroll-thumb | --scroll-thumb-hover          */
+
+/* El pulgar es una pastilla del mismo material. Un pseudo-elemento nativo no
+   acepta las sombras del relieve, así que acá el volumen se insinúa con el
+   color: por eso la barra de este pack es más ancha que la de los otros
+   (--ui-scroll-size), para que se lea como objeto y no como una raya. */
+.ui-scroll {
+  --scroll-track: transparent;
+  --scroll-thumb: var(--ui-scroll-thumb);
+  --scroll-thumb-hover: var(--ui-scroll-thumb-hover);
+}

@@ -1,0 +1,52 @@
+/* ---------------------------------------------- Window — PIEL del pack CYBER */
+/* Interfaz: --window-bg | --window-bar-bg | --window-border | --window-line
+             --window-title-fg | --window-control-hover
+             --window-close-hover | --window-close-fg | --window-shadow      */
+
+/* Terminal de consola: marco de neón, barra con rayas de monitor y título en
+   mayúsculas espaciadas.
+
+   ⛔ ESQUINAS CUADRADAS, SIEMPRE — regla del proyecto, no del pack. Acá cae de
+   maduro porque todo el estilo es de esquina viva, pero igual no es negociable:
+   --ui-window-radius vale 0 en todos los packs. */
+
+.ui-window {
+  --window-bg: var(--ui-bg);
+  --window-bar-bg: var(--ui-scanlines), var(--ui-bg-subtle);
+  --window-border: var(--ui-accent);
+  --window-line: var(--ui-line);
+  --window-title-fg: var(--ui-accent-text);
+  --window-control-hover: var(--ui-accent-subtle);
+  --window-shadow: var(--ui-glow-soft), var(--ui-shadow-lg);
+
+  /* Cerrar en el neón complementario: sale de correr el brand 160°, así que
+     sigue habiendo un solo color declarado. */
+  --window-close-hover: var(--ui-danger);
+  --window-close-fg: var(--ui-on-danger);
+}
+
+/* Cerrar es lo destructivo: la cruz falla al apuntarle. El objetivo es
+   `__glyph`, no el título — el hover de un ancestro nunca estila textos. */
+.ui-window__control--close:hover .ui-window__glyph {
+  animation: var(--ui-glitch-anim-move);
+}
+
+.ui-window__title {
+  text-transform: uppercase;
+  letter-spacing: var(--ui-tracking-wide);
+  font-weight: var(--ui-weight-semibold);
+}
+
+.ui-window--elev-sm { --window-shadow: var(--ui-shadow-sm); }
+.ui-window--elev-md { --window-shadow: var(--ui-glow-soft), var(--ui-shadow-md); }
+.ui-window--elev-lg { --window-shadow: var(--ui-glow-soft), var(--ui-shadow-lg); }
+
+/* Maximizada no flota: se apaga el halo. */
+.ui-window.is-maximized {
+  --window-shadow: none;
+}
+
+/* El titulo NO cambia con el hover de la barra: la barra contiene los botones,
+   asi que pasar el mouse por minimizar o cerrar tambien contaria como hover de
+   la barra y el titulo se encenderia sin motivo. La zona de arrastre ya se
+   anuncia con el cursor. */

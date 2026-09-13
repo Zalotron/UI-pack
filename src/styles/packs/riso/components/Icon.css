@@ -1,0 +1,15 @@
+/* --------------------------------------------- Icon — PIEL del pack RISO */
+/* Interfaz: --icon-color | --icon-stroke | --icon-cap | --icon-join        */
+
+/* Trazo gordo y macizo, impreso a DOS TINTAS: el dibujo en la primera y una
+   copia corrida en la segunda, igual que todo el pack.
+
+   Va con `drop-shadow` y no con `box-shadow`: un SVG de trazo no tiene caja
+   que correr, tiene forma. Y sin desenfoque —los dos ceros no estan de adorno:
+   una plancha no difumina, se corre. */
+.ui-icon {
+  --icon-color: currentColor;
+  --icon-cap: butt;
+  --icon-join: miter;
+  filter: drop-shadow(var(--ui-riso-offset) var(--ui-riso-offset) 0 var(--ui-ink-2-plate));
+}

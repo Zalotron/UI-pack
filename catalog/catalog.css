@@ -1,0 +1,352 @@
+/* ===========================================================================
+   Catálogo — SOLO tipografía y controles nativos.
+   Todo el layout lo hacen instancias reales de Container y Separator, así que
+   acá no hay ni grillas ni superficies. Prefijo `cat-` para no chocar con `ui-`.
+
+   Los controles del panel ya son clases de la librería (Select, Slider,
+   ColorPicker): acá solo queda tipografía. Lo que resta desaparece cuando
+   existan las clases Text / Heading y Stat.
+   =========================================================================== */
+
+/* El ancho del panel de ajustes. Único lugar donde se toca. */
+:root { --cat-panel-w: 320px; }
+
+/* ⚠ LA PAGINA NO SCROLLEA: SCROLLEAN LAS DOS COLUMNAS.
+   Sin esto quedan tres scrolls —el del documento y el de cada columna— y el de
+   afuera arrastra a los de adentro. Las columnas miden 100dvh exactos, así que
+   el del documento no tendría nada que hacer igual, pero mas vale apagarlo. */
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
+body { background: var(--ui-bg); }
+
+/* -- Fondo de demostración del pack GLASS ---------------------------------- */
+/* Un vidrio sobre un fondo liso no se ve: no hay nada que refractar. Estas
+   formas existen SOLO para que el efecto se aprecie.
+
+   Por qué vive acá y no en el pack: un pack que le dibuje anillos de colores
+   al fondo de la página sería inaceptable para quien importe la librería. La
+   ambientación es cosa del catálogo. src/ nunca la ve.
+
+   Se enciende sola: src/config.js escribe data-ui-pack en <html>, así que con
+   cualquier otro pack esta regla ni siquiera aplica.
+
+   Están quietas a propósito. El fondo del pack es `fixed` y el contenido
+   scrollea por encima, así que el movimiento relativo ya existe al scrollear
+   —se ve la grilla deformarse al pasar detrás de cada panel— y sin repintar
+   el desenfoque en cada cuadro, que es lo caro. */
+
+:root[data-ui-pack="glass"] body::before,
+:root[data-ui-pack="glass"] body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;            /* detrás del contenido, delante del fondo */
+  pointer-events: none;
+}
+
+/* Manchas de color. Toman los mismos tonos que la malla del pack, así que
+   acompañan al BRAND_COLOR y al tema sin configurar nada. */
+:root[data-ui-pack="glass"] body::before {
+  background:
+    radial-gradient(20rem 20rem at 74% 26%,
+      var(--ui-mesh-b) 0%, rgb(from var(--ui-mesh-b) r g b / 0) 70%),
+    radial-gradient(16rem 16rem at 18% 72%,
+      var(--ui-mesh-a) 0%, rgb(from var(--ui-mesh-a) r g b / 0) 70%),
+    radial-gradient(13rem 13rem at 58% 88%,
+      var(--ui-mesh-c) 0%, rgb(from var(--ui-mesh-c) r g b / 0) 70%);
+}
+
+/* Lo que realmente delata el vidrio: bordes DUROS. Una grilla y dos anillos
+   finos se ven nítidos al aire y se deshacen al pasar detrás de un panel.
+   Con manchas difusas solas el desenfoque casi no se nota. */
+:root[data-ui-pack="glass"] body::after {
+  --cat-ambience-line: rgb(from var(--ui-text) r g b / 0.10);
+  --cat-ambience-ring: rgb(from var(--ui-text) r g b / 0.16);
+  --cat-ambience-cell: 84px;
+
+  background:
+    radial-gradient(circle at 76% 22%,
+      transparent 0 8.5rem, var(--cat-ambience-ring) 8.5rem 8.6rem, transparent 8.6rem),
+    radial-gradient(circle at 14% 78%,
+      transparent 0 5.5rem, var(--cat-ambience-ring) 5.5rem 5.6rem, transparent 5.6rem),
+    repeating-linear-gradient(90deg,
+      var(--cat-ambience-line) 0 1px, transparent 1px var(--cat-ambience-cell)),
+    repeating-linear-gradient(0deg,
+      var(--cat-ambience-line) 0 1px, transparent 1px var(--cat-ambience-cell));
+}
+
+/* -- Fondo de demostración del pack CYBER ---------------------------------- */
+/* Misma idea y mismo motivo que el de arriba: ambientación del catálogo, no
+   de la librería. Acá no es para que se vea un efecto sino para que el negro
+   no quede muerto — una consola tiene rejilla y textura de monitor.
+
+   Las rayas van DETRÁS del contenido (z-index -1), nunca encima: una trama de
+   3px sobre texto lo haría vibrar. */
+
+:root[data-ui-pack="cyber"] body::before,
+:root[data-ui-pack="cyber"] body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Rejilla de circuito, más marcada cada cinco celdas. */
+:root[data-ui-pack="cyber"] body::before {
+  --cat-cyber-cell: 40px;
+  --cat-cyber-line: rgb(from var(--ui-accent) r g b / 0.07);
+  --cat-cyber-major: rgb(from var(--ui-accent) r g b / 0.14);
+
+  background:
+    repeating-linear-gradient(90deg,
+      var(--cat-cyber-major) 0 1px,
+      transparent 1px calc(var(--cat-cyber-cell) * 5)),
+    repeating-linear-gradient(0deg,
+      var(--cat-cyber-major) 0 1px,
+      transparent 1px calc(var(--cat-cyber-cell) * 5)),
+    repeating-linear-gradient(90deg,
+      var(--cat-cyber-line) 0 1px,
+      transparent 1px var(--cat-cyber-cell)),
+    repeating-linear-gradient(0deg,
+      var(--cat-cyber-line) 0 1px,
+      transparent 1px var(--cat-cyber-cell));
+}
+
+/* Resplandor de los dos neones en esquinas opuestas, y la trama de monitor.
+   El segundo tono sale del brand corrido 160°, igual que en el pack. */
+:root[data-ui-pack="cyber"] body::after {
+  background:
+    radial-gradient(28rem 20rem at 6% 0%,
+      rgb(from var(--ui-accent) r g b / 0.16) 0%,
+      rgb(from var(--ui-accent) r g b / 0) 65%),
+    radial-gradient(24rem 18rem at 96% 100%,
+      rgb(from var(--ui-neon-2) r g b / 0.14) 0%,
+      rgb(from var(--ui-neon-2) r g b / 0) 65%),
+    repeating-linear-gradient(180deg,
+      rgb(from var(--ui-neutral-950) r g b / 0.35) 0 1px,
+      rgb(from var(--ui-neutral-950) r g b / 0) 1px 3px);
+}
+
+/* -- Tipografía (futura clase Text / Heading) ------------------------------ */
+
+.cat-title {
+  font-family: var(--ui-font-sans);
+  letter-spacing: var(--ui-tracking-tight);
+  line-height: var(--ui-leading-tight);
+}
+
+.cat-title--h2 {
+  font-size: var(--ui-text-2xl);
+  font-weight: var(--ui-weight-semibold);
+}
+
+.cat-title--h3 {
+  font-size: var(--ui-text-xs);
+  font-weight: var(--ui-weight-semibold);
+  color: var(--ui-text-subtle);
+  text-transform: uppercase;
+  letter-spacing: var(--ui-tracking-wide);
+}
+
+.cat-label {
+  font-family: var(--ui-font-mono);
+  font-size: var(--ui-text-xs);
+  color: var(--ui-text-subtle);
+  letter-spacing: var(--ui-tracking-wide);
+}
+
+.cat-error {
+  margin: 0;
+  color: var(--ui-danger);
+  font-family: var(--ui-font-mono);
+  font-size: var(--ui-text-sm);
+  white-space: pre-wrap;
+}
+
+/* ===========================================================================
+   LA DOCUMENTACION
+
+   Vive acá y no en `src/` por lo mismo que la ambientación del fondo: es del
+   VISOR. Una librería que le imponga a quien la importe cómo se ve una página
+   de documentación sería inaceptable.
+
+   Todo sale de tokens `--ui-*`, así que la ventana se reestiliza sola al
+   cambiar de pack o de tema — que es justamente la gracia de que la
+   documentación se abra acá adentro y no en otra pestaña.
+   =========================================================================== */
+
+:root {
+  --cat-doc-w: min(1080px, 94vw);
+  --cat-doc-h: min(760px, 88vh);
+  --cat-doc-nav-w: 216px;
+}
+
+/* El cuerpo de la ventana no scrollea: scrollea cada columna por su lado, así
+   el índice se queda quieto mientras se lee. */
+.cat-doc .ui-window__body {
+  overflow: hidden;
+  padding: 0;
+}
+
+.cat-doc__nav { flex: none; }
+
+.cat-doc__navbtn {
+  justify-content: flex-start;
+  text-align: start;
+}
+
+/* -- El texto -------------------------------------------------------------- */
+
+.cat-doc__body {
+  max-width: 72ch;   /* una línea más larga que esto cansa de leer */
+}
+
+.cat-doc__title {
+  margin: 0 0 var(--ui-space-4);
+  font-size: var(--ui-text-xl);
+  font-weight: var(--ui-weight-bold);
+  color: var(--ui-text);
+}
+
+.cat-doc__h {
+  margin: var(--ui-space-6) 0 var(--ui-space-2);
+  font-size: var(--ui-text-md);
+  font-weight: var(--ui-weight-medium);
+  color: var(--ui-accent-text);
+}
+
+.cat-doc__p {
+  margin: 0 0 var(--ui-space-3);
+  line-height: var(--ui-leading-relaxed, 1.6);
+  color: var(--ui-text-muted);
+}
+
+.cat-doc__ul {
+  margin: 0 0 var(--ui-space-3);
+  padding-inline-start: var(--ui-space-5);
+  line-height: var(--ui-leading-relaxed, 1.6);
+  color: var(--ui-text-muted);
+}
+
+.cat-doc__ul li { margin-bottom: var(--ui-space-2); }
+
+.cat-doc__body code {
+  font-family: var(--ui-font-mono);
+  font-size: 0.92em;
+  color: var(--ui-text);
+}
+
+.cat-doc__body b { color: var(--ui-text); }
+
+/* -- Los ejemplos ---------------------------------------------------------- */
+
+.cat-doc__code {
+  margin: 0 0 var(--ui-space-4);
+  padding: var(--ui-space-3) var(--ui-space-4);
+  border: var(--ui-border-width) solid var(--ui-line);
+  border-radius: var(--ui-radius-md);
+  background: var(--ui-bg-subtle);
+  /* Un ejemplo largo scrollea EN SU CAJA: la página no se va de ancho. */
+  overflow-x: auto;
+  font-family: var(--ui-font-mono);
+  font-size: var(--ui-text-sm);
+  line-height: 1.55;
+  color: var(--ui-text);
+}
+
+/* -- Las tablas ------------------------------------------------------------ */
+
+.cat-doc__tablewrap {
+  margin: 0 0 var(--ui-space-4);
+  overflow-x: auto;
+}
+
+.cat-doc__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--ui-text-sm);
+}
+
+.cat-doc__table th {
+  padding: var(--ui-space-2) var(--ui-space-3);
+  border-bottom: var(--ui-border-width) solid var(--ui-border);
+  text-align: start;
+  color: var(--ui-text);
+  font-weight: var(--ui-weight-medium);
+}
+
+.cat-doc__table td {
+  padding: var(--ui-space-2) var(--ui-space-3);
+  border-bottom: var(--ui-border-width) solid var(--ui-line);
+  color: var(--ui-text-muted);
+  vertical-align: top;
+}
+
+.cat-doc__api {
+  font-family: var(--ui-font-mono);
+  color: var(--ui-accent-text);
+  white-space: nowrap;
+}
+
+/* -- Copiar el ejemplo ----------------------------------------------------- */
+/* El botón vive en la esquina del bloque, no debajo: ahí no le roba espacio al
+   código y se encuentra sin buscarlo. */
+
+.cat-doc__codewrap {
+  position: relative;
+}
+
+/* La fila de herramientas: el aviso a la izquierda, el boton a la derecha.
+   Una fila y no dos absolutos: asi nadie tiene que saber cuanto mide el boton.
+   `pointer-events` apagado en la fila y encendido solo en el boton, para no
+   robarle el arrastre al codigo que tiene debajo. */
+.cat-doc__tools {
+  position: absolute;
+  top: var(--ui-space-2);
+  inset-inline-end: var(--ui-space-2);
+  display: flex;
+  align-items: center;
+  gap: var(--ui-space-2);
+  pointer-events: none;
+}
+
+.cat-doc__copy {
+  pointer-events: auto;
+  /* Discreto hasta que se lo busca: el protagonista es el codigo. */
+  opacity: 0.45;
+  transition: opacity var(--ui-duration-fast) var(--ui-ease);
+}
+
+.cat-doc__codewrap:hover .cat-doc__copy,
+.cat-doc__copy:focus-visible {
+  opacity: 1;
+}
+
+/* El aviso: TEXTO PELADO, sin caja.
+   Una pastilla con fondo al lado del boton se lee como un segundo control —
+   invita a hacerle click— y ademas compite con el codigo. Esto no es un
+   control: es un acuse de recibo que dura un segundo y se va. */
+.cat-doc__copied {
+  color: var(--ui-accent-text);
+  font-size: var(--ui-text-xs);
+  white-space: nowrap;
+  pointer-events: none;
+
+  /* Apagado por defecto. `visibility` además de la opacidad para que no quede
+     leyéndose en un lector de pantalla cuando no está. */
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity var(--ui-duration-fast) var(--ui-ease),
+    visibility var(--ui-duration-fast) var(--ui-ease);
+}
+
+.cat-doc__codewrap.is-copied .cat-doc__copied {
+  opacity: 1;
+  visibility: visible;
+}

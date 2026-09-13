@@ -1,0 +1,32 @@
+/* ---------------------------------------------- Spinner — PIEL del pack SOFT */
+/* Interfaz: --spinner-bg | --spinner-fg | --spinner-border | --spinner-ring   */
+
+/* Un campo editable es un HUECO en la lámina, no un objeto apoyado sobre ella.
+   Por eso va hundido siempre, no solo al enfocarse: es la diferencia entre
+   "acá se escribe" y "acá se aprieta". */
+.ui-spinner {
+  --spinner-bg: var(--ui-surface);
+  --spinner-border: var(--ui-line);
+  box-shadow: var(--ui-soft-in-sm);
+  transition: box-shadow var(--ui-duration-base) var(--ui-ease);
+}
+
+/* El halo de la mecánica sale de --spinner-ring, que se pinta con box-shadow.
+   Acá esa propiedad la usa el relieve, así que el foco se marca con el borde
+   y con un hueco más profundo. */
+.ui-spinner:hover:not(.is-disabled) {
+  --spinner-border: var(--ui-border);
+}
+
+/* Los estados activos llevan :not(.is-disabled) para empatarle la
+   especificidad al :hover de arriba. Sin eso el hover gana y el control
+   se ve MAS apagado con el mouse encima que sin el. */
+.ui-spinner.is-dragging:not(.is-disabled) {
+  --spinner-border: var(--ui-accent-soft);
+}
+
+.ui-spinner.is-editing:not(.is-disabled) {
+  --spinner-border: var(--ui-accent);
+  --spinner-caret: var(--ui-accent);
+  box-shadow: var(--ui-soft-in);
+}

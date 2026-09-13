@@ -1,0 +1,29 @@
+/* ---------------------------------------------- Spinner — PIEL del pack CLAY */
+/* Interfaz: --spinner-bg | --spinner-fg | --spinner-border | --spinner-ring   */
+
+/* Un campo es un HUECO hecho en la plastilina: no está apoyado sobre el fondo,
+   está excavado. Es lo que lo distingue de un botón sin leer una sola letra. */
+.ui-spinner {
+  --spinner-bg: var(--ui-bg-subtle);
+  --spinner-border: transparent;
+  box-shadow: var(--ui-clay-pressed);
+  transition: box-shadow var(--ui-duration-fast) var(--ui-ease);
+}
+
+.ui-spinner:hover:not(.is-disabled) {
+  --spinner-bg: var(--ui-surface-active);
+}
+
+/* Los estados activos llevan :not(.is-disabled) para empatarle la
+   especificidad al :hover de arriba. Sin eso el hover gana y el control
+   se ve MAS apagado con el mouse encima que sin el. */
+.ui-spinner.is-dragging:not(.is-disabled) {
+  --spinner-bg: var(--ui-accent-subtle);
+}
+
+.ui-spinner.is-editing:not(.is-disabled) {
+  --spinner-bg: var(--ui-accent-subtle);
+  --spinner-caret: var(--ui-accent);
+  /* El halo de foco va afuera del hueco, así no pelea con el volumen. */
+  box-shadow: var(--ui-clay-pressed), 0 0 0 var(--ui-ring-width) var(--ui-ring);
+}

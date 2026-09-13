@@ -1,0 +1,39 @@
+/* ---------------------------------------------- Toggle — PIEL del pack CYBER */
+/* Interfaz: --toggle-track | --toggle-track-on | --toggle-knob-bg
+             --toggle-border | --toggle-ring                                  */
+
+/* Un interruptor de tablero: canal apagado, y al encenderse se prende el
+   neón entero, halo incluido. */
+.ui-toggle {
+  --toggle-track: var(--ui-bg-subtle);
+  --toggle-track-on: var(--ui-accent);
+  --toggle-border: var(--ui-border);
+  --toggle-knob-bg: var(--ui-text-subtle);
+}
+
+.ui-toggle:hover:not(.is-disabled) {
+  --toggle-border: var(--ui-border-strong);
+}
+
+/* :not(.is-disabled) para empatarle la especificidad al hover de arriba. */
+.ui-toggle.is-checked:not(.is-disabled) {
+  --toggle-border: var(--ui-accent);
+  --toggle-knob-bg: var(--ui-on-accent);
+}
+
+/* El halo solo cuando está encendido: es lo que hace el "click" visual. */
+.ui-toggle.is-checked:not(.is-disabled) .ui-toggle__track {
+  box-shadow: var(--ui-glow);
+  animation: var(--ui-glitch-anim);
+}
+
+/* El tirador glitchea SIN sacudón: la mecánica ya usa `translate` para
+   deslizarlo de un lado al otro, y pisárselo lo dejaría a mitad de camino.
+   El corte cromático alcanza. */
+.ui-toggle.is-checked .ui-toggle__knob {
+  animation: var(--ui-glitch-anim);
+}
+
+.ui-toggle.is-checked:not(.is-disabled) .ui-toggle__label {
+  animation: var(--ui-glitch-anim-text);
+}

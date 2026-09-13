@@ -1,0 +1,563 @@
+/* ===========================================================================
+   PACK "RISO" — tokens
+   ---------------------------------------------------------------------------
+   Risografía. DOS TINTAS sobre papel. No hay luz, no hay volumen, no hay
+   profundidad: hay planchas, y una imprime apenas corrida de la otra.
+
+   RIGE LA MISMA REGLA DURA: un solo color declarado (--ui-brand). Todo lo demás
+   sale de él con color relativo — la segunda tinta incluida, que es el brand
+   girado en el círculo de tono.
+
+   Las cuatro piezas del medio, y son TODAS las que hay:
+
+     1. DOS TINTAS        --ui-ink-1 es el brand; --ui-ink-2 es el brand
+                          girado INK_SHIFT grados. No existe una tercera: lo
+                          que parece un tercer color es una encima de la otra.
+     2. FUERA DE REGISTRO La segunda plancha imprime corrida unos píxeles. Es
+                          el defecto característico del medio y acá hace el
+                          trabajo que en otros packs hace la sombra: separa una
+                          pieza del fondo. Sin desenfoque: una plancha no
+                          difumina, se corre.
+     3. TRAMA             Un relleno no es macizo, es una nube de puntos. Los
+                          rellenos llevan --ui-riso-screen y se componen con
+                          `background-blend-mode: multiply`, que es como se
+                          superponen dos tintas de verdad.
+     4. PAPEL             Uno solo para todo. La página y un contenedor son el
+                          MISMO papel: lo que los separa es la tinta, no un
+                          gris distinto. Por eso acá --ui-bg y --ui-surface
+                          casi no se diferencian, al revés que en todos los
+                          otros packs.
+
+   ⚠ NADA DE SOMBRAS BLANDAS. Si aparece un `blur` en una sombra, el pack dejó
+   de ser una impresión y pasó a ser una interfaz con papeles dibujados.
+
+   Requiere color relativo (Chrome 119+, Safari 16.4+, Firefox 128+).
+   =========================================================================== */
+
+/* Cuánto se separan las dos planchas, en múltiplos de la corrida de reposo.
+   En 1 es la impresión normal; más alto, las planchas todavía no entraron en
+   registro. Es lo que anima el ciclo de vida (ver lifecycle.css).
+
+   Hace falta @property: una custom property sin registrar no interpola. */
+@property --ui-riso-press {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+
+:root {
+  color-scheme: light dark;
+
+  /* ==================================================================== */
+  /*  =============   EL UNICO COLOR DECLARADO   ======================== */
+  /* ==================================================================== */
+  /* Rosa flúor: la tinta más reconocible del catálogo Riso, y la única
+     familia de tono que no usa ningún otro pack. */
+  --ui-brand: #ff4d9d;      /* pack settings -> BRAND_COLOR */
+
+  /* Formas RECORTADAS. Una hoja se corta con guillotina y una plancha imprime
+     un rectángulo: acá no hay esquinas blandas. */
+  --ui-roundness: 0;
+
+  --ui-on-brand-light: hsl(from var(--ui-brand) h calc(s * 0.20) 98%);
+  --ui-on-brand-dark:  hsl(from var(--ui-brand) h calc(s * 0.55) 13%);
+  --ui-on-brand: var(--ui-on-brand-dark);
+
+  /* ==================================================================== */
+  /*  ===============   LAS DOS TINTAS   =============================== */
+  /*  La segunda NO es un color declarado: es el brand girado. Girar la    */
+  /*  perilla INK_SHIFT es cambiar el segundo tambor de la máquina.       */
+  /* ==================================================================== */
+  --ui-ink-1: var(--ui-brand);
+  --ui-ink-2: hsl(from var(--ui-brand) calc(h + var(--ui-ink-shift, 239)) s l);
+
+  /* La tinta risográfica es TRANSLUCIDA: por eso dos capas dan un color que
+     ninguna de las dos tiene. Estas son las versiones con las que se imprime
+     una plancha corrida o una trama. */
+  --ui-ink-2-plate: rgb(from var(--ui-ink-2) r g b / 0.55);
+  --ui-ink-2-veil:  rgb(from var(--ui-ink-2) r g b / 0.28);
+  --ui-ink-1-veil:  rgb(from var(--ui-ink-1) r g b / 0.30);
+
+  /* La tinta oscura, la que hace de negro. En una risografía no hay negro:
+     hay una tinta muy cargada. Sale de la segunda, que es la fría. */
+  --ui-ink-dark: hsl(from var(--ui-ink-2) h calc(s * 0.80) 17%);
+
+  /* ==================================================================== */
+  /*  ============   FUERA DE REGISTRO Y TRAMA   ====================== */
+  /*  Las dos perillas propias del pack, convertidas en medidas.         */
+  /* ==================================================================== */
+
+  /* El calibre de arriba, también declarado acá: el @property registra el tipo
+     para que interpole, pero el valor de reposo va en :root como cualquier
+     otro token — si no, no hay de dónde leerlo sin JS. */
+  --ui-riso-press: 1;
+
+  /* Cuánto sale corrida la segunda plancha. Se multiplica por --ui-riso-press,
+     que en reposo vale 1 y durante la entrada vale más: así la animación es
+     LAS PLANCHAS ENTRANDO EN REGISTRO y no un fundido. */
+  --ui-riso-offset: calc(1px * var(--ui-misregister, 2.5) * var(--ui-riso-press));
+
+  /* El papel acompaña el movimiento de la plancha: en reposo da 0. */
+  --ui-riso-shift: calc(-2px * (var(--ui-riso-press) - 1));
+
+  /* La plancha corrida. SIN DESENFOQUE Y SIN EXTENSION: los dos ceros del
+     final no son decorativos, son la regla del pack. */
+  --ui-misprint:    var(--ui-riso-offset) var(--ui-riso-offset) 0 0 var(--ui-ink-2-plate);
+  --ui-misprint-lg: calc(var(--ui-riso-offset) * 2) calc(var(--ui-riso-offset) * 2)
+                    0 0 var(--ui-ink-2-plate);
+  /* Hacia el otro lado: para lo que está hundido o al revés (la barra de una
+     ventana, una pestaña activa). */
+  --ui-misprint-back: calc(var(--ui-riso-offset) * -1) calc(var(--ui-riso-offset) * -1)
+                      0 0 var(--ui-ink-1-veil);
+
+  /* ==================================================================== */
+  /*  LA TRAMA                                                           */
+  /*  Un relleno risografico no es macizo: es una nube de puntos. Dos     */
+  /*  grillas iguales corridas media celda una de la otra dan la diagonal */
+  /*  a 45 grados de una trama de verdad.                                 */
+  /*                                                                      */
+  /*  ⚠ SE APLICA CON LONGHANDS (background-image + -position + -size),   */
+  /*  NO metiendo `posicion / tamano` adentro de una variable que despues  */
+  /*  entra en el shorthand `background`. Eso ultimo es valido en el papel */
+  /*  pero es fragil: cualquier detalle en la sustitucion tira la          */
+  /*  declaracion ENTERA en silencio y la trama no aparece nunca — que es  */
+  /*  exactamente lo que paso la primera vez. Con longhands, si algo falla */
+  /*  falla una sola propiedad y se ve.                                    */
+  /*                                                                      */
+  /*  Y SIEMPRE con `background-blend-mode: multiply`: dos tintas que se   */
+  /*  cruzan se multiplican, no se tapan.                                  */
+  /* ==================================================================== */
+
+  /* El tamano de celda. Es la perilla HALFTONE. */
+  --ui-halftone-cell: calc(5px * var(--ui-halftone, 1));
+  /* El par de medidas listo para background-size, y el corrimiento de media
+     celda listo para background-position. */
+  --ui-halftone-size: var(--ui-halftone-cell) var(--ui-halftone-cell);
+  --ui-halftone-half: calc(var(--ui-halftone-cell) / 2) calc(var(--ui-halftone-cell) / 2);
+
+  /* El punto. Fuerte para los rellenos de tinta; flojo —y de la PRIMERA
+     tinta— para el papel, que es donde mas superficie hay y donde la trama
+     tiene que leerse como impresion y no como suciedad. */
+  --ui-halftone-dot:      rgb(from var(--ui-ink-2) r g b / 0.55);
+  --ui-halftone-dot-soft: rgb(from var(--ui-ink-1) r g b / 0.20);
+
+  --ui-riso-dot:
+    radial-gradient(circle at 50% 50%, var(--ui-halftone-dot) 0 30%, transparent 32%);
+  --ui-riso-dot-soft:
+    radial-gradient(circle at 50% 50%, var(--ui-halftone-dot-soft) 0 30%, transparent 32%);
+
+  /* El grano del papel. Ruido fractal en escala de grises y muy bajo alfa: se
+     multiplica contra el papel y le da diente. No se ve, se siente.
+
+     ⚠ Los números viven adentro de la cadena y no pueden salir a un token: un
+     data URI es un documento aparte y no ve las variables CSS. */
+  --ui-riso-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='0.11' intercept='0'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23g)'/%3E%3C/svg%3E");
+
+  /* ------------------------------------------------------ Tipografía ---- */
+  /* Un grotesco compacto y macizo: lo que se imprime en una fanzine. El texto
+     es tinta, no una etiqueta — y una letra fina no sobrevive a una trama de
+     puntos encima. */
+  --ui-font-sans: "Archivo", "Oswald", "Franklin Gothic Medium", "Arial Narrow",
+                  system-ui, -apple-system, "Segoe UI", sans-serif;
+  --ui-font-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+
+  --ui-text-xs:   0.75rem;
+  --ui-text-sm:   0.8125rem;
+  --ui-text-md:   0.875rem;
+  --ui-text-lg:   1rem;
+  --ui-text-xl:   1.25rem;
+  --ui-text-2xl:  1.625rem;
+  --ui-text-3xl:  2.25rem;
+
+  --ui-weight-regular:  500;
+  --ui-weight-medium:   600;
+  --ui-weight-semibold: 700;
+  --ui-weight-bold:     800;
+
+  --ui-leading-tight:   1.15;
+  --ui-leading-normal:  1.45;
+  --ui-leading-relaxed: 1.6;
+
+  /* Apretada: los rótulos de una fanzine van juntos. */
+  --ui-tracking-tight: -0.01em;
+  --ui-tracking-wide:  0.08em;
+
+  /* -------------------------------------------- Espaciado (escala 4px) -- */
+  --ui-space-0:  0;
+  --ui-space-1:  0.25rem;
+  --ui-space-2:  0.5rem;
+  --ui-space-3:  0.75rem;
+  --ui-space-4:  1rem;
+  --ui-space-5:  1.25rem;
+  --ui-space-6:  1.5rem;
+  --ui-space-8:  2rem;
+  --ui-space-10: 2.5rem;
+  --ui-space-12: 3rem;
+  --ui-space-16: 4rem;
+
+  /* --------------------------------------- Espaciado fluido ------------- */
+  /* Hay que dejarle lugar a la plancha corrida: si dos piezas se tocan, la
+     segunda tinta de una cae encima de la otra y se lee como suciedad. */
+  --ui-pad-block-xs:  clamp(10px, 1.2vw, 14px);
+  --ui-pad-inline-xs: clamp(12px, 1.4vw, 16px);
+  --ui-pad-block-sm:  clamp(16px, 2vw, 22px);
+  --ui-pad-inline-sm: clamp(18px, 2.2vw, 24px);
+  --ui-pad-block-md:  clamp(24px, 3vw, 32px);
+  --ui-pad-inline-md: clamp(26px, 3.2vw, 36px);
+  --ui-pad-block-lg:  clamp(32px, 4vw, 44px);
+  --ui-pad-inline-lg: clamp(34px, 4.2vw, 48px);
+  --ui-pad-block-xl:  clamp(44px, 5.4vw, 62px);
+  --ui-pad-inline-xl: clamp(46px, 5.6vw, 66px);
+
+  --ui-gap-none: 0;
+  --ui-gap-xs:   var(--ui-space-2);
+  --ui-gap-sm:   clamp(12px, 1.5vw, 16px);
+  --ui-gap-md:   clamp(18px, 2.2vw, 26px);
+  --ui-gap-lg:   clamp(26px, 3.2vw, 38px);
+  --ui-gap-xl:   clamp(36px, 4.4vw, 54px);
+
+  --ui-col-min: 240px;
+
+  /* ------------------------------------------------ Separadores ---------- */
+  --ui-sep-space-none: 0;
+  --ui-sep-space-xs:   var(--ui-space-2);
+  --ui-sep-space-sm:   var(--ui-space-4);
+  --ui-sep-space-md:   clamp(18px, 2.6vh, 26px);
+  --ui-sep-space-lg:   clamp(28px, 4vh, 40px);
+  --ui-sep-space-xl:   clamp(38px, 5.4vh, 56px);
+
+  /* La regla de una impresión no se desvanece: arranca y termina. */
+  --ui-sep-fade: 0%;
+
+  /* ------------------------------------------- Controles ----------------- */
+  --ui-control-h-sm:    32px;
+  --ui-control-h-md:    40px;
+  --ui-control-h-lg:    50px;
+  --ui-control-pad-sm:  var(--ui-space-3);
+  --ui-control-pad-md:  var(--ui-space-5);
+  --ui-control-pad-lg:  var(--ui-space-6);
+  --ui-control-font-sm: var(--ui-text-sm);
+  --ui-control-font-md: var(--ui-text-md);
+  --ui-control-font-lg: var(--ui-text-lg);
+  --ui-control-gap-sm:  var(--ui-space-2);
+  --ui-control-gap-md:  var(--ui-space-2);
+  --ui-control-gap-lg:  var(--ui-space-3);
+  --ui-control-radius-sm: var(--ui-radius-sm);
+  --ui-control-radius-md: var(--ui-radius-sm);
+  --ui-control-radius-lg: var(--ui-radius-md);
+  /* Piso del spinner. NO es su ancho: el ancho lo reserva el propio
+     control segun sus limites. Esto es para que uno de un solo digito
+     siga siendo agarrable. */
+  --ui-spinner-min-w: 3ch;
+  /* Respiro sobre los caracteres reservados: la coma, el signo y el
+     cursor no miden lo que mide un cero, que es lo que mide `ch`. */
+--ui-spinner-slack: 0.75;
+
+  --ui-slider-track-ratio: 0.30;
+  --ui-slider-thumb-ratio: 0.95;
+  --ui-slider-thumb-w: 16px;       /* una plaqueta recortada, no una bolita */
+  --ui-slider-value-w: 5ch;
+
+  --ui-select-menu-max-h: 260px;
+  --ui-select-arrow: 7px;
+
+  --ui-toggle-track-ratio: 0.62;
+  --ui-toggle-aspect: 1.9;
+  --ui-toggle-knob-inset: 3px;
+  --ui-check-ratio: 0.54;
+
+  --ui-scroll-size: 12px;
+  --ui-scroll-inset: 3px;
+  --ui-scroll-size-regular: 16px;
+  --ui-scroll-inset-regular: 4px;
+
+  /* Window. ⛔ EL MARCO DE UNA VENTANA ES CUADRADO, SIEMPRE. */
+  --ui-window-radius: 0;
+  /* El oscurecido detras de una ventana modal. Sale de la marca como
+     todo lo demas: un negro puro no pertenece a ningun pack. */
+  --ui-window-scrim: hsl(from var(--ui-brand) h calc(s * 0.30) 6% / 0.62);
+  --ui-window-bar-h: 40px;
+  --ui-window-control-w: 44px;
+  --ui-window-glyph: 10px;
+
+  /* Progress. Gorda y maciza: una plancha no imprime una linea fina. */
+  --ui-progress-h-sm: 6px;
+  --ui-progress-h-md: 10px;
+  --ui-progress-h-lg: 14px;
+  --ui-progress-ring-sm: 34px;
+  --ui-progress-ring-md: 48px;
+  --ui-progress-ring-lg: 66px;
+  /* ⚠ ESTO NO SON PIXELES: es el PORCENTAJE DEL DIAMETRO.
+     El aro se dibuja en un SVG con `viewBox="0 0 100 100"`, asi que una unidad
+     del trazo vale un centesimo del diametro. Escrito como `px` el numero
+     mentia: un `16px` sobre un aro de 64 se dibujaba de 10. Y ademas asi es
+     como tiene que ser — el trazo acompana al tamano del aro en las tres
+     variantes en vez de quedarse fijo. */
+  --ui-progress-ring-width: 15;
+
+  /* Iconos. Son de TRAZO, asi que lo que los hace de este pack es el grosor:
+     el mismo dibujo con otro calibre ya es otro icono. */
+  --ui-icon-sm: 16px;
+  --ui-icon-md: 20px;
+  --ui-icon-lg: 24px;
+  --ui-icon-stroke: 2.0px;
+
+  --ui-tabs-indicator-h: 4px;
+
+  --ui-swatch-w: 2.6em;
+  --ui-picker-w: 240px;
+  --ui-picker-area-h: 136px;
+  --ui-picker-cursor: 12px;
+
+  /* Apretar es APOYAR LA PLANCHA: la pieza se corre hasta donde estaba su
+     segunda tinta, y las dos quedan en registro por un momento. Por eso el
+     desplazamiento del press es exactamente la corrida, ni más ni menos. */
+  --ui-press-shift: var(--ui-riso-offset);
+  --ui-hover-lift: 0px;
+  --ui-disabled-opacity: 0.40;
+
+  /* ---------------------------------------------------------- Radios ---- */
+  --ui-radius-xs:   calc(3px  * var(--ui-roundness));
+  --ui-radius-sm:   calc(5px  * var(--ui-roundness));
+  --ui-radius-md:   calc(8px  * var(--ui-roundness));
+  --ui-radius-lg:   calc(12px * var(--ui-roundness));
+  --ui-radius-xl:   calc(18px * var(--ui-roundness));
+  --ui-radius-full: calc(999px * min(var(--ui-roundness), 1));
+  --ui-radius-circle: 50%;
+
+  /* -------------------------------------------------------- Bordes ------ */
+  /* Gordo: un contorno impreso tiene cuerpo. Es lo que sostiene la forma en un
+     pack sin sombras blandas. */
+  --ui-border-width: 2px;
+
+  /* ------------------------------------------------------ Movimiento ---- */
+  /* Una máquina de imprimir es rápida y seca. No hay rebote ni inercia. */
+  --ui-duration-fast: 110ms;
+  --ui-duration-base: 190ms;
+  --ui-duration-slow: 320ms;
+  --ui-duration-loader: 900ms;
+  --ui-loader-width: 3px;
+
+  --ui-ease:      cubic-bezier(0.2, 0.8, 0.3, 1);
+  --ui-ease-out:  cubic-bezier(0.12, 0.9, 0.2, 1);
+  --ui-ease-in:   cubic-bezier(0.7, 0, 0.9, 0.25);
+
+  /* ----------------------------------------------------------- Capas ---- */
+  --ui-z-base:     0;
+  --ui-z-dropdown: 1000;
+  --ui-z-sticky:   1100;
+  --ui-z-overlay:  1200;
+  --ui-z-modal:    1300;
+  --ui-z-toast:    1400;
+  --ui-z-tooltip:  1500;
+
+  /* ==================================================================== */
+  /*  NEUTROS — son PAPEL, así que casi no tienen tinta.                  */
+  /* ==================================================================== */
+  --ui-neutral-0:    hsl(from var(--ui-brand) h calc(s * 0.10) 99%);
+  --ui-neutral-50:   hsl(from var(--ui-brand) h calc(s * 0.14) 97%);
+  --ui-neutral-100:  hsl(from var(--ui-brand) h calc(s * 0.16) 94%);
+  --ui-neutral-200:  hsl(from var(--ui-brand) h calc(s * 0.18) 89%);
+  --ui-neutral-300:  hsl(from var(--ui-brand) h calc(s * 0.20) 79%);
+  --ui-neutral-400:  hsl(from var(--ui-brand) h calc(s * 0.20) 63%);
+  --ui-neutral-500:  hsl(from var(--ui-brand) h calc(s * 0.22) 47%);
+  --ui-neutral-600:  hsl(from var(--ui-brand) h calc(s * 0.24) 35%);
+  --ui-neutral-700:  hsl(from var(--ui-brand) h calc(s * 0.26) 26%);
+  --ui-neutral-800:  hsl(from var(--ui-brand) h calc(s * 0.30) 18%);
+  --ui-neutral-900:  hsl(from var(--ui-brand) h calc(s * 0.34) 12%);
+  --ui-neutral-950:  hsl(from var(--ui-brand) h calc(s * 0.40) 6%);
+
+  /* ==================================================================== */
+  /*  FAMILIA DE MARCA                                                   */
+  /* ==================================================================== */
+  --ui-brand-base:   var(--ui-brand);
+  --ui-brand-hover:  hsl(from var(--ui-brand) h s calc(l * 1.06));
+  --ui-brand-active: hsl(from var(--ui-brand) h s calc(l * 0.90));
+  --ui-brand-soft:   hsl(from var(--ui-brand) h calc(s * 0.80) 82%);
+  --ui-brand-subtle: hsl(from var(--ui-brand) h calc(s * 0.55) 94%);
+
+  /* ==================================================================== */
+  /*  ESTADOS — tono fijo, saturación aportada por el brand.             */
+  /* ==================================================================== */
+  --ui-red-100:   hsl(from var(--ui-brand) 6   calc(s * 0.40) 94%);
+  --ui-red-500:   hsl(from var(--ui-brand) 6   calc(s * 0.95) 58%);
+  --ui-red-600:   hsl(from var(--ui-brand) 4   calc(s * 0.95) 45%);
+  --ui-red-700:   hsl(from var(--ui-brand) 2   calc(s * 0.95) 36%);
+
+  --ui-green-100: hsl(from var(--ui-brand) 150 calc(s * 0.35) 93%);
+  --ui-green-500: hsl(from var(--ui-brand) 152 calc(s * 0.80) 44%);
+  --ui-green-600: hsl(from var(--ui-brand) 152 calc(s * 0.80) 32%);
+
+  --ui-amber-100: hsl(from var(--ui-brand) 46  calc(s * 0.45) 93%);
+  --ui-amber-500: hsl(from var(--ui-brand) 42  calc(s * 0.95) 54%);
+  --ui-amber-600: hsl(from var(--ui-brand) 38  calc(s * 0.95) 40%);
+
+  /* -------------------------------------------------------- Sombras ----- */
+  /* Acá una "sombra" es LA SEGUNDA PLANCHA. Nada de esto desenfoca. */
+  --ui-shadow-sm: var(--ui-misprint);
+  --ui-shadow-md: var(--ui-misprint);
+  --ui-shadow-lg: var(--ui-misprint-lg);
+
+  /* ------------------------------------------- Semánticos — tema claro -- */
+  /* UN SOLO PAPEL. La diferencia entre --ui-bg y --ui-surface es mínima a
+     propósito: lo que separa una pieza del fondo es su contorno y su plancha
+     corrida, no un gris más claro. */
+  --ui-bg:             var(--ui-neutral-50);
+  --ui-bg-subtle:      var(--ui-neutral-100);
+  --ui-surface:        var(--ui-neutral-0);
+  --ui-surface-hover:  var(--ui-neutral-0);
+  --ui-surface-active: var(--ui-neutral-100);
+
+  /* Los contornos son TINTA, no líneas de baja opacidad. */
+  --ui-border:         var(--ui-ink-dark);
+  --ui-border-strong:  var(--ui-ink-dark);
+  --ui-line:           rgb(from var(--ui-ink-dark) r g b / 0.55);
+  --ui-line-soft:      rgb(from var(--ui-ink-dark) r g b / 0.22);
+  --ui-scroll-thumb:       var(--ui-ink-2-plate);
+  --ui-scroll-thumb-hover: var(--ui-ink-2);
+
+  --ui-panel-from:     var(--ui-surface);
+  --ui-panel-to:       var(--ui-surface);
+
+  /* El texto es tinta cargada, nunca negro. */
+  --ui-text:           var(--ui-ink-dark);
+  --ui-text-muted:     hsl(from var(--ui-ink-2) h calc(s * 0.70) 30%);
+  --ui-text-subtle:    hsl(from var(--ui-ink-2) h calc(s * 0.60) 40%);
+
+  --ui-accent:         var(--ui-ink-1);
+  --ui-accent-hover:   hsl(from var(--ui-ink-1) h s calc(l * 0.92));
+  --ui-accent-active:  hsl(from var(--ui-ink-1) h s calc(l * 0.82));
+  --ui-accent-subtle:  rgb(from var(--ui-ink-1) r g b / 0.18);
+  --ui-accent-soft:    rgb(from var(--ui-ink-1) r g b / 0.45);
+  /* Como LETRA el rosa flúor no se lee sobre papel: hay que bajarlo mucho.
+     Como RELLENO sigue siendo el flúor de --ui-accent. */
+  --ui-accent-text:    hsl(from var(--ui-ink-1) h calc(s * 0.95) 34%);
+  --ui-on-accent:      var(--ui-on-brand-dark);
+
+  --ui-danger:         var(--ui-red-600);
+  --ui-danger-hover:   var(--ui-red-700);
+  --ui-danger-subtle:  var(--ui-red-100);
+  --ui-on-danger:      var(--ui-on-brand-light);
+
+  --ui-success:        var(--ui-green-600);
+  --ui-success-subtle: var(--ui-green-100);
+  --ui-warning:        var(--ui-amber-600);
+  --ui-warning-subtle: var(--ui-amber-100);
+
+  /* El foco es la segunda tinta, maciza y recta. */
+  --ui-focus-ring:     var(--ui-ink-2);
+  --ui-focus-width:    3px;
+  --ui-focus-offset:   2px;
+
+  --ui-selection-bg:   rgb(from var(--ui-ink-1) r g b / 0.35);
+  --ui-selection-fg:   var(--ui-text);
+
+  --ui-ring-width:     3px;
+  --ui-ring:           var(--ui-ink-2-veil);
+  --ui-ring-soft:      rgb(from var(--ui-ink-2) r g b / 0.14);
+}
+
+/* ===========================================================================
+   TEMA OSCURO
+   ---------------------------------------------------------------------------
+   No es la impresión invertida: es OTRO PAPEL. Un stock negro con las mismas
+   dos tintas encima, que es como se imprime una fanzine oscura de verdad. Las
+   tintas flúor no cambian — sobre papel oscuro es justo cuando más brillan.
+
+   Lo único que sí cambia es la tinta que hace de negro: sobre papel oscuro no
+   se vería, así que el texto pasa a ser el PAPEL, o sea la reserva sin tinta.
+   =========================================================================== */
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ui-ink-dark: hsl(from var(--ui-ink-2) h calc(s * 0.30) 93%);
+
+    --ui-bg:             hsl(from var(--ui-ink-2) h calc(s * 0.35) 9%);
+    --ui-bg-subtle:      hsl(from var(--ui-ink-2) h calc(s * 0.35) 6%);
+    --ui-surface:        hsl(from var(--ui-ink-2) h calc(s * 0.32) 13%);
+    --ui-surface-hover:  hsl(from var(--ui-ink-2) h calc(s * 0.32) 13%);
+    --ui-surface-active: hsl(from var(--ui-ink-2) h calc(s * 0.32) 18%);
+
+    --ui-border:         var(--ui-ink-dark);
+    --ui-border-strong:  var(--ui-ink-dark);
+    --ui-line:           rgb(from var(--ui-ink-dark) r g b / 0.50);
+    --ui-line-soft:      rgb(from var(--ui-ink-dark) r g b / 0.20);
+    --ui-scroll-thumb:       var(--ui-ink-2-plate);
+    --ui-scroll-thumb-hover: var(--ui-ink-2);
+
+    --ui-panel-from:     var(--ui-surface);
+    --ui-panel-to:       var(--ui-surface);
+
+    --ui-text:           var(--ui-ink-dark);
+    --ui-text-muted:     hsl(from var(--ui-ink-2) h calc(s * 0.32) 76%);
+    --ui-text-subtle:    hsl(from var(--ui-ink-2) h calc(s * 0.34) 64%);
+
+    /* Sobre papel oscuro la trama tiene que ser CLARA o desaparece, y la
+       plancha corrida necesita más carga para verse contra el negro. */
+    --ui-halftone-dot:      rgb(from var(--ui-ink-2) r g b / 0.70);
+    --ui-halftone-dot-soft: rgb(from var(--ui-ink-1) r g b / 0.26);
+    --ui-ink-2-plate:       rgb(from var(--ui-ink-2) r g b / 0.75);
+
+    --ui-accent:         var(--ui-ink-1);
+    --ui-accent-hover:   hsl(from var(--ui-ink-1) h s calc(l * 1.08));
+    --ui-accent-active:  hsl(from var(--ui-ink-1) h s calc(l * 0.88));
+    --ui-accent-subtle:  rgb(from var(--ui-ink-1) r g b / 0.22);
+    --ui-accent-soft:    rgb(from var(--ui-ink-1) r g b / 0.50);
+    --ui-accent-text:    hsl(from var(--ui-ink-1) h s 72%);
+    --ui-on-accent:      var(--ui-on-brand-dark);
+
+    --ui-danger:         var(--ui-red-500);
+    --ui-danger-hover:   hsl(from var(--ui-red-500) h s calc(l * 1.10));
+    --ui-danger-subtle:  rgb(from var(--ui-red-500) r g b / 0.20);
+
+    --ui-success:        var(--ui-green-500);
+    --ui-success-subtle: rgb(from var(--ui-green-500) r g b / 0.20);
+    --ui-warning:        var(--ui-amber-500);
+    --ui-warning-subtle: rgb(from var(--ui-amber-500) r g b / 0.20);
+  }
+}
+
+:root[data-theme="dark"] {
+  --ui-ink-dark: hsl(from var(--ui-ink-2) h calc(s * 0.30) 93%);
+
+  --ui-bg:             hsl(from var(--ui-ink-2) h calc(s * 0.35) 9%);
+  --ui-bg-subtle:      hsl(from var(--ui-ink-2) h calc(s * 0.35) 6%);
+  --ui-surface:        hsl(from var(--ui-ink-2) h calc(s * 0.32) 13%);
+  --ui-surface-hover:  hsl(from var(--ui-ink-2) h calc(s * 0.32) 13%);
+  --ui-surface-active: hsl(from var(--ui-ink-2) h calc(s * 0.32) 18%);
+
+  --ui-border:         var(--ui-ink-dark);
+  --ui-border-strong:  var(--ui-ink-dark);
+  --ui-line:           rgb(from var(--ui-ink-dark) r g b / 0.50);
+  --ui-line-soft:      rgb(from var(--ui-ink-dark) r g b / 0.20);
+  --ui-scroll-thumb:       var(--ui-ink-2-plate);
+  --ui-scroll-thumb-hover: var(--ui-ink-2);
+
+  --ui-panel-from:     var(--ui-surface);
+  --ui-panel-to:       var(--ui-surface);
+
+  --ui-text:           var(--ui-ink-dark);
+  --ui-text-muted:     hsl(from var(--ui-ink-2) h calc(s * 0.32) 76%);
+  --ui-text-subtle:    hsl(from var(--ui-ink-2) h calc(s * 0.34) 64%);
+
+  --ui-halftone-dot:      rgb(from var(--ui-ink-2) r g b / 0.70);
+  --ui-halftone-dot-soft: rgb(from var(--ui-ink-1) r g b / 0.26);
+  --ui-ink-2-plate:       rgb(from var(--ui-ink-2) r g b / 0.75);
+
+  --ui-accent:         var(--ui-ink-1);
+  --ui-accent-hover:   hsl(from var(--ui-ink-1) h s calc(l * 1.08));
+  --ui-accent-active:  hsl(from var(--ui-ink-1) h s calc(l * 0.88));
+  --ui-accent-subtle:  rgb(from var(--ui-ink-1) r g b / 0.22);
+  --ui-accent-soft:    rgb(from var(--ui-ink-1) r g b / 0.50);
+  --ui-accent-text:    hsl(from var(--ui-ink-1) h s 72%);
+  --ui-on-accent:      var(--ui-on-brand-dark);
+
+  --ui-danger:         var(--ui-red-500);
+  --ui-danger-hover:   hsl(from var(--ui-red-500) h s calc(l * 1.10));
+  --ui-danger-subtle:  rgb(from var(--ui-red-500) r g b / 0.20);
+
+  --ui-success:        var(--ui-green-500);
+  --ui-success-subtle: rgb(from var(--ui-green-500) r g b / 0.20);
+  --ui-warning:        var(--ui-amber-500);
+  --ui-warning-subtle: rgb(from var(--ui-amber-500) r g b / 0.20);
+}

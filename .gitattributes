@@ -1,0 +1,7 @@
+# Finales de linea normalizados en el repo y nativos en cada maquina. Sin esto,
+# clonar en Windows y en Linux produce diffs de archivos enteros sin que nadie
+# haya tocado una linea.
+* text=auto
+
+# El ejecutable del catalogo: binario, no se toca.
+*.exe binary

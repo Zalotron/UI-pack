@@ -1,0 +1,158 @@
+/* --------------------------------------------------- Container — ESTRUCTURA */
+/* Mecánica del componente: caja, layout, y la interfaz de variables
+   --container-* que la piel del pack rellena.
+   Este archivo es AGNÓSTICO AL ESTILO: se comparte entre todos los packs y
+   no debería cambiar al crear uno nuevo.
+   La estética (fondos, hovers, sombras) vive en:
+     src/styles/packs/<pack>/components/Container.css                        */
+
+.ui-container {
+  /* Interfaz del componente. La piel del pack pisa estas variables. */
+  --container-pad-block: var(--ui-pad-block-md);
+  --container-pad-inline: var(--ui-pad-inline-md);
+  --container-gap: var(--ui-gap-sm);
+  --container-radius: var(--ui-radius-lg);
+  --container-bg: transparent;
+  --container-border-color: transparent;
+  --container-shadow: none;
+  --container-column-min: var(--ui-col-min);
+
+  box-sizing: border-box;
+  min-width: 0; /* permite encogerse dentro de un grid o flex */
+
+  padding: var(--container-pad-block) var(--container-pad-inline);
+  border: var(--ui-border-width) solid var(--container-border-color);
+  border-radius: var(--container-radius);
+  background: var(--container-bg);
+  box-shadow: var(--container-shadow);
+
+  color: var(--ui-text);
+  font-family: var(--ui-font-sans);
+  font-size: var(--ui-text-md);
+  line-height: var(--ui-leading-normal);
+
+  transition:
+    border-color var(--ui-duration-base) var(--ui-ease),
+    background var(--ui-duration-base) var(--ui-ease),
+    box-shadow var(--ui-duration-base) var(--ui-ease),
+    transform var(--ui-duration-base) var(--ui-ease);
+}
+
+/* Cuando el contenedor es un <a>, no debe heredar look de link. */
+a.ui-container {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* -- Layout de los hijos --------------------------------------------------- */
+
+.ui-container--layout-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--container-gap);
+}
+
+.ui-container--layout-row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: var(--container-gap);
+}
+
+/* Sin `columns`: auto-fit. Las columnas bajan solas cuando no entran,
+   sin media queries ni breakpoints hardcodeados. */
+/* Una fila que no se parte. Para una columna de aplicacion: el panel fijo al
+   costado y el contenido al lado, sin que se apilen. */
+.ui-container--layout-row.ui-container--nowrap {
+  flex-wrap: nowrap;
+}
+
+.ui-container--layout-grid {
+  display: grid;
+  gap: var(--container-gap);
+  grid-template-columns: repeat(auto-fit, minmax(min(var(--container-column-min), 100%), 1fr));
+}
+
+/* Con `columns`: cantidad exacta. */
+.ui-container--layout-grid.ui-container--fixed-columns {
+  grid-template-columns: repeat(var(--container-columns), minmax(0, 1fr));
+}
+
+.ui-container--layout-flow {
+  display: block;
+}
+
+/* -- Alineación del texto -------------------------------------------------- */
+/* Solo texto. Para alinear los HIJOS está la opción `items` (align-items). */
+
+.ui-container--align-start  { text-align: start; }
+.ui-container--align-center { text-align: center; }
+.ui-container--align-end    { text-align: end; }
+
+/* -- Padding (inner margin) ------------------------------------------------ */
+
+.ui-container--pad-none { --container-pad-block: 0;                      --container-pad-inline: 0; }
+.ui-container--pad-xs   { --container-pad-block: var(--ui-pad-block-xs); --container-pad-inline: var(--ui-pad-inline-xs); }
+.ui-container--pad-sm   { --container-pad-block: var(--ui-pad-block-sm); --container-pad-inline: var(--ui-pad-inline-sm); }
+.ui-container--pad-md   { --container-pad-block: var(--ui-pad-block-md); --container-pad-inline: var(--ui-pad-inline-md); }
+.ui-container--pad-lg   { --container-pad-block: var(--ui-pad-block-lg); --container-pad-inline: var(--ui-pad-inline-lg); }
+.ui-container--pad-xl   { --container-pad-block: var(--ui-pad-block-xl); --container-pad-inline: var(--ui-pad-inline-xl); }
+
+/* Overrides por eje. Van después para ganarle al padding de ambos ejes. */
+.ui-container--padblock-none { --container-pad-block: 0; }
+.ui-container--padblock-xs   { --container-pad-block: var(--ui-pad-block-xs); }
+.ui-container--padblock-sm   { --container-pad-block: var(--ui-pad-block-sm); }
+.ui-container--padblock-md   { --container-pad-block: var(--ui-pad-block-md); }
+.ui-container--padblock-lg   { --container-pad-block: var(--ui-pad-block-lg); }
+.ui-container--padblock-xl   { --container-pad-block: var(--ui-pad-block-xl); }
+
+.ui-container--padinline-none { --container-pad-inline: 0; }
+.ui-container--padinline-xs   { --container-pad-inline: var(--ui-pad-inline-xs); }
+.ui-container--padinline-sm   { --container-pad-inline: var(--ui-pad-inline-sm); }
+.ui-container--padinline-md   { --container-pad-inline: var(--ui-pad-inline-md); }
+.ui-container--padinline-lg   { --container-pad-inline: var(--ui-pad-inline-lg); }
+.ui-container--padinline-xl   { --container-pad-inline: var(--ui-pad-inline-xl); }
+
+/* -- Gap ------------------------------------------------------------------- */
+
+.ui-container--gap-none { --container-gap: var(--ui-gap-none); }
+.ui-container--gap-xs   { --container-gap: var(--ui-gap-xs); }
+.ui-container--gap-sm   { --container-gap: var(--ui-gap-sm); }
+.ui-container--gap-md   { --container-gap: var(--ui-gap-md); }
+.ui-container--gap-lg   { --container-gap: var(--ui-gap-lg); }
+.ui-container--gap-xl   { --container-gap: var(--ui-gap-xl); }
+
+/* -- Radio ----------------------------------------------------------------- */
+/* Sin modificador hereda --ui-radius-lg, o sea que sigue config.ROUNDNESS. */
+
+.ui-container--radius-none   { --container-radius: 0; }
+.ui-container--radius-xs     { --container-radius: var(--ui-radius-xs); }
+.ui-container--radius-sm     { --container-radius: var(--ui-radius-sm); }
+.ui-container--radius-md     { --container-radius: var(--ui-radius-md); }
+.ui-container--radius-lg     { --container-radius: var(--ui-radius-lg); }
+.ui-container--radius-xl     { --container-radius: var(--ui-radius-xl); }
+.ui-container--radius-full   { --container-radius: var(--ui-radius-full); }
+.ui-container--radius-circle { --container-radius: var(--ui-radius-circle); }
+
+/* -- Elevación ------------------------------------------------------------- */
+
+.ui-container--elev-sm { --container-shadow: var(--ui-shadow-sm); }
+.ui-container--elev-md { --container-shadow: var(--ui-shadow-md); }
+.ui-container--elev-lg { --container-shadow: var(--ui-shadow-lg); }
+
+/* -- Medidas --------------------------------------------------------------- */
+
+.ui-container--full { width: 100%; }
+
+/* -- Interactivo ----------------------------------------------------------- */
+/* Solo la mecánica. El tratamiento visual del hover lo pone el pack. */
+
+.ui-container.is-interactive {
+  cursor: pointer;
+  user-select: none;
+}
+
+.ui-container.is-interactive:focus-visible {
+  outline: var(--ui-focus-width) solid var(--ui-focus-ring);
+  outline-offset: var(--ui-focus-offset);
+}

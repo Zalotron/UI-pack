@@ -1,0 +1,40 @@
+/* ------------------------------------------ Window — PIEL del pack EDITORIAL */
+/* Interfaz: --window-bg | --window-bar-bg | --window-border | --window-line
+             --window-title-fg | --window-control-hover
+             --window-close-hover | --window-close-fg | --window-shadow      */
+
+/* Una página con su titulillo arriba: el título centrado en versalitas y un
+   filete que lo separa del cuerpo, como el encabezado de un capítulo.
+
+   ⛔ ESQUINAS CUADRADAS, SIEMPRE — regla del proyecto, no del pack. */
+
+.ui-window {
+  --window-bg: var(--ui-surface);
+  --window-bar-bg: transparent;
+  --window-border: var(--ui-border);
+  --window-line: var(--ui-line);
+  --window-title-fg: var(--ui-text-muted);
+  --window-control-hover: var(--ui-surface-hover);
+  /* Una página no proyecta sombra sobre otra. */
+  --window-shadow: none;
+
+  --window-close-hover: var(--ui-danger);
+  --window-close-fg: var(--ui-on-danger);
+}
+
+/* Titulillo: centrado y en versalitas, como corresponde a un encabezado. */
+.ui-window__title {
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: var(--ui-tracking-wide);
+  font-size: var(--ui-text-xs);
+}
+
+/* La jerarquía se lee en el peso del filete, no en una sombra. */
+.ui-window--elev-sm { --window-border: var(--ui-line-soft); }
+.ui-window--elev-md { --window-border: var(--ui-line); }
+.ui-window--elev-lg { --window-border: var(--ui-border); }
+
+/* El titulo NO cambia con el hover de la barra: la barra contiene los botones,
+   asi que pasar el mouse por minimizar o cerrar tambien contaria como hover de
+   la barra y el titulo se encenderia sin motivo. */

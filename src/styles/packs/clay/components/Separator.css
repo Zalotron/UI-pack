@@ -1,0 +1,54 @@
+/* -------------------------------------------- Separator — PIEL del pack CLAY */
+/* Interfaz: --separator-color, --separator-thickness.
+   --separator-color se usa como `background`, así que acepta un degradé.     */
+
+/* Un separador acá no es una línea: es un SURCO gordo hecho en el material.
+   Tres píxeles, con la sombra arriba y la luz abajo — la misma luz del pack
+   vista de costado. */
+.ui-separator--soft,
+.ui-separator--base,
+.ui-separator--strong {
+  --separator-thickness: calc(var(--ui-border-width) * 3);
+}
+
+.ui-separator--soft {
+  --separator-color: linear-gradient(
+    180deg,
+    var(--ui-clay-dark) 0 60%,
+    var(--ui-clay-light) 60% 100%
+  );
+  opacity: 0.5;
+}
+
+.ui-separator--base {
+  --separator-color: linear-gradient(
+    180deg,
+    var(--ui-clay-dark) 0 60%,
+    var(--ui-clay-light) 60% 100%
+  );
+}
+
+.ui-separator--strong {
+  --separator-color: linear-gradient(
+    180deg,
+    var(--ui-neutral-400) 0 60%,
+    var(--ui-clay-light) 60% 100%
+  );
+}
+
+/* Vertical: el mismo surco, girado. La luz sigue viniendo de arriba. */
+.ui-separator--soft.ui-separator--vertical,
+.ui-separator--base.ui-separator--vertical,
+.ui-separator--strong.ui-separator--vertical {
+  --separator-color: linear-gradient(
+    90deg,
+    var(--ui-clay-dark) 0 60%,
+    var(--ui-clay-light) 60% 100%
+  );
+}
+
+/* El acento es una barrita maciza, redondeada como todo. */
+.ui-separator--accent {
+  --separator-color: var(--ui-accent);
+  border-radius: var(--ui-radius-full);
+}

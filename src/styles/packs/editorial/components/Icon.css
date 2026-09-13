@@ -1,0 +1,16 @@
+/* ---------------------------------------- Icon — PIEL del pack EDITORIAL */
+/* Interfaz: --icon-color | --icon-stroke | --icon-cap | --icon-join        */
+
+/* Trazo fino, del peso de la letra que lo rodea. En un pack que es tipografia
+   el icono no puede pesar mas que el texto: si se nota mas que una palabra,
+   deja de ser un signo y pasa a ser un dibujo.
+
+   Remate redondo y union redonda, como los terminales de una serif. */
+.ui-icon {
+  --icon-color: currentColor;
+  --icon-cap: round;
+  --icon-join: round;
+  /* Baja un poco para sentarse sobre la linea de base del texto, que en este
+     pack manda: la interlinea es de 1.75 y un icono centrado flota. */
+  vertical-align: -0.14em;
+}

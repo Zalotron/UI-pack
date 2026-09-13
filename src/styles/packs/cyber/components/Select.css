@@ -1,0 +1,44 @@
+/* ---------------------------------------------- Select — PIEL del pack CYBER */
+/* Interfaz: --select-bg | --select-border | --select-menu-bg
+             --select-menu-border | --select-menu-shadow
+             --select-option-hover / -selected                                */
+
+.ui-select {
+  --select-bg: var(--ui-bg-subtle);
+  --select-border: var(--ui-border);
+
+  /* La lista va OPACA y sin rayas: es lo que hay que leer. La textura de
+     monitor queda para las superficies, no para el contenido. */
+  --select-menu-bg: var(--ui-surface);
+  --select-menu-border: var(--ui-accent);
+  --select-menu-shadow: var(--ui-glow-soft), var(--ui-shadow-lg);
+  --select-option-hover: var(--ui-accent-subtle);
+  --select-option-selected: var(--ui-accent-subtle);
+}
+
+.ui-select:hover:not(.is-disabled) { --select-border: var(--ui-border-strong); }
+
+/* Los estados activos llevan :not(.is-disabled) para empatarle la
+   especificidad al :hover de arriba. Sin eso el hover gana y el control
+   se ve MAS apagado con el mouse encima que sin el. */
+.ui-select.is-open:not(.is-disabled) {
+  --select-border: var(--ui-accent);
+  --select-fg: var(--ui-accent-text);
+}
+
+/* La lista no aparece: ENCIENDE, como un tubo. Arranca desde una banda y
+   parpadea dos veces antes de estabilizarse. Se dispara sola cada vez que se
+   abre porque mientras está cerrada el elemento está en `display: none`. */
+.ui-select__list {
+  animation: var(--ui-glitch-anim-boot);
+}
+
+/* La opción activa lleva una marca al costado, como un cursor de terminal. */
+.ui-select__option.is-active {
+  box-shadow: inset var(--ui-hud-weight) 0 0 var(--ui-accent);
+}
+
+.ui-select__option.is-selected {
+  color: var(--ui-accent-text);
+  box-shadow: inset var(--ui-hud-weight) 0 0 var(--ui-accent);
+}

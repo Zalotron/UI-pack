@@ -1,0 +1,11 @@
+/* --------------------------------------------- Icon — PIEL del pack CLAY */
+/* Interfaz: --icon-color | --icon-stroke | --icon-cap | --icon-join        */
+
+/* Trazo GORDO y todo redondeado. Es el mismo criterio que el resto del pack:
+   la plastilina no tiene aristas, y un icono de linea fina al lado de una
+   pieza con volumen se ve endeble. */
+.ui-icon {
+  --icon-color: currentColor;
+  --icon-cap: round;
+  --icon-join: round;
+}

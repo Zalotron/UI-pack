@@ -1,0 +1,13 @@
+/* -------------------------------------------- Icon — PIEL del pack GLASS */
+/* Interfaz: --icon-color | --icon-stroke | --icon-cap | --icon-join        */
+
+/* Trazo fino y redondeado, con una luz apenas detras: el icono es una pieza
+   de cristal mas, no una calcomania. La luz va con `drop-shadow` y no con
+   `box-shadow` porque un SVG de trazo no tiene caja que sombrear — la sombra
+   tiene que seguir la FORMA del dibujo. */
+.ui-icon {
+  --icon-color: currentColor;
+  --icon-cap: round;
+  --icon-join: round;
+  filter: drop-shadow(0 1px 1px rgb(from var(--ui-glass-shade) r g b / var(--ui-glass-cast)));
+}

@@ -1,0 +1,19 @@
+/* -------------------------------------- RadioGroup — PIEL del pack BLUEPRINT */
+/* Interfaz: --radio-bg | --radio-border | --radio-fill | --radio-ring         */
+
+/* El mismo lenguaje que el Checkbox: círculo de trazo, y al elegirlo se marca
+   el punto adentro. */
+.ui-radiogroup {
+  --radio-bg: transparent;
+  --radio-border: var(--ui-border);
+  --radio-fill: var(--ui-accent);
+}
+
+.ui-radio:hover:not(.is-disabled) {
+  --radio-border: var(--ui-accent);
+}
+
+/* :not(.is-disabled) para empatarle la especificidad al hover de arriba. */
+.ui-radio.is-checked:not(.is-disabled) {
+  --radio-border: var(--ui-accent);
+}

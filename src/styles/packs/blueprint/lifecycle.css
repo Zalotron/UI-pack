@@ -1,0 +1,148 @@
+/* ===========================================================================
+   PACK "BLUEPRINT" — entradas y salidas
+   ---------------------------------------------------------------------------
+   Contrato de `UIComponent`: la mecánica pone `.is-entering` al montar y
+   `.is-leaving` en `leave()`, y espera a que termine lo que corra acá.
+
+   Va en un archivo aparte de motion.css a propósito: ahí está el trazado de
+   INTERACCION (el desplegable que baja, el tilde que se marca); acá está el
+   ciclo de vida.
+
+   La idea: acá nada aparece ni se desvanece — se PINTA. El barrido entra en
+   DIAGONAL desde la esquina de arriba a la izquierda, que es como cae la mano
+   al pasar un pincel, y se retira por donde vino.
+
+   Se hace con `clip-path` y no con `width`, que dispararía un reflow por cuadro
+   y además rompería el layout de adentro.
+
+   La salida es MAS CORTA que la entrada: lo que aparece se presenta, lo que se
+   va no debe hacerte esperar.
+   =========================================================================== */
+
+/* -- El barrido del pincel -------------------------------------------------- */
+/* Un triángulo anclado en la esquina de arriba a la izquierda que crece hasta
+   tapar todo. Su hipotenusa ES el filo del pincel: una diagonal que cruza el
+   elemento de punta a punta.
+
+   ⚠ POR QUE EN PORCENTAJES Y NO EN PIXELES
+   Así el barrido tarda lo mismo en cruzar un contenedor enorme que un checkbox
+   de 17px. Con una medida fija, en una casilla chica el triángulo la taparía
+   en el primer 1% de la animación y el resto correría sin que se vea nada.
+
+   Efecto secundario: como los porcentajes se miden contra el ancho y el alto
+   por separado, en un elemento muy apaisado la diagonal queda casi acostada y
+   el barrido deja de leerse. Un checkbox con su etiqueta, o un grupo de radios
+   en fila, son exactamente eso — anchos y bajos.
+   Por eso las piezas CHICAS barren por su cuenta (ver más abajo): la casilla y
+   el punto son cuadrados, así que ahí la diagonal sale a 45° y se ve.
+
+   ⚠ EL 220% VA ESCRITO, NO SALE DE UN TOKEN
+   Tiene que pasar de 200%: con exactamente 200% la hipotenusa toca la esquina
+   opuesta justo sobre el filo y esa punta puede quedar sin pintar.
+
+   Y va literal en vez de `var(--ui-bp-sweep-reach)` a propósito. Un `var()`
+   adentro de un @keyframes es terreno frágil para la interpolación: si no se
+   sustituye bien, el keyframe final queda inválido y la animación pasa a ser
+   un salto — el elemento se queda invisible media animación y después aparece
+   de golpe, que es exactamente "no se ve animar". Acá el valor es geometría,
+   no estética: no hay nada que calibrar por pack. */
+
+@keyframes ui-bp-sweep-in {
+  from { clip-path: polygon(0 0, 0 0, 0 0); }
+  to   { clip-path: polygon(0 0, 220% 0, 0 220%); }
+}
+
+@keyframes ui-bp-sweep-out {
+  from { clip-path: polygon(0 0, 220% 0, 0 220%); }
+  to   { clip-path: polygon(0 0, 0 0, 0 0); }
+}
+
+/* ===========================================================================
+   Asignación por componente
+   ---------------------------------------------------------------------------
+   Todos llevan el MISMO gesto: en este pack pintar es pintar, sin importar el
+   tamaño de la pieza. Lo único que cambia es cuánto tarda.
+   =========================================================================== */
+
+/* -- Las láminas: el barrido más largo, se ve recorrer la hoja -------------- */
+
+.ui-container.is-entering,
+.ui-window.is-entering {
+  animation: ui-bp-sweep-in var(--ui-duration-slow) var(--ui-ease) both;
+  /* Escalonado: lo reparte UIComponent al montar. Va DESPUES del shorthand,
+     que resetea animation-delay a 0. */
+  animation-delay: var(--ui-enter-delay, 0ms);
+}
+.ui-container.is-leaving,
+.ui-window.is-leaving {
+  animation: ui-bp-sweep-out var(--ui-duration-base) var(--ui-ease) both;
+}
+
+/* -- Lo que se despliega --------------------------------------------------- */
+
+.ui-select.is-entering,
+.ui-colorpicker.is-entering {
+  animation: ui-bp-sweep-in var(--ui-duration-base) var(--ui-ease) both;
+  animation-delay: var(--ui-enter-delay, 0ms);
+}
+.ui-select.is-leaving,
+.ui-colorpicker.is-leaving {
+  animation: ui-bp-sweep-out var(--ui-duration-fast) var(--ui-ease) both;
+}
+
+/* -- Controles y estructura: un trazo corto -------------------------------- */
+
+.ui-btn.is-entering,
+.ui-spinner.is-entering,
+.ui-slider.is-entering,
+.ui-toggle.is-entering,
+.ui-checkbox.is-entering,
+.ui-radiogroup.is-entering,
+.ui-textfield.is-entering,
+.ui-tabs.is-entering,
+.ui-scroll.is-entering,
+.ui-progress.is-entering,
+.ui-icon.is-entering,
+.ui-separator.is-entering {
+  animation: ui-bp-sweep-in var(--ui-duration-base) var(--ui-ease) both;
+  animation-delay: var(--ui-enter-delay, 0ms);
+}
+.ui-btn.is-leaving,
+.ui-spinner.is-leaving,
+.ui-slider.is-leaving,
+.ui-toggle.is-leaving,
+.ui-checkbox.is-leaving,
+.ui-radiogroup.is-leaving,
+.ui-textfield.is-leaving,
+.ui-tabs.is-leaving,
+.ui-scroll.is-leaving,
+.ui-progress.is-leaving,
+.ui-icon.is-leaving,
+.ui-separator.is-leaving {
+  animation: ui-bp-sweep-out var(--ui-duration-fast) var(--ui-ease) both;
+}
+
+/* -- Las piezas chicas, por su cuenta -------------------------------------- */
+/* La casilla de un checkbox y el punto de un radio son CUADRADOS, así que ahí
+   la diagonal sale a 45° y el barrido se ve de verdad. Si se dejaran barrer
+   junto con su fila —que es ancha y baja— la diagonal quedaría acostada y no
+   se leería nada, que es justo lo que pasaba.
+
+   Entran un toque después que su fila: primero se pinta el rótulo, después la
+   marca. Ese retraso se SUMA al turno del escalonado, no lo reemplaza. */
+
+.ui-checkbox.is-entering .ui-checkbox__box,
+.ui-radiogroup.is-entering .ui-radio__dot,
+.ui-toggle.is-entering .ui-toggle__track {
+  animation: ui-bp-sweep-in var(--ui-duration-base) var(--ui-ease) both;
+  animation-delay: calc(var(--ui-enter-delay, 0ms) + var(--ui-duration-fast));
+}
+
+/* Cada radio del grupo arranca un escalón después del anterior, así se ve que
+   se pintan uno por uno en vez de todos juntos. */
+.ui-radiogroup.is-entering .ui-radio:nth-child(2) .ui-radio__dot {
+  animation-delay: calc(var(--ui-enter-delay, 0ms) + var(--ui-duration-base));
+}
+.ui-radiogroup.is-entering .ui-radio:nth-child(3) .ui-radio__dot {
+  animation-delay: calc(var(--ui-enter-delay, 0ms) + var(--ui-duration-base) * 1.5);
+}

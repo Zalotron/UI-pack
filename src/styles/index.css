@@ -1,0 +1,12 @@
+/* ===========================================================================
+   Punto de entrada "todo incluido" con el pack DEFAULT.
+
+     <link rel="stylesheet" href="ruta/a/src/styles/index.css">
+
+   Para usar otro pack, no importes este archivo: armá el tuyo con
+     base.css  +  structure.css  +  packs/<tuPack>/pack.css
+   =========================================================================== */
+
+@import url("./base.css");
+@import url("./structure.css");
+@import url("./packs/default/pack.css");

@@ -1,0 +1,29 @@
+/* ---------------------------------------------- Toggle — PIEL del pack GLASS */
+/* Interfaz: --toggle-track | --toggle-track-on | --toggle-knob-bg
+             --toggle-border | --toggle-ring                                  */
+
+.ui-toggle {
+  --toggle-track: var(--ui-glass-control);
+  --toggle-track-on: var(--ui-glass-accent);
+  --toggle-border: transparent;
+
+  /* El tirador es la única pieza OPACA del sistema, y a propósito: es lo que
+     hay que seguir con la vista. Si también fuera de vidrio, se perdería
+     contra la pista. */
+  --toggle-knob-bg: var(--ui-neutral-0);
+}
+
+.ui-toggle__track {
+  backdrop-filter: var(--ui-glass-blur-sm);
+  -webkit-backdrop-filter: var(--ui-glass-blur-sm);
+}
+
+.ui-toggle:hover:not(.is-disabled) {
+  --toggle-track: var(--ui-glass-control-on);
+  --toggle-ring: var(--ui-ring-soft);
+}
+
+/* :not(.is-disabled) para empatarle la especificidad al hover de arriba. */
+.ui-toggle.is-checked:not(.is-disabled) {
+  --toggle-knob-bg: var(--ui-on-accent);
+}

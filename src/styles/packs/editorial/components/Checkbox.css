@@ -1,0 +1,23 @@
+/* ---------------------------------------- Checkbox — PIEL del pack EDITORIAL */
+/* Interfaz: --check-bg | --check-bg-on | --check-border | --check-mark
+             --check-ring                                                     */
+
+/* Una casilla de filete que al marcarse se llena de tinta. Chica a propósito:
+   --ui-check-ratio vale 0.42 en este pack, más bajo que en los demás, porque
+   al lado de una serif de 16px una casilla grande se ve tosca. */
+.ui-checkbox {
+  --check-bg: transparent;
+  --check-bg-on: var(--ui-text);
+  --check-border: var(--ui-border);
+  --check-mark: var(--ui-bg);
+}
+
+.ui-checkbox:hover:not(.is-disabled) {
+  --check-border: var(--ui-text-muted);
+}
+
+/* :not(.is-disabled) para empatarle la especificidad al hover de arriba. */
+.ui-checkbox.is-checked:not(.is-disabled),
+.ui-checkbox.is-indeterminate:not(.is-disabled) {
+  --check-border: var(--ui-text);
+}

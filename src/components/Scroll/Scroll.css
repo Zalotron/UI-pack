@@ -1,0 +1,127 @@
+/* ------------------------------------------------------ Scroll — ESTRUCTURA */
+/* Mecánica. Los colores los pone el pack.
+
+   Hay DOS formas de estilar la barra nativa y NO se pueden usar juntas:
+
+     ::-webkit-scrollbar-*   Chromium y Safari. Control total: tamaño, radio,
+                             color, hover.
+     scrollbar-width/-color  El estándar. Firefox. Solo grosor y colores; la
+                             forma la decide el sistema.
+
+   Chromium soporta las dos, pero si encuentra `scrollbar-width` DESCARTA todo
+   lo de `::-webkit-scrollbar`. Por eso el estándar va dentro de un @supports
+   que solo entra donde los pseudo-elementos NO existen, o sea Firefox.
+   Sin esa guarda, Chromium dibuja su barra propia y el radio no obedece a
+   ROUNDNESS.                                                                 */
+
+.ui-scroll {
+  --scroll-size: var(--ui-scroll-size);
+  --scroll-inset: var(--ui-scroll-inset);
+  --scroll-radius: var(--ui-radius-full);
+  --scroll-track: transparent;
+  --scroll-thumb: transparent;
+  --scroll-thumb-hover: transparent;
+
+  box-sizing: border-box;
+  min-height: 0;
+  min-width: 0;
+}
+
+/* -- Ejes ------------------------------------------------------------------ */
+
+.ui-scroll--y { overflow-y: auto; overflow-x: hidden; }
+.ui-scroll--x { overflow-x: auto; overflow-y: hidden; }
+.ui-scroll--both { overflow: scroll; }
+.ui-scroll--auto { overflow: auto; }
+
+/* Reserva el lugar de la barra: el contenido no se corre cuando aparece. */
+.ui-scroll--stable { scrollbar-gutter: stable; }
+
+.ui-scroll:focus-visible {
+  outline: var(--ui-focus-width) solid var(--ui-focus-ring);
+  outline-offset: calc(var(--ui-focus-width) * -1);
+}
+
+/* -- Chromium y Safari ----------------------------------------------------- */
+
+.ui-scroll::-webkit-scrollbar {
+  width: var(--scroll-size);
+  height: var(--scroll-size);
+}
+
+.ui-scroll::-webkit-scrollbar-track {
+  background: var(--scroll-track);
+}
+
+/* El borde transparente + background-clip deja el pulgar más finito que la
+   pista, con aire a los costados. Es lo que lo hace ver liviano. */
+.ui-scroll::-webkit-scrollbar-thumb {
+  border: var(--scroll-inset) solid transparent;
+  border-radius: var(--scroll-radius);
+  background: var(--scroll-thumb);
+  background-clip: padding-box;
+}
+
+.ui-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--scroll-thumb-hover);
+  background-clip: padding-box;
+}
+
+/* Donde se cruzan las dos barras no debe quedar un cuadrado gris. */
+.ui-scroll::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* -- Grosor ---------------------------------------------------------------- */
+
+.ui-scroll--thin {
+  --scroll-size: var(--ui-scroll-size);
+  --scroll-inset: var(--ui-scroll-inset);
+}
+
+.ui-scroll--regular {
+  --scroll-size: var(--ui-scroll-size-regular);
+  --scroll-inset: var(--ui-scroll-inset-regular);
+}
+
+/* -- Firefox --------------------------------------------------------------- */
+/* Solo donde los pseudo-elementos de WebKit no existen. Acá no se puede
+   controlar la forma: la barra sigue al sistema operativo. */
+
+@supports not selector(::-webkit-scrollbar) {
+  .ui-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scroll-thumb) var(--scroll-track);
+  }
+  .ui-scroll--regular {
+    scrollbar-width: auto;
+  }
+}
+
+/* -- Ocupar el espacio sobrante -------------------------------------------- */
+/* ⚠ EL `min-size: 0` NO ES OPCIONAL, ES LA MITAD DEL ARREGLO.
+   Un item de flex arranca con `min-width`/`min-height` en `auto`, o sea que se
+   niega a achicarse por debajo de su contenido. Una region con scroll adentro
+   de una fila hereda eso y, en vez de scrollear, EMPUJA: crece hasta donde le
+   pida el contenido y desborda al contenedor. Con el minimo en 0 puede
+   achicarse, y recien ahi el overflow tiene algo que hacer.
+
+   `flex-basis: 0` y no `auto` para que reparta el sobrante sin mirar cuanto
+   contenido tiene: dos regiones hermanas quedan iguales, no proporcionales a
+   lo que les tocó adentro. */
+.ui-scroll--grow {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* -- Aire adentro de la region --------------------------------------------- */
+/* La misma escala que Container. Va en el contenedor de scroll y no en un
+   envoltorio: un envoltorio corta la cadena de altura y lo de adentro deja de
+   poder pedir `min-height: 100%`. */
+.ui-scroll--pad-none { padding: 0; }
+.ui-scroll--pad-xs   { padding: var(--ui-pad-block-xs) var(--ui-pad-inline-xs); }
+.ui-scroll--pad-sm   { padding: var(--ui-pad-block-sm) var(--ui-pad-inline-sm); }
+.ui-scroll--pad-md   { padding: var(--ui-pad-block-md) var(--ui-pad-inline-md); }
+.ui-scroll--pad-lg   { padding: var(--ui-pad-block-lg) var(--ui-pad-inline-lg); }
+.ui-scroll--pad-xl   { padding: var(--ui-pad-block-xl) var(--ui-pad-inline-xl); }

@@ -1,0 +1,35 @@
+/* ------------------------------------ Progress — PIEL del pack EDITORIAL */
+/* Interfaz: --progress-track | --progress-fill | --progress-ring-fill
+             --progress-label-fg | --progress-value-fg
+             --progress-radius | --progress-cap                             */
+
+/* Un FILETE, del grosor de una regla de pagina. Este pack no tiene cajas de
+   colores: tiene tipografia y lineas, asi que el progreso es una regla que se
+   va tinturando de izquierda a derecha. Puntas rectas y sin redondeo: una
+   regla impresa no tiene las puntas gastadas. */
+.ui-progress {
+  --progress-track: var(--ui-line);
+  --progress-fill: var(--ui-accent);
+  --progress-ring-fill: var(--ui-accent);
+  --progress-radius: 0;
+  --progress-cap: butt;
+  --progress-value-fg: var(--ui-accent-text);
+}
+
+/* El rotulo y el numero son TEXTO, no una etiqueta: van en la serif del pack
+   y con versalitas, como una nota al pie. */
+.ui-progress__label {
+  font-family: var(--ui-font-sans);
+  font-style: italic;
+}
+
+.ui-progress__value {
+  font-family: var(--ui-font-sans);
+  font-variant-numeric: oldstyle-nums tabular-nums;
+  letter-spacing: var(--ui-tracking-wide);
+}
+
+.ui-progress.is-indeterminate {
+  --progress-fill: var(--ui-accent-soft);
+  --progress-ring-fill: var(--ui-accent-soft);
+}

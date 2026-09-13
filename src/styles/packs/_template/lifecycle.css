@@ -1,0 +1,81 @@
+/* ===========================================================================
+   PACK "_template" — entradas y salidas
+   ---------------------------------------------------------------------------
+   ⛔ ESTE ARCHIVO NO ES OPCIONAL. Todo pack tiene que definir una entrada y una
+   salida para TODOS los componentes, y hay un guard en la suite que lo
+   verifica pack por pack y componente por componente.
+
+   Cómo funciona:
+
+     `UIComponent` pone `.is-entering` al montar y `.is-leaving` cuando se
+     llama `leave()`, y ESPERA a que terminen las animaciones que corran acá
+     antes de sacar el elemento del DOM. La mecánica decide CUANDO; este
+     archivo decide QUE SE VE.
+
+   Si no se define nada no se rompe: la espera resuelve enseguida y el elemento
+   entra o se va de golpe. Justamente por eso hace falta el guard — la falta no
+   se nota hasta que alguien la mira.
+
+   Dos reglas del proyecto:
+
+     1. La SALIDA es más corta que la ENTRADA. Lo que aparece se presenta; lo
+        que se va no debe hacerte esperar. (También hay guard.)
+     2. La coreografía tiene que ser del MISMO material que el pack. Mirá
+        packs/glass (el vidrio se condensa), packs/cyber (engancha y pierde
+        señal), packs/soft (sale de la lámina) o packs/blueprint (se dibuja y
+        se borra) antes de inventar una.
+
+   Abajo está la forma mínima. Copiala de un pack real y cambiale los keyframes.
+   Las clases raíz de los 14 componentes son las que están en la lista.
+   =========================================================================== */
+
+@keyframes ui-tpl-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes ui-tpl-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+.ui-container.is-entering,
+.ui-window.is-entering,
+.ui-select.is-entering,
+.ui-colorpicker.is-entering,
+.ui-btn.is-entering,
+.ui-spinner.is-entering,
+.ui-slider.is-entering,
+.ui-toggle.is-entering,
+.ui-checkbox.is-entering,
+.ui-radiogroup.is-entering,
+.ui-textfield.is-entering,
+.ui-tabs.is-entering,
+.ui-scroll.is-entering,
+.ui-progress.is-entering,
+.ui-icon.is-entering,
+.ui-separator.is-entering {
+  animation: ui-tpl-in var(--ui-duration-base) var(--ui-ease) both;
+  /* Escalonado: lo reparte UIComponent al montar. Va DESPUES del shorthand,
+     que resetea animation-delay a 0. */
+  animation-delay: var(--ui-enter-delay, 0ms);
+}
+
+.ui-container.is-leaving,
+.ui-window.is-leaving,
+.ui-select.is-leaving,
+.ui-colorpicker.is-leaving,
+.ui-btn.is-leaving,
+.ui-spinner.is-leaving,
+.ui-slider.is-leaving,
+.ui-toggle.is-leaving,
+.ui-checkbox.is-leaving,
+.ui-radiogroup.is-leaving,
+.ui-textfield.is-leaving,
+.ui-tabs.is-leaving,
+.ui-scroll.is-leaving,
+.ui-progress.is-leaving,
+.ui-icon.is-leaving,
+.ui-separator.is-leaving {
+  animation: ui-tpl-out var(--ui-duration-fast) var(--ui-ease-in) both;
+}

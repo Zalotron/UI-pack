@@ -1,0 +1,60 @@
+/* -------------------------------------------- Container — PIEL del pack CLAY */
+/* Interfaz: --container-bg | --container-border-color | --container-shadow    */
+
+/* Una pieza de plastilina apoyada sobre el fondo: tiene su propio color y
+   proyecta sombra. Esa sombra proyectada es lo que la separa de `soft`, donde
+   la superficie es la misma lámina que el fondo y nada está apoyado en nada. */
+
+.ui-container--panel {
+  --container-bg: var(--ui-surface);
+  --container-border-color: transparent;
+  --container-shadow: var(--ui-clay-body);
+}
+
+/* Igual pero sin sombra proyectada: para anidar sin que se apilen dos
+   volúmenes y el resultado quede embarrado. */
+.ui-container--solid {
+  --container-bg: var(--ui-surface);
+  --container-border-color: transparent;
+  --container-shadow: var(--ui-clay-pressed);
+}
+
+/* Un hueco marcado en el fondo, no una pieza. */
+.ui-container--outline {
+  --container-bg: var(--ui-bg-subtle);
+  --container-border-color: transparent;
+  --container-shadow: var(--ui-clay-pressed);
+}
+
+.ui-container--ghost {
+  --container-bg: transparent;
+  --container-border-color: transparent;
+  --container-shadow: none;
+}
+
+.ui-container--no-border {
+  --container-border-color: transparent;
+}
+
+/* -- Elevación ------------------------------------------------------------- */
+
+.ui-container--elev-sm { --container-shadow: var(--ui-clay-pressed); }
+.ui-container--elev-md { --container-shadow: var(--ui-clay-body); }
+.ui-container--elev-lg { --container-shadow: var(--ui-clay-lifted); }
+
+/* -- Reacción al mouse ----------------------------------------------------- */
+/* Se levanta: sube y su sombra cae de más lejos. */
+
+.ui-container.is-interactive:hover {
+  --container-shadow: var(--ui-clay-lifted);
+  transform: translateY(var(--ui-hover-lift));
+}
+
+/* Y al apretarla se APLASTA. No se hunde como en `soft`: se deforma, que es
+   lo que hace un material blando apoyado. El aplastado sale de --ui-squash,
+   que responde a la perilla BOUNCE. */
+.ui-container.is-interactive:active {
+  --container-shadow: var(--ui-clay-pressed);
+  transform: translateY(0);
+  scale: calc(1 + var(--ui-squash) * 0.3) calc(1 - var(--ui-squash) * 0.5);
+}

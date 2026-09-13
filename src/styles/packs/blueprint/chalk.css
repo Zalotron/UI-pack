@@ -1,0 +1,483 @@
+/* ===========================================================================
+   PACK "BLUEPRINT" — la textura del trazo
+   ---------------------------------------------------------------------------
+   Dos cosas, y no son la misma:
+
+     TEXTURA   una varianza fina de opacidad sobre TODO lo dibujado, para que
+               el trazo se lea hecho a mano. Nunca baja de --ui-bp-chalk-floor,
+               así que no hace desaparecer nada: solo modula.
+     COMISURAS el contorno COMIDO a pedazos, con la textura fuerte, que sí baja
+               hasta 0.18 y corta el trazo. Es lo que da el borde dibujado.
+
+   ⚠ POR QUE LAS COMISURAS VAN EN UNA CAPA APARTE Y NO EN EL ELEMENTO
+
+   Una máscara se lleva puestas dos cosas: recorta lo que se sale del elemento,
+   y modula TAMBIEN el anillo de foco, que se dibuja fuera de la caja de borde.
+
+   Con la textura suave eso da igual —el piso alto hace que nada desaparezca—
+   pero con la fuerte no: un anillo de foco al 18% de opacidad en algunos
+   tramos es un anillo de foco roto, y eso es accesibilidad, no estética.
+
+   La salida es separar el CONTORNO del elemento. El elemento deja su borde en
+   transparente y el contorno lo dibuja una capa propia, en ::after, que no
+   contiene nada y no es el elemento: se la puede comer entera sin tocar ni el
+   contenido ni el foco. Es el mismo truco que ya usaba el marco del contenedor.
+
+   Como la capa lee `--bp-edge`, que apunta a la MISMA variable de borde que usa
+   la piel, sigue sola todos los estados: hover, foco, abierto, deshabilitado.
+   =========================================================================== */
+
+/* ---------------------------------------------------------------------------
+   1. LA TEXTURA — sobre todo lo dibujado.
+
+   La lista es explícita a propósito. Tres cosas NO pueden entrar acá:
+
+     · `.ui-container`, `.ui-select` y `.ui-colorpicker`: tienen descendientes
+       que se salen de su caja, y una máscara recorta — un desplegable que
+       asoma quedaría cortado. En esos tres se enmascara lo que vive adentro.
+     · `.ui-colorpicker__trigger` y `.ui-colorpicker__panel`: lo que llevan
+       adentro es COLOR QUE EL USUARIO ELIGIO —la pastilla, el área, la rueda—
+       y la máscara del padre se lo comía a todo. El área salía rayada en
+       vertical (la veta de trazo del panel, no la suya) y la pastilla igual.
+       El panel textura su papel en una capa detrás; el disparador no tiene
+       fondo que texturar, así que sale de la lista y ya.
+     · `.ui-btn`: ya tiene DOS capas propias (el relleno en ::before y el
+       contorno en ::after). Enmascararlo además a él componía las dos texturas
+       —la diagonal del relleno y la recta de acá— y encima le pasaba por
+       arriba al rótulo y al icono. El botón se veía lavado y el icono, gris.
+     · `.ui-slider__fill` y `.ui-toggle__knob`: son piezas PINTADAS, no
+       contornos. Van con la veta de RELLENO, que es diagonal — con la de trazo
+       salían rayadas en vertical, o sea en otra dirección que todos los demás
+       rellenos del pack, que es justo lo que no puede pasar cuando lo que se
+       simula es una sola mano.
+     · `.ui-window`: es un CONTENEDOR. Su máscara le caía encima a todo lo que
+       tuviera adentro —los botones de la barra, los controles, el contenido
+       entero de la app— y los dejaba a todos con la veta de trazo, en vertical,
+       en vez de la suya. Su papel se textura en una capa detrás.
+     · `.ui-icon` DENTRO DE UN BOTON RELLENO: ahí el icono es el HUECO del
+       rayado, y lo que lo hace legible es que sea duro. Con textura encima se
+       vuelve él mismo semitransparente y el hueco deja de leerse como hueco.
+       Es la misma excepción que el rótulo. El resto de los iconos SÍ llevan
+       textura, más abajo — con su propio aire, porque un trazo se dibuja
+       centrado sobre la línea y medio grosor cae afuera del `viewBox`.
+   --------------------------------------------------------------------------- */
+
+.ui-spinner,
+.ui-textfield,
+.ui-select__trigger,
+.ui-select__list,
+.ui-checkbox__box,
+.ui-checkbox__mark,
+.ui-radio__dot,
+.ui-tabs__list,
+/* La marca del slider ya es un elemento de verdad, asi que acepta textura. El
+   pseudo-elemento nativo no la aceptaba: ponersela lo hacia DESAPARECER. */
+.ui-slider__thumb {
+  /* Una sola capa: el grano y la dirección vienen ya combinados de adentro del
+     SVG. No hace falta `mask-composite`, y es a propósito — depender de que el
+     navegador multiplique capas de máscara fue justamente lo que falló antes.
+     Ver la nota en tokens.css. */
+  -webkit-mask-image: var(--ui-bp-chalk);
+  mask-image: var(--ui-bp-chalk);
+}
+
+/* ⛔ EL <input> DEL SLIDER NO SE ENMASCARA NUNCA.
+   Una mascara sobre un control nativo —o sobre sus pseudo-elementos de pista y
+   tirador— hace DESAPARECER el tirador en Chrome: no compone como sobre un div.
+   Se probo y se rompio. Por eso lo que se ve del slider son elementos de
+   verdad: el canal, el relleno y la marca. El <input> quedo de puro agarre,
+   invisible, y ahi no hay nada que texturar. */
+
+/* Los iconos. Son dibujos de línea, o sea lo mismo que un contorno: llevan la
+   textura de trazo.
+
+   ⛔ Y NECESITAN AIRE, POR LO MISMO QUE EL TEXTO. Un trazo se dibuja CENTRADO
+   sobre la línea, así que medio grosor cae afuera de la caja — `Icon.css` ya lo
+   dice y lo arregla con `overflow: visible`. Pero una máscara recorta contra
+   esa caja: lo que se sale no tiene máscara, o sea que no se pinta. Sin el aire,
+   la textura le corta el borde de cada trazo y el icono sale mordido.
+
+   `content-box` es imprescindible: con el `border-box` global el padding le
+   comería el lugar al dibujo y el icono saldría más chico. Así el padding
+   agranda SOLO la caja que la máscara usa de molde, y el margen negativo
+   devuelve el lugar para que no corra nada de al lado. */
+.ui-icon {
+  box-sizing: content-box;
+  padding: var(--ui-bp-ink-slack);
+  margin: calc(var(--ui-bp-ink-slack) * -1);
+
+  -webkit-mask-image: var(--ui-bp-chalk);
+  mask-image: var(--ui-bp-chalk);
+}
+
+/* ---------------------------------------------------------------------------
+   2. LAS COMISURAS — el contorno, en su propia capa.
+   --------------------------------------------------------------------------- */
+
+/* El elemento deja de dibujar su borde: sigue ocupando el lugar (el ancho no
+   cambia) pero el trazo lo pone la capa de arriba. */
+.ui-btn,
+.ui-spinner,
+.ui-textfield,
+.ui-select__trigger,
+.ui-colorpicker__trigger,
+.ui-colorpicker__panel,
+.ui-checkbox__box,
+.ui-radio__dot,
+.ui-toggle__track,
+.ui-toggle__knob {
+  border-color: transparent;
+}
+
+/* ⛔ `position: relative` SOLO A LOS QUE NO TIENEN POSICION PROPIA.
+   Una capa absoluta necesita un padre posicionado, pero ponerselo a ciegas a
+   toda la lista ROMPE a los que ya son `absolute`: el tirador del toggle se
+   desprendio de su carril y desaparecio, y los desplegables del select y del
+   colorpicker se habrian ido de lugar. Los que ya traen `relative` o
+   `absolute` de la mecanica ya sirven de ancla: no hay que tocarlos. */
+.ui-btn,
+.ui-spinner,
+.ui-textfield,
+.ui-select__trigger,
+.ui-colorpicker__trigger {
+  position: relative;
+}
+
+.ui-btn::after,
+.ui-spinner::after,
+.ui-textfield::after,
+.ui-select__trigger::after,
+.ui-colorpicker__trigger::after,
+.ui-colorpicker__panel::after,
+.ui-checkbox__box::after,
+.ui-toggle__track::after,
+.ui-toggle__knob::after,
+/* El punto del radio ya usa ::after para su relleno, así que acá va ::before.
+   No es equivalente por casualidad: la capa no contiene nada y lleva
+   `pointer-events: none`, o sea que el orden de pintado no le cambia nada. */
+.ui-radio__dot::before {
+  content: "";
+  position: absolute;
+  /* Se corre hacia afuera el ancho del borde: un absoluto se posiciona contra
+     la caja de PADDING, y el contorno tiene que caer justo donde estaría el
+     borde del elemento. */
+  inset: calc(var(--ui-border-width) * -1);
+  /* El grosor sale de --bp-edge-width para que un estado pueda ENGROSAR EL
+     TRAZO sin tocar la caja. Engrosar el borde del elemento mueve todo lo que
+     tiene al lado; engrosar el de una capa absoluta no mueve nada, y encima
+     crece hacia adentro, que es como se marca un trazo en un plano. */
+  border: var(--bp-edge-width, var(--ui-border-width)) solid var(--bp-edge, transparent);
+  border-radius: inherit;
+  pointer-events: none;
+
+  -webkit-mask-image: var(--ui-bp-chalk-rough);
+  mask-image: var(--ui-bp-chalk-rough);
+}
+
+/* A qué variable de borde sigue cada uno. Es la MISMA que usa la piel, así que
+   la capa acompaña sola cada cambio de estado. */
+.ui-btn                  { --bp-edge: var(--btn-border); }
+.ui-btn:hover:not(.is-disabled) { --bp-edge: var(--btn-border-hover); }
+.ui-spinner              { --bp-edge: var(--spinner-border); }
+.ui-textfield            { --bp-edge: var(--field-border); }
+.ui-select__trigger      { --bp-edge: var(--select-border); }
+.ui-colorpicker__trigger { --bp-edge: var(--cp-border); }
+.ui-colorpicker__panel   { --bp-edge: var(--cp-panel-border); }
+.ui-checkbox__box        { --bp-edge: var(--check-border); }
+.ui-radio__dot           { --bp-edge: var(--radio-border); }
+.ui-toggle__track        { --bp-edge: var(--toggle-border); }
+.ui-toggle__knob         { --bp-edge: var(--toggle-border); }
+
+/* El papel del panel, en una capa propia detrás de lo que lleva adentro. El
+   panel ya crea contexto de apilamiento (`z-index` de desplegable), así que el
+   -1 lo manda detrás de su contenido y no detrás de la página. */
+.ui-colorpicker__panel { background: transparent; }
+
+.ui-colorpicker__panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--cp-panel-bg);
+  pointer-events: none;
+
+  -webkit-mask-image: var(--ui-bp-chalk);
+  mask-image: var(--ui-bp-chalk);
+}
+
+/* El canal del slider ya trae su capa de contorno de la mecánica
+   (`--slider-track-border` sobre `::after`, por encima del relleno), así que
+   acá solo hay que comérsela con la textura. No se le pone una capa propia:
+   serían dos `::after` peleando por el mismo elemento. */
+.ui-slider__track::after {
+  -webkit-mask-image: var(--ui-bp-chalk-rough);
+  mask-image: var(--ui-bp-chalk-rough);
+}
+
+/* ---------------------------------------------------------------------------
+   3. LO QUE ES PURO TRAZO — se come entero, sin capa aparte.
+
+   El marco de un contenedor y un separador no contienen nada ni tienen foco:
+   la textura fuerte les entra directo.
+   --------------------------------------------------------------------------- */
+
+.ui-container::before,
+.ui-separator,
+/* Las barras de progreso van con la FUERTE y no con la capa de contorno, por
+   dos motivos. Uno: el canal lleva `overflow: hidden`, así que una capa
+   corrida hacia afuera quedaría recortada y no se vería nada. Dos: acá la
+   textura fuerte es justo lo que se busca — un relleno mordido a pedazos se
+   lee como un trazo de lápiz, que es lo que una barra de este pack tiene que
+   parecer. Y no hay texto ni anillo de foco que perder. */
+/* El aro lleva la veta de RELLENO, no la de trazo: es una pieza pintada, igual
+   que el relleno de un boton. Va la version contrarrotada, porque el aro
+   mismo esta rotado -90 — ver --ui-bp-chalk-fill-ring.
+
+   La mascara va en el <svg> entero y no en el arco: enmascarar un elemento de
+   adentro de un SVG con una mascara CSS es terreno raro (la imagen esta en px
+   y el elemento vive en el espacio escalado del viewBox). El <svg> es una caja
+   CSS comun y ahi la mascara se comporta. Que el carril punteado quede tambien
+   rayado no molesta: es una linea de construccion. */
+.ui-progress__ring {
+  -webkit-mask-image: var(--ui-bp-chalk-fill-ring);
+  mask-image: var(--ui-bp-chalk-fill-ring);
+}
+
+/* ---------------------------------------------------------------------------
+   ⛔ LO QUE SCROLLEA NO LLEVA COMISURAS.
+   `.ui-select__list` scrollea: tiene `overflow-y: auto` para respetar
+   --ui-select-menu-max-h. Una capa absoluta corrida hacia AFUERA adentro de
+   algo que scrollea es contenido desbordado, y el desplegable aparecia SIEMPRE
+   con las dos barras de scroll puestas. Se queda con su borde propio y la
+   textura suave.
+   --------------------------------------------------------------------------- */
+
+/* ---------------------------------------------------------------------------
+   ⛔ LA VENTANA NO LLEVA COMISURAS, Y NO ES UN OLVIDO.
+   `.ui-window` tiene `overflow: hidden` (lo necesita para la barra y el
+   redimensionado), así que una capa corrida hacia afuera quedaría recortada y
+   no se vería nada.
+
+   Y su papel se textura en una capa DETRAS del contenido, no en ella misma: una
+   máscara alcanza a todo el subárbol, así que puesta en la ventana le caía
+   encima a cada cosa que tuviera adentro. Los botones de la barra salían con la
+   veta de trazo —vertical— en vez de la de relleno, y el resto del contenido
+   quedaba lavado sin que se entendiera por qué.
+   --------------------------------------------------------------------------- */
+
+.ui-window {
+  position: relative;
+  /* Contexto propio, para que el `z-index: -1` de abajo signifique "detrás de
+     lo que la ventana tiene adentro" y no "detrás de la página". */
+  isolation: isolate;
+  background: transparent;
+}
+
+.ui-window::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--window-bg);
+  pointer-events: none;
+
+  -webkit-mask-image: var(--ui-bp-chalk);
+  mask-image: var(--ui-bp-chalk);
+}
+
+/* Los botones del cajetín: lo que pintan al pasarles el mouse es un RELLENO,
+   así que lleva la veta diagonal como todos los demás. En reposo no pintan
+   nada, y el contenido queda duro encima. */
+.ui-window__control {
+  position: relative;
+  isolation: isolate;
+}
+
+.ui-window__control,
+.ui-window__control:hover,
+.ui-window__control--close:hover {
+  background: transparent;
+}
+
+.ui-window__control::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: transparent;
+  pointer-events: none;
+  transition: background var(--ui-duration-fast) var(--ui-ease);
+
+  -webkit-mask-image: var(--ui-bp-chalk-fill);
+  mask-image: var(--ui-bp-chalk-fill);
+}
+
+.ui-window__control:hover::before { background: var(--window-control-hover); }
+.ui-window__control--close:hover::before { background: var(--window-close-hover); }
+
+/* ⛔ LA BARRA DEL SCROLL NO SE ENMASCARA: EL PSEUDO NATIVO IGNORA LA MASCARA.
+   `::-webkit-scrollbar-thumb` acepta un puñado de propiedades y `mask-image` no
+   esta entre ellas — la declaracion se pone y no pasa nada. Se probo.
+   Su veta se dibuja con degradados, en Scroll.css del pack. */
+
+/* ---------------------------------------------------------------------------
+   4. EL TEXTO
+
+   Con su propia textura, la del medio: la fuerte deja las letras a pedazos y
+   la suave no se nota a tamaño de párrafo. Ver --ui-bp-chalk-text.
+
+   La lista es explícita por lo de siempre: una máscara recorta lo que se sale
+   del elemento. Acá entra lo que es SOLO texto — un rótulo, un título, una
+   opción — y nunca una caja que contenga un desplegable.
+   --------------------------------------------------------------------------- */
+
+h1, h2, h3, h4, h5, h6,
+p,
+.ui-checkbox__label,
+.ui-radio__label,
+.ui-toggle__label,
+.ui-tabs__tab,
+.ui-btn__label,
+.ui-window__title,
+.ui-select__value,
+.ui-select__option,
+.ui-colorpicker__value,
+.ui-slider__value,
+.ui-progress__label,
+.ui-progress__value,
+.ui-separator__label {
+  -webkit-mask-image: var(--ui-bp-chalk-text);
+  mask-image: var(--ui-bp-chalk-text);
+}
+
+/* ⛔ LO QUE SE ESCRIBE NO SE ENMASCARA.
+   Un `input` con la textura encima se lee peor JUSTO cuando mas atencion pide:
+   mientras lo estas escribiendo. Y el cursor de texto tambien queda mordido.
+   El contorno de esos campos ya lleva comisuras, que es de donde viene el
+   caracter dibujado. */
+
+/* ⛔ EL CANAL DE LA BARRA NO LLEVA MASCARA, Y NO ES UN OLVIDO.
+   Una máscara alcanza al elemento Y A TODOS SUS DESCENDIENTES. El relleno vive
+   ADENTRO del canal, así que una máscara en el canal se le compone encima a la
+   del relleno y se la tapa: el rayado diagonal estaba puesto y no se veía
+   nunca, porque arriba tenía las comisuras del canal.
+   Se queda sin textura. Es una franja de 1px de contorno y un fondo apenas
+   teñido — lo que hay para texturar ahí es casi nada, y el relleno, que sí
+   tiene superficie, la necesita entera.
+   --------------------------------------------------------------------------- */
+
+/* ---------------------------------------------------------------------------
+   5. LOS RELLENOS
+
+   Un trazo y un relleno no se dibujan igual. Un trazo se recorre; un relleno se
+   SOMBREA, y a mano eso sale rayado en diagonal porque la muñeca gira. De ahí
+   que los rellenos lleven su propia veta —estirada a lo alto y girada 45 grados
+   en sentido horario— y no la misma que los contornos. Ver --ui-bp-chalk-fill.
+
+   La lista son las únicas piezas de este pack que de verdad se rellenan: casi
+   todo lo demás es contorno. Va DESPUES de las otras dos secciones a propósito
+   — varias de estas ya aparecen arriba con la textura de trazo, y acá se les
+   cambia por la de relleno.
+   --------------------------------------------------------------------------- */
+
+/* -- Los que NO tienen nada adentro: la veta va en el elemento -------------- */
+
+.ui-progress__fill,
+.ui-tabs__indicator,
+.ui-toggle__knob,
+.ui-slider__fill,
+/* La pastilla del disparador no lleva nada adentro: la veta va en ella. El
+   área sí lleva el cursor, así que la veta va en su capa de pintura — la marca
+   tiene que quedar DURA para leerse contra cualquier color de abajo. */
+.ui-colorpicker__swatch,
+.ui-colorpicker__area::before,
+.ui-radio.is-checked .ui-radio__dot::after {
+  -webkit-mask-image: var(--ui-bp-chalk-fill);
+  mask-image: var(--ui-bp-chalk-fill);
+}
+
+/* -- Los que SI tienen contenido: la veta va en una capa DETRAS -------------- */
+/* ⚠ UNA MASCARA ALCANZA A TODO EL SUBARBOL, NO SOLO AL FONDO.
+   Puesta en el botón se come también el rótulo y, sobre todo, el ICONO: un
+   trazo de 1.25px modulado hasta el 28% de opacidad deja de verse blanco y se
+   lee GRIS al lado de su propio texto. Se vio en el botón de guardar.
+
+   La salida es pintar el relleno en una capa propia, detrás del contenido, y
+   enmascarar ESA. El elemento se queda sin fondo —lo pone la capa— y lo que
+   lleva adentro queda intacto.
+
+   `z-index: -1` la manda detrás del contenido; el contorno lo sigue dibujando
+   la capa de comisuras, que va en ::after y por encima. */
+
+.ui-btn--primary,
+.ui-btn--secondary,
+.ui-btn--danger,
+.ui-checkbox.is-checked .ui-checkbox__box,
+.ui-checkbox.is-indeterminate .ui-checkbox__box,
+.ui-toggle.is-checked .ui-toggle__track {
+  background: transparent;
+}
+
+.ui-btn--primary::before,
+.ui-btn--secondary::before,
+.ui-btn--danger::before,
+.ui-checkbox.is-checked .ui-checkbox__box::before,
+.ui-checkbox.is-indeterminate .ui-checkbox__box::before,
+.ui-toggle.is-checked .ui-toggle__track::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+
+  -webkit-mask-image: var(--ui-bp-chalk-fill);
+  mask-image: var(--ui-bp-chalk-fill);
+}
+
+/* Cada uno pinta en su capa el relleno que le corresponde. */
+.ui-btn--primary::before,
+.ui-btn--secondary::before,
+.ui-btn--danger::before { background: var(--btn-bg); }
+
+.ui-checkbox.is-checked .ui-checkbox__box::before,
+.ui-checkbox.is-indeterminate .ui-checkbox__box::before { background: var(--check-bg-on); }
+
+.ui-toggle.is-checked .ui-toggle__track::before { background: var(--toggle-track-on); }
+
+/* ⛔ EL TIRADOR DEL TOGGLE SE QUEDA SIN VETA.
+   Vive ADENTRO del carril, que ya lleva la suya: enmascararlo además por su
+   cuenta lo deja con las dos encima y sale casi transparente. */
+
+/* ⛔ EL ARO TAMPOCO LLEVA LA VETA DIAGONAL, Y NO ES UN OLVIDO.
+   La mecánica lo dibuja rotado -90 grados para que el cero quede arriba, y una
+   máscara rota CON el elemento: la veta de 45 saldría a -45, o sea al revés de
+   la de todas las demás piezas. Una textura direccional y un elemento rotado no
+   conviven. Se queda con la de trazo, que es casi isótropa y no tiene ese
+   problema.
+
+   ⛔ EL RELLENO DEL SLIDER SE QUEDA SIN VETA.
+   Vive en `::-webkit-slider-runnable-track`, o sea adentro de un control
+   nativo, y enmascarar ahí hace desaparecer el tirador en Chrome. Ya se probó
+   y se rompió; está anotado arriba, en la sección de la textura. */
+
+/* ---------------------------------------------------------------------------
+   ⛔ EL CONTENIDO DE UN BOTON RELLENO NO LLEVA TEXTURA.
+
+   El rótulo y el icono de esos botones son el HUECO del rayado: lo que los
+   hace legibles es que sean duros. Con la textura encima quedan ellos mismos
+   semitransparentes, el rayado se ve A TRAVES de las letras, y el hueco deja
+   de leerse como hueco — era buena parte de por qué costaba leerlos.
+
+   Es la única excepción de todo el pack, y tiene sentido: en un dibujo a mano,
+   la reserva que uno deja sin rayar no tiene trama. Justamente por eso se ve.
+   --------------------------------------------------------------------------- */
+
+.ui-btn--primary .ui-btn__label,
+.ui-btn--danger .ui-btn__label,
+.ui-btn--primary .ui-icon,
+.ui-btn--danger .ui-icon {
+  -webkit-mask-image: none;
+  mask-image: none;
+}

@@ -1,0 +1,24 @@
+/* --------------------------------------- Progress — PIEL del pack DEFAULT */
+/* Interfaz: --progress-track | --progress-fill | --progress-ring-fill
+             --progress-label-fg | --progress-value-fg
+             --progress-radius | --progress-cap                             */
+
+.ui-progress {
+  /* ⛔ EL MISMO CANAL Y EL MISMO RELLENO QUE EL SLIDER.
+     Son la misma pieza contando lo mismo: un tramo medido sobre un recorrido.
+     Se declaran con los MISMOS tokens y no con dos copias parecidas — dos
+     copias se despegan en cuanto alguien toca una sola. */
+  --progress-track: var(--ui-surface-active);
+  --progress-track-shadow: inset 0 0 0 var(--ui-border-width) var(--ui-line);
+  --progress-fill: var(--ui-accent);
+  --progress-ring-fill: var(--ui-accent);
+  /* El remate del arco va recto: es una medida, no un adorno. */
+  --progress-cap: butt;
+}
+
+/* Sin valor conocido la pieza es mas tenue: el sistema esta diciendo "no se
+   cuanto falta", y un color pleno afirmaria lo contrario. */
+.ui-progress.is-indeterminate {
+  --progress-fill: var(--ui-accent-soft);
+  --progress-ring-fill: var(--ui-accent-soft);
+}

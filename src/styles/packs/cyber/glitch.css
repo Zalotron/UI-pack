@@ -1,0 +1,91 @@
+/* ===========================================================================
+   PACK "CYBER" — el glitch
+   ---------------------------------------------------------------------------
+   Los keyframes del pack. Los VALORES viven en tokens.css, sección
+   "CALIBRE DEL GLITCH": acá solo está la coreografía.
+
+   Tres decisiones que hacen que se lea como falla de señal y no como adorno:
+
+   1. DISPARA EN EL CAMBIO DE ESTADO, y dura ~250ms. Un glitch permanente es
+      ruido; uno que aparece justo cuando algo cambia se lee como causa-efecto.
+
+   2. VA A SALTOS, no interpolado. Todas las animaciones usan `steps(1, end)`:
+      cada keyframe SOSTIENE su valor y salta al siguiente. Interpolando, el
+      desplazamiento de color queda como un bamboleo suave — exactamente lo
+      contrario de una falla.
+
+   3. LA ABERRACION CROMATICA USA LOS DOS NEONES DEL PACK, que salen del brand
+      (uno es el brand, el otro el brand corrido 160°). Un glitch rojo/cian
+      hardcodeado rompería la regla de un solo color declarado, y además no
+      acompañaría si cambiás BRAND_COLOR.
+
+   Qué propiedad toca cada animación, y por qué importa: la mecánica ya usa
+   `translate` en el tirador del Toggle y en la rayita de Tabs, y `scale` en el
+   tilde del Checkbox. Por eso el glitch base se hace SOLO con `filter` y
+   `clip-path` —libres en todos lados— y el sacudón de posición va aparte, para
+   componerlo únicamente donde `translate` está disponible.
+   =========================================================================== */
+
+/* -- El glitch base: aberración cromática + cortes de banda ---------------- */
+/* Seguro en cualquier elemento: no toca ni transform ni layout. */
+
+@keyframes ui-cy-glitch {
+  0%   { filter: none;                   clip-path: inset(0); }
+  10%  { filter: var(--ui-glitch-rgb-a); clip-path: inset(0 0 58% 0); }
+  22%  { filter: var(--ui-glitch-rgb-b); clip-path: inset(46% 0 22% 0); }
+  34%  { filter: var(--ui-glitch-rgb-a); clip-path: inset(72% 0 0 0); }
+  46%  { filter: none;                   clip-path: inset(0); }
+  58%  { filter: var(--ui-glitch-rgb-b); clip-path: inset(18% 0 54% 0); }
+  70%  { filter: var(--ui-glitch-rgb-a); clip-path: inset(0 0 12% 0); }
+  82%  { filter: none;                   clip-path: inset(0); }
+  100% { filter: none;                   clip-path: inset(0); }
+}
+
+/* -- El sacudón de posición ------------------------------------------------ */
+/* Se compone con el de arriba SOLO donde `translate` esté libre. */
+
+@keyframes ui-cy-jitter {
+  0%   { translate: 0 0; }
+  10%  { translate: calc(var(--ui-glitch-shift) * -1) 0; }
+  22%  { translate: var(--ui-glitch-shift) 0; }
+  34%  { translate: calc(var(--ui-glitch-shift) * -0.5) 0; }
+  46%  { translate: 0 0; }
+  58%  { translate: var(--ui-glitch-shift) 0; }
+  70%  { translate: 0 0; }
+  100% { translate: 0 0; }
+}
+
+/* -- Glitch de texto ------------------------------------------------------- */
+/* En texto la aberración se hace con text-shadow, no con drop-shadow: sigue
+   la forma de las letras en vez del rectángulo de la caja. */
+
+@keyframes ui-cy-glitch-text {
+  0%   { text-shadow: none; }
+  10%  { text-shadow: var(--ui-glitch-text-a); }
+  22%  { text-shadow: var(--ui-glitch-text-b); }
+  34%  { text-shadow: var(--ui-glitch-text-a); }
+  46%  { text-shadow: none; }
+  58%  { text-shadow: var(--ui-glitch-text-b); }
+  70%  { text-shadow: var(--ui-glitch-text-a); }
+  82%  { text-shadow: none; }
+  100% { text-shadow: none; }
+}
+
+/* -- Encendido de tubo ----------------------------------------------------- */
+/* Para lo que APARECE (un desplegable, un panel): abre desde una banda, con
+   dos parpadeos, como un CRT prendiendo. */
+
+@keyframes ui-cy-boot {
+  0%   { opacity: 0;   clip-path: inset(48% 0 48% 0); }
+  14%  { opacity: 1;   clip-path: inset(46% 0 46% 0); }
+  28%  { opacity: 0.5; clip-path: inset(10% 0 62% 0); }
+  42%  { opacity: 1;   clip-path: inset(0); }
+  56%  { opacity: 0.4; clip-path: inset(34% 0 30% 0); }
+  70%  { opacity: 1;   clip-path: inset(0); }
+  84%  { opacity: 0.8; clip-path: inset(0 0 8% 0); }
+  100% { opacity: 1;   clip-path: inset(0); }
+}
+
+/* Las coreografías armadas (`--ui-glitch-anim*`) están en tokens.css, así las
+   pieles escriben `animation: var(--ui-glitch-anim)` y no repiten la duración
+   ni el `steps()` en cada archivo. */

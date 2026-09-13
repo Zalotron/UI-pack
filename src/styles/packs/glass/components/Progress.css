@@ -1,0 +1,117 @@
+/* ---------------------------------------- Progress — PIEL del pack GLASS */
+/* Interfaz: --progress-track | --progress-fill | --progress-ring-fill
+             --progress-label-fg | --progress-value-fg
+             --progress-radius | --progress-cap                             */
+
+/* Un TUBO de vidrio con liquido adentro. El canal es cristal hueco y lo lleno
+   es el acento iridiscente del pack, con el reflejo corriendo por arriba de
+   TODO el tubo —lleno o no— porque la luz pega en el tubo entero. */
+.ui-progress {
+  --progress-track: var(--ui-glass-film);
+  --progress-fill: var(--ui-fill-sheen), linear-gradient(90deg, var(--ui-fill-from), var(--ui-fill-to));
+  /* El aro se pinta con EL MISMO corrimiento de tono que la barra y que el
+     relleno del slider. Antes era un color plano porque un `stroke` no acepta
+     un degradé de CSS; ahora la mecánica define uno adentro del propio SVG y
+     acá solo hay que declarar los dos topes. */
+  --progress-ring-fill: var(--ui-accent);
+  --progress-ring-from: var(--ui-fill-from);
+  --progress-ring-to: var(--ui-fill-to);
+  /* El remate del arco va recto: es una medida, no un adorno. */
+  --progress-cap: butt;
+}
+
+/* ⛔ EL BISEL VA ENCIMA DEL RELLENO, NO DEBAJO.
+   Estaba puesto en el canal, o sea que se pintaba sobre SU fondo pero debajo
+   de su hijo — y el relleno es un hijo. El tubo se veía hueco mientras estaba
+   vacío y se aplanaba justo donde tenía líquido adentro: exactamente al revés.
+   Es el mismo canal que el del slider, y ahora se ve igual. */
+.ui-progress--linear .ui-progress__track {
+  border: var(--ui-border-width) solid transparent;
+  background: var(--ui-glass-hollow);
+}
+
+.ui-progress {
+  --progress-track-shadow: var(--ui-glass-inner);
+}
+
+/* El canal desenfoca, igual que el del slider. Son la misma pieza y el vidrio
+   es lo que las define: tenerlo en una y no en la otra las separaba.
+
+   ⚠ El desenfoque la vuelve BACKDROP ROOT de lo que tenga adentro. Aca no
+   molesta: lo unico que vive dentro del canal es el relleno, que no desenfoca
+   nada — pinta color. */
+.ui-progress--linear .ui-progress__track {
+  backdrop-filter: var(--ui-glass-blur-sm);
+  -webkit-backdrop-filter: var(--ui-glass-blur-sm);
+}
+
+/* ⛔ NINGUN PACK DECLARA `stroke` EN EL ARO.
+   Una regla de CSS le gana al atributo del elemento, y el atributo es el que
+   apunta al degrade. Declarar `stroke` aca tapa el degrade y deja el aro plano
+   — que es exactamente lo que le pasaba a este canal. El color va por los topes. */
+/* El canal vacio del aro lleva EL MISMO BISEL que el del slider: claro en un
+   borde, oscuro en el medio y otra vez claro en el otro. Con dos topes no
+   alcanzaba —salia un degrade liso— y por eso se veia plano, apenas una
+   opacidad. Los tres tonos son los mismos de --ui-glass-edge. */
+.ui-progress {
+  --progress-ring-track-from: rgb(from var(--ui-glass-tint) r g b / var(--ui-glass-edge-hi));
+  --progress-ring-track-mid: rgb(from var(--ui-glass-shade) r g b / var(--ui-glass-edge-lo));
+  --progress-ring-track-to: rgb(from var(--ui-glass-tint) r g b / var(--ui-glass-edge-tail));
+}
+
+/* El aro lleno refracta: deja un halo del color que está llevando. Es lo único
+   que un `stroke` admite para tener cuerpo —no acepta box-shadow— y es el
+   mismo gesto que el reflejo del tubo. */
+.ui-progress__ring-fill {
+  filter: drop-shadow(0 0 var(--ui-glass-ring-glow) rgb(from var(--ui-accent) r g b / 0.55));
+}
+
+.ui-progress.is-indeterminate {
+  --progress-ring-fill: var(--ui-accent-soft);
+}
+
+/* ⛔ EL CANAL DEL ARO TAMBIEN DESENFOCA — Y NO PUEDE HACERLO EL `stroke`.
+   `backdrop-filter` es de elementos con caja; un trazo de SVG no la tiene. Asi
+   que el desenfoque va en una capa DETRAS del aro, recortada a la misma banda
+   que el aro ocupa. Es la unica forma de que el canal vacio del radial sea
+   vidrio de verdad, como el del slider y el del tubo lineal.
+
+   Las dos medidas de la banda las calcula la mecanica —`--progress-ring-outer`
+   y `--progress-ring-inner`— porque son geometria y no estetica: un `stroke` se
+   dibuja CENTRADO sobre la linea, asi que el aro sobresale del diametro para
+   afuera y deja un hueco mas grande para adentro. Usar `--progress-d` a secas
+   dejaria el desenfoque corrido.
+
+   La mascara es un degrade radial con cortes DUROS: dos topes en la misma
+   posicion no interpolan, cortan.
+
+   ⚠ `currentColor` y no un negro escrito: una mascara usa el ALFA, el color da
+   igual con tal de que sea opaco. Y asi no hay que declarar ningun color, que
+   en este proyecto es una regla dura. */
+.ui-progress--radial::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: var(--progress-ring-outer);
+  height: var(--progress-ring-outer);
+  translate: -50% 0;
+  /* El aro esta centrado en el diametro nominal; la banda sobresale la mitad
+     del grosor, asi que la capa arranca esa mitad mas arriba. */
+  margin-top: calc((var(--progress-d) - var(--progress-ring-outer)) / 2);
+  border-radius: var(--ui-radius-circle);
+  pointer-events: none;
+
+  backdrop-filter: var(--ui-glass-blur-sm);
+  -webkit-backdrop-filter: var(--ui-glass-blur-sm);
+
+  --banda: radial-gradient(
+    closest-side,
+    transparent calc(var(--progress-ring-inner) / 2),
+    currentColor calc(var(--progress-ring-inner) / 2),
+    currentColor calc(var(--progress-ring-outer) / 2),
+    transparent calc(var(--progress-ring-outer) / 2)
+  );
+  -webkit-mask-image: var(--banda);
+  mask-image: var(--banda);
+}

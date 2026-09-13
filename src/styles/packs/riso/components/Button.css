@@ -1,0 +1,97 @@
+/* ----------------------------------------------- Button — PIEL del pack RISO */
+/* Interfaz: --btn-bg / --btn-bg-hover | --btn-gloss | --btn-fg
+             --btn-border / -hover | --btn-shadow                            */
+
+/* El botón es LA pieza del pack: un bloque de tinta con la trama encima y la
+   segunda plancha corrida atrás.
+
+   --btn-gloss es la capa de IMAGEN que la mecánica pinta arriba del relleno
+   (`background: var(--btn-gloss), var(--btn-bg)`). Acá no hay ningún brillo
+   que poner: ese lugar lo ocupa la TRAMA DE PUNTOS, que es lo que hace que un
+   relleno risográfico no se vea macizo. */
+
+.ui-btn {
+  --btn-gloss: none;
+  --btn-border: var(--ui-border);
+  --btn-border-hover: var(--ui-border);
+  --btn-shadow: var(--ui-misprint);
+  font-weight: var(--ui-weight-semibold);
+  letter-spacing: var(--ui-tracking-wide);
+  text-transform: uppercase;
+
+
+  /* La mecánica no transiciona la sombra: la corrida se agrega acá. */
+  transition:
+    box-shadow var(--ui-duration-fast) var(--ui-ease),
+    background var(--ui-duration-fast) var(--ui-ease),
+    color var(--ui-duration-fast) var(--ui-ease);
+}
+
+/* Pasar el mouse SEPARA las planchas. */
+.ui-btn:hover:not(.is-disabled) {
+  --btn-bg: var(--btn-bg-hover);
+  --btn-shadow: var(--ui-misprint-lg);
+  border-color: var(--btn-border-hover);
+}
+
+/* ⚠ APRETAR ES APOYAR LA PLANCHA.
+   La pieza se corre exactamente lo que estaba corrida su segunda tinta
+   (--ui-press-shift vale --ui-riso-offset) y la sombra desaparece: por un
+   momento las dos planchas coinciden y la impresión sale perfecta. Ese es el
+   gesto del pack, y no hace falta cambiar ningún color para leerlo. */
+.ui-btn:active:not(.is-disabled) {
+  --btn-shadow: none;
+}
+
+/* Sin segunda plancha no hay pieza que tocar. */
+.ui-btn.is-disabled {
+  --btn-shadow: none;
+}
+
+/* -- Variantes ------------------------------------------------------------ */
+
+.ui-btn--primary,
+.ui-btn--danger {
+  /* LA TRAMA. Dos grillas corridas media celda: la diagonal a 45 grados.
+     Con longhands a proposito — ver tokens.css. */
+  background-image: var(--ui-riso-dot), var(--ui-riso-dot);
+  background-position: 0 0, var(--ui-halftone-half);
+  background-size: var(--ui-halftone-size), var(--ui-halftone-size);
+  background-blend-mode: multiply;
+}
+
+.ui-btn--primary {
+  --btn-bg: var(--ui-accent);
+  --btn-bg-hover: var(--ui-accent-hover);
+  --btn-fg: var(--ui-on-accent);
+}
+
+/* Papel sin tinta de fondo: solo contorno y rótulo. Sin trama, porque no hay
+   relleno que tramar — una trama sobre el papel blanco se lee como mugre. */
+.ui-btn--secondary {
+  --btn-bg: var(--ui-surface);
+  --btn-bg-hover: var(--ui-accent-subtle);
+  --btn-fg: var(--ui-text);
+  --btn-gloss: none;
+}
+
+/* Ni contorno ni plancha: el rótulo solo. Al tocarlo se imprime. */
+.ui-btn--ghost {
+  --btn-bg: transparent;
+  --btn-bg-hover: var(--ui-accent-subtle);
+  --btn-fg: var(--ui-text-muted);
+  --btn-border: transparent;
+  --btn-border-hover: var(--ui-border);
+  --btn-gloss: none;
+  --btn-shadow: none;
+}
+.ui-btn--ghost:hover:not(.is-disabled) {
+  --btn-shadow: var(--ui-misprint);
+  color: var(--ui-text);
+}
+
+.ui-btn--danger {
+  --btn-bg: var(--ui-danger);
+  --btn-bg-hover: var(--ui-danger-hover);
+  --btn-fg: var(--ui-on-danger);
+}

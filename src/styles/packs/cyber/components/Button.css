@@ -1,0 +1,78 @@
+/* ---------------------------------------------- Button — PIEL del pack CYBER */
+/* Interfaz: --btn-bg / --btn-bg-hover | --btn-gloss | --btn-fg
+             --btn-border / -hover | --btn-shadow                            */
+
+/* Rótulo de máquina: mayúsculas y letras separadas. */
+.ui-btn {
+  --btn-gloss: none;
+  text-transform: uppercase;
+  letter-spacing: var(--ui-tracking-wide);
+  font-weight: var(--ui-weight-semibold);
+}
+
+/* El hover cambia la VARIABLE, no `background`. */
+.ui-btn:hover:not(.is-disabled) {
+  --btn-bg: var(--btn-bg-hover);
+  border-color: var(--btn-border-hover);
+}
+
+/* Al apretar: se hunde, y la falla es de la caja entera. */
+.ui-btn:active:not(.is-disabled) {
+  transform: translateY(var(--ui-press-shift));
+  animation: var(--ui-glitch-anim);
+}
+
+/* Al pasar el mouse, la señal se desalinea un instante.
+
+   Va en el BOTON y no en `.ui-btn__label` a propósito: `text-shadow` se hereda,
+   así que la aberración llega igual a la etiqueta, y de paso no se escribe una
+   regla con `:hover` en un ancestro estilando un `__label` — que es el patrón
+   que enciende textos sin motivo y que el proyecto ya tiene prohibido. */
+.ui-btn:hover:not(.is-disabled) {
+  animation: var(--ui-glitch-anim-text);
+}
+
+/* -- Variantes ------------------------------------------------------------ */
+
+/* Primario: neón pleno con texto oscuro encima. El cian saturado tiene
+   demasiada luminancia para sostener texto blanco — lo mide config.js. */
+.ui-btn--primary {
+  --btn-bg: var(--ui-accent);
+  --btn-bg-hover: var(--ui-accent-hover);
+  --btn-fg: var(--ui-on-accent);
+  --btn-border: var(--ui-accent);
+  --btn-border-hover: var(--ui-accent-hover);
+  --btn-shadow: var(--ui-glow);
+}
+
+/* Secundario: solo el trazo. Apagado en reposo, se enciende al tocarlo —
+   es el gesto central del pack. */
+.ui-btn--secondary {
+  --btn-bg: transparent;
+  --btn-bg-hover: var(--ui-accent-subtle);
+  --btn-fg: var(--ui-accent-text);
+  --btn-border: var(--ui-border-strong);
+  --btn-border-hover: var(--ui-accent);
+  --btn-shadow: none;
+}
+.ui-btn--secondary:hover:not(.is-disabled) {
+  --btn-shadow: var(--ui-glow);
+}
+
+/* Terciario: ni trazo, hasta que lo tocás. */
+.ui-btn--ghost {
+  --btn-bg: transparent;
+  --btn-bg-hover: var(--ui-accent-subtle);
+  --btn-fg: var(--ui-text-muted);
+}
+.ui-btn--ghost:hover:not(.is-disabled) { color: var(--ui-accent-text); }
+
+/* Destructivo: el neón complementario, que sale de correr el brand 160°. */
+.ui-btn--danger {
+  --btn-bg: var(--ui-danger);
+  --btn-bg-hover: var(--ui-danger-hover);
+  --btn-fg: var(--ui-on-danger);
+  --btn-border: var(--ui-danger);
+  --btn-border-hover: var(--ui-danger-hover);
+  --btn-shadow: var(--ui-glow-alt);
+}

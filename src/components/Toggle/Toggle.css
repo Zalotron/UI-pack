@@ -1,0 +1,103 @@
+/* ------------------------------------------------------ Toggle — ESTRUCTURA */
+/* Mecánica. Los colores los pone el pack.
+   La pista y el tirador se miden como fracción de la altura del control, para
+   que un Toggle quede a la par de un Button o un Select de la misma fila.    */
+
+.ui-toggle {
+  --toggle-h: var(--ui-control-h-md);
+  --toggle-track-h: calc(var(--toggle-h) * var(--ui-toggle-track-ratio));
+  --toggle-track-w: calc(var(--toggle-track-h) * var(--ui-toggle-aspect));
+  --toggle-knob: calc(var(--toggle-track-h) - var(--ui-toggle-knob-inset) * 2);
+  --toggle-font: var(--ui-control-font-md);
+
+  --toggle-track: transparent;
+  --toggle-track-on: transparent;
+  --toggle-knob-bg: transparent;
+  --toggle-border: transparent;
+  --toggle-ring: transparent;
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ui-space-3);
+  min-height: var(--toggle-h);
+  cursor: pointer;
+}
+
+.ui-toggle--label-start { flex-direction: row-reverse; }
+
+/* El input real queda encima pero invisible: se lleva el click y el foco. */
+.ui-toggle__input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: inherit;
+}
+
+/* -- Pista ----------------------------------------------------------------- */
+
+.ui-toggle__track {
+  position: relative;
+  flex: none;
+  width: var(--toggle-track-w);
+  height: var(--toggle-track-h);
+  border: var(--ui-border-width) solid var(--toggle-border);
+  /* Sigue el redondeo global, como el resto del sistema. */
+  border-radius: var(--ui-control-radius-sm);
+  background: var(--toggle-track);
+  box-shadow: 0 0 0 var(--ui-ring-width) var(--toggle-ring);
+  transition:
+    background var(--ui-duration-base) var(--ui-ease),
+    border-color var(--ui-duration-fast) var(--ui-ease),
+    box-shadow var(--ui-duration-fast) var(--ui-ease);
+}
+
+.ui-toggle.is-checked .ui-toggle__track { background: var(--toggle-track-on); }
+
+/* -- Tirador --------------------------------------------------------------- */
+
+.ui-toggle__knob {
+  position: absolute;
+  top: 50%;
+  inset-inline-start: var(--ui-toggle-knob-inset);
+  width: var(--toggle-knob);
+  height: var(--toggle-knob);
+  margin-top: calc(var(--toggle-knob) / -2);
+  border-radius: calc(var(--ui-control-radius-sm) - var(--ui-border-width));
+  background: var(--toggle-knob-bg);
+  transition: translate var(--ui-duration-base) var(--ui-ease-out);
+}
+
+.ui-toggle.is-checked .ui-toggle__knob {
+  translate: calc(var(--toggle-track-w) - var(--toggle-knob)
+    - var(--ui-toggle-knob-inset) * 2 - var(--ui-border-width) * 2) 0;
+}
+
+/* -- Texto ----------------------------------------------------------------- */
+
+.ui-toggle__label {
+  font-family: var(--ui-font-sans);
+  font-size: var(--toggle-font);
+  line-height: 1.2;
+}
+
+/* -- Tamaños --------------------------------------------------------------- */
+
+.ui-toggle--sm { --toggle-h: var(--ui-control-h-sm); --toggle-font: var(--ui-control-font-sm); }
+.ui-toggle--md { --toggle-h: var(--ui-control-h-md); --toggle-font: var(--ui-control-font-md); }
+.ui-toggle--lg { --toggle-h: var(--ui-control-h-lg); --toggle-font: var(--ui-control-font-lg); }
+
+/* -- Estados --------------------------------------------------------------- */
+
+.ui-toggle.is-disabled {
+  opacity: var(--ui-disabled-opacity);
+  cursor: not-allowed;
+}
+
+.ui-toggle__input:focus-visible + .ui-toggle__track {
+  outline: var(--ui-focus-width) solid var(--ui-focus-ring);
+  outline-offset: var(--ui-focus-offset);
+}

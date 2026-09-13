@@ -1,0 +1,52 @@
+/* ----------------------------------------------- Select — PIEL del pack RISO */
+/* Interfaz: --select-bg | --select-border | --select-menu-bg
+             --select-menu-border | --select-menu-shadow
+             --select-option-hover / -selected                                */
+
+/* El disparador es un BLOQUE IMPRESO, no una reserva: se aprieta, no se
+   escribe en él. Por eso lleva contorno y plancha corrida, al revés que el
+   Spinner y el TextField. */
+.ui-select {
+  --select-bg: var(--ui-surface);
+  --select-border: var(--ui-border);
+  --select-menu-bg: var(--ui-surface);
+  --select-menu-border: var(--ui-border);
+  --select-menu-shadow: var(--ui-misprint-lg);
+  --select-option-hover: var(--ui-accent-subtle);
+  --select-option-selected: var(--ui-accent-subtle);
+}
+
+.ui-select__trigger {
+  box-shadow: var(--ui-misprint);
+  transition: box-shadow var(--ui-duration-fast) var(--ui-ease);
+}
+
+.ui-select:hover:not(.is-disabled) .ui-select__trigger {
+  box-shadow: var(--ui-misprint-lg);
+}
+
+/* Abierto = plancha apoyada: las dos tintas coinciden. */
+.ui-select.is-open:not(.is-disabled) { --select-border: var(--ui-accent); }
+.ui-select.is-open:not(.is-disabled) .ui-select__trigger {
+  box-shadow: none;
+}
+
+/* La lista es otra hoja, con su grano. Sin trama: encima hay que leer. */
+.ui-select__list {
+  /* LA TRAMA. Dos grillas corridas media celda: la diagonal a 45 grados.
+     Con longhands a proposito — ver tokens.css. */
+  background-image: var(--ui-riso-dot-soft), var(--ui-riso-dot-soft);
+  background-position: 0 0, var(--ui-halftone-half);
+  background-size: var(--ui-halftone-size), var(--ui-halftone-size);
+  background-blend-mode: multiply;
+}
+
+.ui-select__option {
+  border-radius: var(--ui-radius-xs);
+}
+
+/* La opción elegida se marca con una barra de tinta al costado, como una
+   corrección hecha sobre la hoja. */
+.ui-select__option.is-selected {
+  box-shadow: inset calc(var(--ui-border-width) * 2) 0 0 var(--ui-accent);
+}

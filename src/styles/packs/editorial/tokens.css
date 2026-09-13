@@ -1,0 +1,453 @@
+/* ===========================================================================
+   PACK "EDITORIAL" — tokens
+   ---------------------------------------------------------------------------
+   Una página de libro. Acá la identidad no la lleva ninguna superficie: la
+   llevan LA TIPOGRAFIA y EL AIRE. No hay relieve, ni vidrio, ni neón, ni
+   trazo grueso — hay tipo bien compuesto y espacio alrededor.
+
+   RIGE LA MISMA REGLA DURA: un solo color declarado (--ui-brand). Todo lo demás
+   sale de él con color relativo.
+
+   Las piezas:
+
+     1. SERIF DE LECTURA      Georgia, que está en todos los sistemas. El
+                              proyecto no carga fuentes, así que la elección
+                              real es entre lo que ya hay — y para texto
+                              corrido la serif del sistema es la buena.
+     2. CUERPO GRANDE         16px de base, no 14. Un libro no se lee en letra
+                              de interfaz.
+     3. INTERLINEADO ABIERTO  1.75 de base. Es lo que más cambia la sensación
+                              de toda la página, y es un solo token.
+     4. MUCHO AIRE            Los paddings y los gaps son los más grandes de
+                              todos los packs. El blanco es material.
+     5. FILETES, NO CAJAS     Nada se encierra en un borde: se separa con una
+                              línea fina. Los campos son un renglón sobre el
+                              que se escribe, no un rectángulo.
+     6. CASI SIN COLOR        La tinta es casi negra y el acento aparece poco:
+                              un enlace, lo elegido. El color es la excepción.
+
+   El brand es un rojo óxido de imprenta. Como los neutros se tiñen del brand,
+   un rojo cálido vuelve el papel CREMA en vez de gris — que es justo lo que
+   distingue una página impresa de una pantalla.
+
+   Requiere color relativo (Chrome 119+, Safari 16.4+, Firefox 128+).
+   =========================================================================== */
+
+:root {
+  color-scheme: light dark;
+
+  /* ==================================================================== */
+  /*  =============   EL UNICO COLOR DECLARADO   ======================== */
+  /* ==================================================================== */
+  --ui-brand: #8a2b22;      /* pack settings -> BRAND_COLOR */
+
+  /* Una página impresa no tiene esquinas redondeadas. */
+  --ui-roundness: 0;
+
+  --ui-on-brand-light: hsl(from var(--ui-brand) h calc(s * 0.12) 98%);
+  --ui-on-brand-dark:  hsl(from var(--ui-brand) h calc(s * 0.40) 12%);
+  --ui-on-brand: var(--ui-on-brand-light);
+
+  /* ------------------------------------------------------ Tipografía ---- */
+  /* ⚠ ACA VIVE LA IDENTIDAD DEL PACK. Si algo de esto se toca, cambia el
+     estilo entero — mucho más que cualquier color.
+
+     La serif va en el slot `sans` a propósito: ese slot no significa
+     "sin serifas", significa "la fuente del texto". Acá la del texto es una
+     serif de lectura. */
+  --ui-font-sans: Georgia, "Iowan Old Style", "Palatino Linotype", Palatino,
+                  "Times New Roman", Times, serif;
+  --ui-font-mono: ui-monospace, "JetBrains Mono", Consolas, monospace;
+
+  /* Cuerpo de LIBRO, no de interfaz: 16px de base. */
+  --ui-text-xs:   0.75rem;    /* 12 — folios, notas al pie */
+  --ui-text-sm:   0.875rem;   /* 14 */
+  --ui-text-md:   1rem;       /* 16 — el texto */
+  --ui-text-lg:   1.125rem;   /* 18 */
+  --ui-text-xl:   1.5rem;     /* 24 */
+  --ui-text-2xl:  2rem;       /* 32 */
+  --ui-text-3xl:  2.75rem;    /* 44 — titular */
+
+  --ui-weight-regular:  400;
+  --ui-weight-medium:   400;   /* una serif no engorda para jerarquizar: */
+  --ui-weight-semibold: 600;   /* cambia de cuerpo o va a versalitas */
+  --ui-weight-bold:     700;
+
+  /* El interlineado abierto es lo que más cambia la página entera, así que es
+     una PERILLA del pack (LEADING). Las otras dos derivan de ella para que
+     moverla no rompa la proporción entre títulos y texto.
+     El fallback es por si el JS no corrió: config.js escribe --ui-leading. */
+  --ui-leading-normal:  var(--ui-leading, 1.75);
+  --ui-leading-tight:   calc(var(--ui-leading, 1.75) * 0.72);
+  --ui-leading-relaxed: calc(var(--ui-leading, 1.75) * 1.14);
+
+  --ui-tracking-tight: -0.015em;
+  --ui-tracking-wide:   0.09em;   /* para las versalitas de los rótulos */
+
+  /* -------------------------------------------- Espaciado (escala 4px) -- */
+  --ui-space-0:  0;
+  --ui-space-1:  0.25rem;
+  --ui-space-2:  0.5rem;
+  --ui-space-3:  0.75rem;
+  --ui-space-4:  1rem;
+  --ui-space-5:  1.25rem;
+  --ui-space-6:  1.5rem;
+  --ui-space-8:  2rem;
+  --ui-space-10: 2.5rem;
+  --ui-space-12: 3rem;
+  --ui-space-16: 4rem;
+
+  /* --------------------------------------- Espaciado fluido ------------- */
+  /* Los márgenes más generosos de todos los packs, y es la mitad del estilo.
+     En una página impresa el blanco no es lo que sobra: es material. */
+  --ui-pad-block-xs: calc(clamp(14px, 1.8vw, 20px) * var(--ui-margins, 1));
+  --ui-pad-inline-xs: calc(clamp(14px, 1.8vw, 20px) * var(--ui-margins, 1));
+  --ui-pad-block-sm: calc(clamp(22px, 2.8vw, 32px) * var(--ui-margins, 1));
+  --ui-pad-inline-sm: calc(clamp(22px, 2.8vw, 32px) * var(--ui-margins, 1));
+  --ui-pad-block-md: calc(clamp(34px, 4.4vw, 52px) * var(--ui-margins, 1));
+  --ui-pad-inline-md: calc(clamp(32px, 4vw, 48px) * var(--ui-margins, 1));
+  --ui-pad-block-lg: calc(clamp(48px, 6vw, 76px) * var(--ui-margins, 1));
+  --ui-pad-inline-lg: calc(clamp(44px, 5.4vw, 68px) * var(--ui-margins, 1));
+  --ui-pad-block-xl: calc(clamp(64px, 8vw, 108px) * var(--ui-margins, 1));
+  --ui-pad-inline-xl: calc(clamp(56px, 7vw, 92px) * var(--ui-margins, 1));
+
+  --ui-gap-none: 0;
+  --ui-gap-xs: calc(var(--ui-space-2) * var(--ui-margins, 1));
+  --ui-gap-sm: calc(clamp(14px, 1.8vw, 20px) * var(--ui-margins, 1));
+  --ui-gap-md: calc(clamp(22px, 2.8vw, 32px) * var(--ui-margins, 1));
+  --ui-gap-lg: calc(clamp(34px, 4.2vw, 50px) * var(--ui-margins, 1));
+  --ui-gap-xl: calc(clamp(48px, 6vw, 76px) * var(--ui-margins, 1));
+
+  /* Una columna angosta: el texto largo se lee mal a todo el ancho. */
+  --ui-col-min: 320px;
+
+  /* ------------------------------------------------ Separadores ---------- */
+  /* Un corte entre secciones respira: son los más aireados del sistema. */
+  --ui-sep-space-none: 0;
+  --ui-sep-space-xs: calc(var(--ui-space-3) * var(--ui-margins, 1));
+  --ui-sep-space-sm: calc(var(--ui-space-6) * var(--ui-margins, 1));
+  --ui-sep-space-md: calc(clamp(28px, 4vh, 42px) * var(--ui-margins, 1));
+  --ui-sep-space-lg: calc(clamp(44px, 6vh, 68px) * var(--ui-margins, 1));
+  --ui-sep-space-xl: calc(clamp(64px, 9vh, 104px) * var(--ui-margins, 1));
+
+  /* El filete se apaga en las puntas: no llega a tocar el margen. */
+  --ui-sep-fade: 30%;
+
+  /* ------------------------------------------- Controles ----------------- */
+  /* Altos, porque el tipo es grande. Un control apretado con letra de 16px
+     se ve mal compuesto. */
+  --ui-control-h-sm:    34px;
+  --ui-control-h-md:    44px;
+  --ui-control-h-lg:    54px;
+  --ui-control-pad-sm:  var(--ui-space-3);
+  --ui-control-pad-md:  var(--ui-space-4);
+  --ui-control-pad-lg:  var(--ui-space-6);
+  --ui-control-font-sm: var(--ui-text-sm);
+  --ui-control-font-md: var(--ui-text-md);
+  --ui-control-font-lg: var(--ui-text-lg);
+  --ui-control-gap-sm:  var(--ui-space-2);
+  --ui-control-gap-md:  var(--ui-space-3);
+  --ui-control-gap-lg:  var(--ui-space-3);
+  --ui-control-radius-sm: 0;
+  --ui-control-radius-md: 0;
+  --ui-control-radius-lg: 0;
+  /* Piso del spinner. NO es su ancho: el ancho lo reserva el propio
+     control segun sus limites. Esto es para que uno de un solo digito
+     siga siendo agarrable. */
+  --ui-spinner-min-w: 3ch;
+  /* Respiro sobre los caracteres reservados: la coma, el signo y el
+     cursor no miden lo que mide un cero, que es lo que mide `ch`. */
+--ui-spinner-slack: 0.75;
+
+  --ui-slider-track-ratio: 0.08;   /* un filete, no una pista */
+  --ui-slider-thumb-ratio: 0.5;
+  --ui-slider-thumb-w: 2px;        /* una marca de folio */
+  --ui-slider-value-w: 5ch;
+
+  --ui-select-menu-max-h: 280px;
+  --ui-select-arrow: 8px;
+
+  --ui-toggle-track-ratio: 0.44;
+  --ui-toggle-aspect: 2.2;
+  --ui-toggle-knob-inset: 2px;
+  --ui-check-ratio: 0.42;
+
+  --ui-scroll-size: 8px;           /* discreto: no compite con el texto */
+  --ui-scroll-inset: 2px;
+  --ui-scroll-size-regular: 12px;
+  --ui-scroll-inset-regular: 3px;
+
+  /* Window. ⛔ EL MARCO DE UNA VENTANA ES CUADRADO, SIEMPRE. */
+  --ui-window-radius: 0;
+  /* El oscurecido detras de una ventana modal. Sale de la marca como
+     todo lo demas: un negro puro no pertenece a ningun pack. */
+  --ui-window-scrim: hsl(from var(--ui-brand) h calc(s * 0.30) 6% / 0.62);
+  --ui-window-bar-h: 46px;
+  --ui-window-control-w: 46px;
+  --ui-window-glyph: 9px;
+
+  /* Progress. Un filete tipografico, del grosor de una regla de pagina. */
+  --ui-progress-h-sm: 2px;
+  --ui-progress-h-md: 4px;
+  --ui-progress-h-lg: 6px;
+  --ui-progress-ring-sm: 28px;
+  --ui-progress-ring-md: 40px;
+  --ui-progress-ring-lg: 56px;
+  /* ⚠ ESTO NO SON PIXELES: es el PORCENTAJE DEL DIAMETRO.
+     El aro se dibuja en un SVG con `viewBox="0 0 100 100"`, asi que una unidad
+     del trazo vale un centesimo del diametro. Escrito como `px` el numero
+     mentia: un `16px` sobre un aro de 64 se dibujaba de 10. Y ademas asi es
+     como tiene que ser — el trazo acompana al tamano del aro en las tres
+     variantes en vez de quedarse fijo. */
+  --ui-progress-ring-width: 8;
+
+  /* Iconos. Son de TRAZO, asi que lo que los hace de este pack es el grosor:
+     el mismo dibujo con otro calibre ya es otro icono. */
+  --ui-icon-sm: 16px;
+  --ui-icon-md: 19px;
+  --ui-icon-lg: 23px;
+  --ui-icon-stroke: 1.4px;
+
+  --ui-tabs-indicator-h: 1px;      /* un filete, no una barra */
+
+  --ui-swatch-w: 2.6em;
+  --ui-picker-w: 240px;
+  --ui-picker-area-h: 140px;
+  --ui-picker-cursor: 12px;
+
+  /* La página no se mueve: nada se hunde ni se levanta. */
+  --ui-press-shift: 0px;
+  --ui-hover-lift: 0px;
+  --ui-disabled-opacity: 0.38;
+
+  /* ---------------------------------------------------------- Radios ---- */
+  --ui-radius-xs:   calc(2px * var(--ui-roundness));
+  --ui-radius-sm:   calc(3px * var(--ui-roundness));
+  --ui-radius-md:   calc(4px * var(--ui-roundness));
+  --ui-radius-lg:   calc(6px * var(--ui-roundness));
+  --ui-radius-xl:   calc(8px * var(--ui-roundness));
+  --ui-radius-full: calc(999px * min(var(--ui-roundness), 1));
+  --ui-radius-circle: 50%;
+
+  /* -------------------------------------------------------- Bordes ------ */
+  --ui-border-width: 1px;
+
+  /* ------------------------------------------------------ Movimiento ---- */
+  /* Sin apuro y sin rebote. Una página no salta: se asienta. */
+  --ui-duration-fast: 160ms;
+  --ui-duration-base: 300ms;
+  --ui-duration-slow: 480ms;
+  --ui-duration-loader: 900ms;
+  --ui-loader-width: 1px;
+  --ui-ease:      cubic-bezier(0.32, 0.08, 0.24, 1);
+  --ui-ease-out:  cubic-bezier(0.16, 0.84, 0.3, 1);
+  --ui-ease-in:   cubic-bezier(0.7, 0.16, 0.88, 0.4);
+
+  /* ----------------------------------------------------------- Capas ---- */
+  --ui-z-base:     0;
+  --ui-z-dropdown: 1000;
+  --ui-z-sticky:   1100;
+  --ui-z-overlay:  1200;
+  --ui-z-modal:    1300;
+  --ui-z-toast:    1400;
+  --ui-z-tooltip:  1500;
+
+  /* ==================================================================== */
+  /*  NEUTROS — papel y tinta.                                           */
+  /*  Teñidos del brand: con un rojo óxido, el papel sale CREMA. Es lo    */
+  /*  que separa una página impresa de una pantalla blanca.               */
+  /* ==================================================================== */
+  --ui-neutral-0:    hsl(from var(--ui-brand) h calc(s * 0.10) 99.5%);
+  --ui-neutral-50:   hsl(from var(--ui-brand) h calc(s * 0.16) 97.5%);
+  --ui-neutral-100:  hsl(from var(--ui-brand) h calc(s * 0.20) 95%);
+  --ui-neutral-200:  hsl(from var(--ui-brand) h calc(s * 0.22) 89%);
+  --ui-neutral-300:  hsl(from var(--ui-brand) h calc(s * 0.22) 78%);
+  --ui-neutral-400:  hsl(from var(--ui-brand) h calc(s * 0.22) 60%);
+  --ui-neutral-500:  hsl(from var(--ui-brand) h calc(s * 0.22) 44%);
+  --ui-neutral-600:  hsl(from var(--ui-brand) h calc(s * 0.24) 33%);
+  --ui-neutral-700:  hsl(from var(--ui-brand) h calc(s * 0.26) 24%);
+  --ui-neutral-800:  hsl(from var(--ui-brand) h calc(s * 0.30) 16%);
+  --ui-neutral-900:  hsl(from var(--ui-brand) h calc(s * 0.34) 10%);
+  --ui-neutral-950:  hsl(from var(--ui-brand) h calc(s * 0.40) 5%);
+
+  /* ==================================================================== */
+  /*  FAMILIA DE MARCA                                                   */
+  /* ==================================================================== */
+  --ui-brand-base:   var(--ui-brand);
+  --ui-brand-hover:  hsl(from var(--ui-brand) h s calc(l * 0.82));
+  --ui-brand-active: hsl(from var(--ui-brand) h s calc(l * 0.7));
+  --ui-brand-soft:   hsl(from var(--ui-brand) h calc(s * 0.55) 72%);
+  --ui-brand-subtle: hsl(from var(--ui-brand) h calc(s * 0.35) 93%);
+
+  /* ==================================================================== */
+  /*  ESTADOS — tono fijo, saturación aportada por el brand.             */
+  /* ==================================================================== */
+  --ui-red-100:   hsl(from var(--ui-brand) 6   calc(s * 0.35) 93%);
+  --ui-red-500:   hsl(from var(--ui-brand) 6   calc(s * 1.0)  52%);
+  --ui-red-600:   hsl(from var(--ui-brand) 4   calc(s * 1.0)  40%);
+  --ui-red-700:   hsl(from var(--ui-brand) 2   calc(s * 1.0)  32%);
+
+  --ui-green-100: hsl(from var(--ui-brand) 140 calc(s * 0.28) 92%);
+  --ui-green-500: hsl(from var(--ui-brand) 145 calc(s * 0.60) 38%);
+  --ui-green-600: hsl(from var(--ui-brand) 145 calc(s * 0.60) 30%);
+
+  --ui-amber-100: hsl(from var(--ui-brand) 40  calc(s * 0.35) 92%);
+  --ui-amber-500: hsl(from var(--ui-brand) 36  calc(s * 0.90) 46%);
+  --ui-amber-600: hsl(from var(--ui-brand) 32  calc(s * 0.90) 38%);
+
+  /* -------------------------------------------------------- Sombras ----- */
+  /* NINGUNA, y es la decisión estética central del pack: una página impresa no
+     tiene profundidad. Igual hay que DECLARARLAS — la mecánica las consume
+     (las variantes `elev-*` del Container, por ejemplo), y un token que no
+     existe deja la propiedad en vacío en vez de en `none`.
+     La jerarquía acá la dan el aire y el peso del filete. */
+  --ui-shadow-sm: none;
+  --ui-shadow-md: none;
+  --ui-shadow-lg: none;
+
+  /* ------------------------------------------- Semánticos — tema claro -- */
+  /* Papel crema, tinta casi negra. */
+  --ui-bg:             var(--ui-neutral-50);
+  --ui-bg-subtle:      var(--ui-neutral-100);
+  --ui-surface:        var(--ui-neutral-0);
+  --ui-surface-hover:  var(--ui-neutral-100);
+  --ui-surface-active: var(--ui-neutral-200);
+
+  /* Filetes, no bordes: la línea más fina que siga siendo visible. */
+  --ui-border:         rgb(from var(--ui-text) r g b / 0.22);
+  --ui-border-strong:  rgb(from var(--ui-text) r g b / 0.45);
+  --ui-line:           rgb(from var(--ui-text) r g b / 0.16);
+  --ui-line-soft:      rgb(from var(--ui-text) r g b / 0.09);
+  --ui-scroll-thumb:       rgb(from var(--ui-text) r g b / 0.20);
+  --ui-scroll-thumb-hover: rgb(from var(--ui-text) r g b / 0.40);
+
+  --ui-panel-from:     var(--ui-surface);
+  --ui-panel-to:       var(--ui-surface);
+
+  --ui-text:           hsl(from var(--ui-brand) h calc(s * 0.30) 12%);
+  --ui-text-muted:     hsl(from var(--ui-brand) h calc(s * 0.22) 34%);
+  --ui-text-subtle:    hsl(from var(--ui-brand) h calc(s * 0.20) 44%);
+
+  --ui-accent:         var(--ui-brand-base);
+  --ui-accent-hover:   var(--ui-brand-hover);
+  --ui-accent-active:  var(--ui-brand-active);
+  --ui-accent-subtle:  rgb(from var(--ui-accent) r g b / 0.09);
+  --ui-accent-soft:    rgb(from var(--ui-accent) r g b / 0.35);
+  --ui-accent-text:    var(--ui-accent);
+  --ui-on-accent:      var(--ui-on-brand-light);
+
+  --ui-danger:         var(--ui-red-600);
+  --ui-danger-hover:   var(--ui-red-700);
+  --ui-danger-subtle:  var(--ui-red-100);
+  --ui-on-danger:      var(--ui-on-brand-light);
+
+  --ui-success:        var(--ui-green-600);
+  --ui-success-subtle: var(--ui-green-100);
+  --ui-warning:        var(--ui-amber-600);
+  --ui-warning-subtle: var(--ui-amber-100);
+
+  --ui-focus-ring:     var(--ui-accent);
+  --ui-focus-width:    2px;
+  --ui-focus-offset:   3px;
+
+  --ui-selection-bg:   rgb(from var(--ui-accent) r g b / 0.16);
+  --ui-selection-fg:   var(--ui-text);
+
+  --ui-ring-width:     1px;
+  --ui-ring:           rgb(from var(--ui-accent) r g b / 0.35);
+  --ui-ring-soft:      rgb(from var(--ui-accent) r g b / 0.18);
+}
+
+/* ===========================================================================
+   TEMA OSCURO — la edición nocturna
+   ---------------------------------------------------------------------------
+   No es el claro invertido: el papel pasa a un negro CALIDO (sigue teñido del
+   brand) y la tinta a un crema. Un negro puro con blanco puro es pantalla, no
+   página.
+   =========================================================================== */
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ui-bg:             hsl(from var(--ui-brand) h calc(s * 0.16) 8%);
+    --ui-bg-subtle:      hsl(from var(--ui-brand) h calc(s * 0.16) 11%);
+    --ui-surface:        hsl(from var(--ui-brand) h calc(s * 0.14) 10%);
+    --ui-surface-hover:  hsl(from var(--ui-brand) h calc(s * 0.14) 14%);
+    --ui-surface-active: hsl(from var(--ui-brand) h calc(s * 0.14) 18%);
+
+    --ui-border:         rgb(from var(--ui-text) r g b / 0.24);
+    --ui-border-strong:  rgb(from var(--ui-text) r g b / 0.46);
+    --ui-line:           rgb(from var(--ui-text) r g b / 0.17);
+    --ui-line-soft:      rgb(from var(--ui-text) r g b / 0.10);
+    --ui-scroll-thumb:       rgb(from var(--ui-text) r g b / 0.22);
+    --ui-scroll-thumb-hover: rgb(from var(--ui-text) r g b / 0.42);
+
+    --ui-panel-from:     var(--ui-surface);
+    --ui-panel-to:       var(--ui-surface);
+
+    --ui-text:           hsl(from var(--ui-brand) h calc(s * 0.14) 93%);
+    --ui-text-muted:     hsl(from var(--ui-brand) h calc(s * 0.12) 72%);
+    --ui-text-subtle:    hsl(from var(--ui-brand) h calc(s * 0.12) 60%);
+
+    /* El óxido no se lee sobre negro: acá el acento se aclara bastante. */
+    --ui-accent:         hsl(from var(--ui-brand) h calc(s * 0.85) 62%);
+    --ui-accent-hover:   hsl(from var(--ui-brand) h calc(s * 0.80) 72%);
+    --ui-accent-active:  hsl(from var(--ui-brand) h calc(s * 0.90) 52%);
+    --ui-accent-subtle:  rgb(from var(--ui-accent) r g b / 0.14);
+    --ui-accent-soft:    rgb(from var(--ui-accent) r g b / 0.40);
+    /* Como LETRA el acento necesita mas luz que como relleno: al 62% daba
+       3.98:1 sobre la opcion elegida. El relleno se queda donde esta. */
+    --ui-accent-text:    hsl(from var(--ui-brand) h calc(s * 0.80) 70%);
+    --ui-on-accent:      var(--ui-on-brand-dark);
+
+    --ui-danger:         var(--ui-red-500);
+    --ui-danger-hover:   hsl(from var(--ui-red-500) h s calc(l * 1.15));
+    --ui-danger-subtle:  rgb(from var(--ui-red-500) r g b / 0.16);
+
+    --ui-success:        var(--ui-green-500);
+    --ui-success-subtle: rgb(from var(--ui-green-500) r g b / 0.16);
+    --ui-warning:        var(--ui-amber-500);
+    --ui-warning-subtle: rgb(from var(--ui-amber-500) r g b / 0.16);
+  }
+}
+
+:root[data-theme="dark"] {
+  --ui-bg:             hsl(from var(--ui-brand) h calc(s * 0.16) 8%);
+  --ui-bg-subtle:      hsl(from var(--ui-brand) h calc(s * 0.16) 11%);
+  --ui-surface:        hsl(from var(--ui-brand) h calc(s * 0.14) 10%);
+  --ui-surface-hover:  hsl(from var(--ui-brand) h calc(s * 0.14) 14%);
+  --ui-surface-active: hsl(from var(--ui-brand) h calc(s * 0.14) 18%);
+
+  --ui-border:         rgb(from var(--ui-text) r g b / 0.24);
+  --ui-border-strong:  rgb(from var(--ui-text) r g b / 0.46);
+  --ui-line:           rgb(from var(--ui-text) r g b / 0.17);
+  --ui-line-soft:      rgb(from var(--ui-text) r g b / 0.10);
+  --ui-scroll-thumb:       rgb(from var(--ui-text) r g b / 0.22);
+  --ui-scroll-thumb-hover: rgb(from var(--ui-text) r g b / 0.42);
+
+  --ui-panel-from:     var(--ui-surface);
+  --ui-panel-to:       var(--ui-surface);
+
+  --ui-text:           hsl(from var(--ui-brand) h calc(s * 0.14) 93%);
+  --ui-text-muted:     hsl(from var(--ui-brand) h calc(s * 0.12) 72%);
+  --ui-text-subtle:    hsl(from var(--ui-brand) h calc(s * 0.12) 60%);
+
+  /* El óxido no se lee sobre negro: acá el acento se aclara bastante. */
+  --ui-accent:         hsl(from var(--ui-brand) h calc(s * 0.85) 62%);
+  --ui-accent-hover:   hsl(from var(--ui-brand) h calc(s * 0.80) 72%);
+  --ui-accent-active:  hsl(from var(--ui-brand) h calc(s * 0.90) 52%);
+  --ui-accent-subtle:  rgb(from var(--ui-accent) r g b / 0.14);
+  --ui-accent-soft:    rgb(from var(--ui-accent) r g b / 0.40);
+  /* Como LETRA el acento necesita mas luz que como relleno: al 62% daba
+     3.98:1 sobre la opcion elegida. El relleno se queda donde esta. */
+  --ui-accent-text:    hsl(from var(--ui-brand) h calc(s * 0.80) 70%);
+  --ui-on-accent:      var(--ui-on-brand-dark);
+
+  --ui-danger:         var(--ui-red-500);
+  --ui-danger-hover:   hsl(from var(--ui-red-500) h s calc(l * 1.15));
+  --ui-danger-subtle:  rgb(from var(--ui-red-500) r g b / 0.16);
+
+  --ui-success:        var(--ui-green-500);
+  --ui-success-subtle: rgb(from var(--ui-green-500) r g b / 0.16);
+  --ui-warning:        var(--ui-amber-500);
+  --ui-warning-subtle: rgb(from var(--ui-amber-500) r g b / 0.16);
+}

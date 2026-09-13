@@ -1,0 +1,77 @@
+/* ----------------------------------------- Progress — PIEL del pack RISO */
+/* Interfaz: --progress-track | --progress-fill | --progress-ring-fill
+             --progress-label-fg | --progress-value-fg
+             --progress-radius | --progress-cap                             */
+
+/* Una barra IMPRESA: canal con contorno de tinta, relleno tramado y la
+   segunda plancha corrida atras. Puntas rectas — una plancha imprime un
+   rectangulo. */
+.ui-progress {
+  /* El canal vacio es PAPEL, igual que el del slider: una plancha no imprime
+     el hueco, lo deja. Estaba transparente y se veia distinto al de al lado. */
+  --progress-track: var(--ui-surface);
+  --progress-fill: var(--ui-accent);
+  --progress-ring-fill: var(--ui-accent);
+  --progress-radius: 0;
+  --progress-cap: butt;
+  --progress-value-fg: var(--ui-accent-text);
+}
+
+.ui-progress--linear .ui-progress__track {
+  border: var(--ui-border-width) solid var(--ui-border);
+  box-shadow: var(--ui-misprint);
+}
+
+/* LA TRAMA sobre el relleno. Dos grillas corridas media celda: la diagonal a
+   45 grados. Con longhands a proposito — ver tokens.css. */
+.ui-progress--linear .ui-progress__fill {
+  background-image: var(--ui-riso-dot), var(--ui-riso-dot);
+  background-position: 0 0, var(--ui-halftone-half);
+  background-size: var(--ui-halftone-size), var(--ui-halftone-size);
+  background-blend-mode: multiply;
+}
+
+/* El aro no puede llevar trama —un `stroke` no acepta imagen de fondo— asi
+   que ahi la segunda tinta aparece como el aro de atras, que es justamente la
+   otra plancha. */
+/* ⛔ NINGUN PACK DECLARA `stroke` EN EL ARO.
+   Una regla de CSS le gana al atributo del elemento, y el atributo es el que
+   apunta al degrade. Declarar `stroke` aca tapa el degrade y deja el aro plano
+   — que es exactamente lo que le pasaba a este canal. El color va por los topes. */
+.ui-progress {
+  --progress-ring-track-from: var(--ui-ink-2-veil);
+  --progress-ring-track-to: var(--ui-ink-2-veil);
+}
+
+/* ⛔ EL ARO TAMBIEN SE IMPRIME MAL, COMO TODO LO DEMAS DEL PACK.
+   Le faltaba el desalineado: era el unico relleno del pack que salia limpio, y
+   al lado de una barra lineal con la segunda plancha corrida se veia de otro
+   sistema. Un `stroke` no acepta `box-shadow` —que es como se hace en todas las
+   demas piezas— asi que la plancha de atras va como sombra proyectada, que es
+   lo unico que un trazo admite. El desplazamiento sale del MISMO token que usa
+   el resto, o sea que la perilla MISREGISTER lo mueve junto con todo.
+
+   ⚠ LOS EJES VAN CAMBIADOS, Y NO ES UN ERROR. La mecanica dibuja el aro ROTADO
+   -90 grados para que el cero quede arriba, y un filtro se aplica en el espacio
+   del elemento: la sombra gira con el. Para que en PANTALLA caiga abajo-a-la-
+   derecha como en todas las demas piezas, hay que pedirla girada al reves — un
+   desplazamiento de pantalla (x, y) se escribe (-y, x). */
+.ui-progress__ring-fill {
+  filter: drop-shadow(
+    calc(var(--ui-riso-offset) * -1) var(--ui-riso-offset) 0 var(--ui-ink-2-plate)
+  );
+}
+
+/* El aro vacio tambien: es la linea de la primera plancha, y tiene que
+   desalinearse igual. Corrido a la mitad, porque es un contorno y no un
+   relleno — el mismo criterio que el resto del pack. */
+.ui-progress__ring-track {
+  filter: drop-shadow(
+    calc(var(--ui-riso-offset) * -0.5) calc(var(--ui-riso-offset) * 0.5) 0
+    var(--ui-ink-2-veil)
+  );
+}
+
+.ui-progress__value {
+  letter-spacing: var(--ui-tracking-wide);
+}

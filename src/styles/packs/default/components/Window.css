@@ -1,0 +1,29 @@
+/* ------------------------------------------------ Window — PIEL del pack default */
+/* Interfaz: --window-bg | --window-bar-bg | --window-border | --window-line
+             --window-title-fg | --window-control-hover
+             --window-close-hover | --window-close-fg | --window-shadow      */
+
+.ui-window {
+  --window-bg: var(--ui-bg);
+  /* La barra lleva el mismo degrade sutil que un panel: se despega del cuerpo
+     sin necesidad de una linea gruesa. */
+  --window-bar-bg: linear-gradient(180deg, var(--ui-panel-from), var(--ui-panel-to));
+  --window-border: var(--ui-border);
+  --window-line: var(--ui-line);
+  --window-title-fg: var(--ui-text-muted);
+  --window-control-hover: var(--ui-surface-hover);
+  --window-shadow: var(--ui-shadow-lg);
+
+  /* Cerrar en rojo es la convencion; el rojo sale del brand como todo. */
+  --window-close-hover: var(--ui-danger);
+  --window-close-fg: var(--ui-on-danger);
+}
+
+.ui-window--elev-sm { --window-shadow: var(--ui-shadow-sm); }
+.ui-window--elev-md { --window-shadow: var(--ui-shadow-md); }
+.ui-window--elev-lg { --window-shadow: var(--ui-shadow-lg); }
+
+/* El titulo NO cambia con el hover de la barra: la barra contiene los botones,
+   asi que pasar el mouse por minimizar o cerrar tambien contaria como hover de
+   la barra y el titulo se encenderia sin motivo. La zona de arrastre ya se
+   anuncia con el cursor. */

@@ -1,0 +1,116 @@
+/* ===========================================================================
+   PACK "DEFAULT" — entradas y salidas
+   ---------------------------------------------------------------------------
+   Contrato de `UIComponent`: la mecánica pone `.is-entering` al montar y
+   `.is-leaving` en `leave()`, y espera a que termine lo que corra acá. Qué se
+   ve es decisión de este archivo.
+
+   El carácter del pack es la sobriedad, así que el movimiento es el mínimo que
+   se lee como intencional: un desvanecido con un pequeño desplazamiento. Nada
+   rebota, nada gira.
+
+   REGLA GENERAL DE TODOS LOS PACKS: la salida es MAS CORTA que la entrada.
+   Lo que aparece se presenta; lo que se va no debe hacerte esperar.
+   =========================================================================== */
+
+/* -- Superficies: suben al entrar ------------------------------------------ */
+
+@keyframes ui-def-rise-in {
+  from { opacity: 0; translate: 0 8px; }
+  to   { opacity: 1; translate: 0 0; }
+}
+
+@keyframes ui-def-rise-out {
+  from { opacity: 1; translate: 0 0; }
+  to   { opacity: 0; translate: 0 4px; }
+}
+
+/* -- Flotantes: además escalan, para que se lean como algo que se despliega - */
+
+@keyframes ui-def-pop-in {
+  from { opacity: 0; scale: 0.98; translate: 0 4px; }
+  to   { opacity: 1; scale: 1;    translate: 0 0; }
+}
+
+@keyframes ui-def-pop-out {
+  from { opacity: 1; scale: 1;    translate: 0 0; }
+  to   { opacity: 0; scale: 0.99; translate: 0 2px; }
+}
+
+/* -- Controles: solo desvanecido. Son chicos; moverlos ensucia. ------------ */
+
+@keyframes ui-def-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes ui-def-fade-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+/* ===========================================================================
+   Asignación por componente
+   =========================================================================== */
+
+/* -- Superficies ----------------------------------------------------------- */
+
+.ui-container.is-entering,
+.ui-window.is-entering {
+  animation: ui-def-rise-in var(--ui-duration-base) var(--ui-ease-out) both;
+  /* Escalonado: lo reparte UIComponent al montar. Va DESPUES del shorthand,
+     que resetea animation-delay a 0. */
+  animation-delay: var(--ui-enter-delay, 0ms);
+}
+.ui-container.is-leaving,
+.ui-window.is-leaving {
+  animation: ui-def-rise-out var(--ui-duration-fast) var(--ui-ease-in) both;
+}
+
+/* -- Lo que flota ---------------------------------------------------------- */
+
+.ui-select.is-entering,
+.ui-colorpicker.is-entering {
+  animation: ui-def-pop-in var(--ui-duration-base) var(--ui-ease-out) both;
+  /* Escalonado: lo reparte UIComponent al montar. Va DESPUES del shorthand,
+     que resetea animation-delay a 0. */
+  animation-delay: var(--ui-enter-delay, 0ms);
+}
+.ui-select.is-leaving,
+.ui-colorpicker.is-leaving {
+  animation: ui-def-pop-out var(--ui-duration-fast) var(--ui-ease-in) both;
+}
+
+/* -- Controles y estructura ------------------------------------------------ */
+
+.ui-btn.is-entering,
+.ui-spinner.is-entering,
+.ui-slider.is-entering,
+.ui-toggle.is-entering,
+.ui-checkbox.is-entering,
+.ui-radiogroup.is-entering,
+.ui-textfield.is-entering,
+.ui-tabs.is-entering,
+.ui-scroll.is-entering,
+.ui-progress.is-entering,
+.ui-icon.is-entering,
+.ui-separator.is-entering {
+  animation: ui-def-fade-in var(--ui-duration-base) var(--ui-ease) both;
+  /* Escalonado: lo reparte UIComponent al montar. Va DESPUES del shorthand,
+     que resetea animation-delay a 0. */
+  animation-delay: var(--ui-enter-delay, 0ms);
+}
+.ui-btn.is-leaving,
+.ui-spinner.is-leaving,
+.ui-slider.is-leaving,
+.ui-toggle.is-leaving,
+.ui-checkbox.is-leaving,
+.ui-radiogroup.is-leaving,
+.ui-textfield.is-leaving,
+.ui-tabs.is-leaving,
+.ui-scroll.is-leaving,
+.ui-progress.is-leaving,
+.ui-icon.is-leaving,
+.ui-separator.is-leaving {
+  animation: ui-def-fade-out var(--ui-duration-fast) var(--ui-ease-in) both;
+}

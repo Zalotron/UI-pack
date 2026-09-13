@@ -1,0 +1,55 @@
+/* ---------------------------------------- Button — PIEL del pack _template */
+/* Interfaz: --btn-bg | --btn-bg-hover | --btn-gloss | --btn-fg
+             --btn-border | --btn-border-hover | --btn-shadow               */
+
+/* Brillo translucido: sirve para cualquier variante sin repetir degrades. */
+.ui-btn {
+  --btn-gloss: linear-gradient(
+    180deg,
+    rgb(from var(--ui-neutral-0) r g b / 0.14) 0%,
+    rgb(from var(--ui-neutral-0) r g b / 0.04) 45%,
+    rgb(from var(--ui-neutral-950) r g b / 0.07) 100%
+  );
+}
+
+/* El hover cambia la VARIABLE, no `background`: pisar la propiedad se
+   llevaria puesta la capa de brillo. */
+.ui-btn:hover:not(.is-disabled) {
+  --btn-bg: var(--btn-bg-hover);
+  border-color: var(--btn-border-hover);
+}
+
+.ui-btn:active:not(.is-disabled) {
+  transform: translateY(var(--ui-press-shift));
+}
+
+.ui-btn--primary {
+  --btn-bg: var(--ui-accent);
+  --btn-bg-hover: var(--ui-accent-hover);
+  --btn-fg: var(--ui-on-accent);
+  --btn-border: var(--ui-accent);
+  --btn-border-hover: var(--ui-accent-hover);
+}
+
+.ui-btn--secondary {
+  --btn-bg: var(--ui-surface);
+  --btn-bg-hover: var(--ui-surface-hover);
+  --btn-fg: var(--ui-text);
+  --btn-border: var(--ui-border-strong);
+  --btn-border-hover: var(--ui-accent-soft);
+}
+
+.ui-btn--ghost {
+  --btn-bg: transparent;
+  --btn-bg-hover: var(--ui-surface-hover);
+  --btn-fg: var(--ui-text-muted);
+  --btn-gloss: none;
+}
+
+.ui-btn--danger {
+  --btn-bg: var(--ui-danger);
+  --btn-bg-hover: var(--ui-danger-hover);
+  --btn-fg: var(--ui-on-danger);
+  --btn-border: var(--ui-danger);
+  --btn-border-hover: var(--ui-danger-hover);
+}

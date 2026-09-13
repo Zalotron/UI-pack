@@ -1,0 +1,66 @@
+/* ------------------------------------------ Button — PIEL del pack EDITORIAL */
+/* Interfaz: --btn-bg / --btn-bg-hover | --btn-gloss | --btn-fg
+             --btn-border / -hover | --btn-shadow                            */
+
+/* Un botón acá es TIPOGRAFIA, no una caja con texto adentro. Va en versalitas
+   espaciadas, que es como se rotula en una página impresa: la jerarquía sale
+   del tratamiento de la letra, no de un relleno de color. */
+
+.ui-btn {
+  --btn-gloss: none;
+  text-transform: uppercase;
+  letter-spacing: var(--ui-tracking-wide);
+  font-size: var(--ui-text-sm);
+  font-weight: var(--ui-weight-semibold);
+}
+
+.ui-btn:hover:not(.is-disabled) {
+  --btn-bg: var(--btn-bg-hover);
+  border-color: var(--btn-border-hover);
+}
+
+/* -- Variantes ------------------------------------------------------------ */
+
+/* Primario: un bloque de tinta maciza. Es el único relleno del pack, y por eso
+   mismo se lee como la acción principal sin necesidad de nada más. */
+.ui-btn--primary {
+  --btn-bg: var(--ui-text);
+  --btn-bg-hover: var(--ui-accent);
+  --btn-fg: var(--ui-bg);
+  --btn-border: transparent;
+  --btn-border-hover: transparent;
+}
+
+/* Secundario: solo un filete. */
+.ui-btn--secondary {
+  --btn-bg: transparent;
+  --btn-bg-hover: transparent;
+  --btn-fg: var(--ui-text);
+  --btn-border: var(--ui-border);
+  --btn-border-hover: var(--ui-text);
+}
+
+/* Terciario: texto subrayado. Es un enlace, y se comporta como tal — el
+   subrayado aparece al pasar el mouse, como en cualquier página. */
+.ui-btn--ghost {
+  --btn-bg: transparent;
+  --btn-bg-hover: transparent;
+  --btn-fg: var(--ui-text-muted);
+  --btn-border: transparent;
+  --btn-border-hover: transparent;
+  padding: 0;
+  height: auto;
+}
+.ui-btn--ghost:hover:not(.is-disabled) {
+  color: var(--ui-accent-text);
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+
+.ui-btn--danger {
+  --btn-bg: var(--ui-danger);
+  --btn-bg-hover: var(--ui-danger-hover);
+  --btn-fg: var(--ui-on-danger);
+  --btn-border: transparent;
+  --btn-border-hover: transparent;
+}

@@ -1,0 +1,127 @@
+/* ----------------------------------------------- Button — PIEL del pack SOFT */
+/* Interfaz: --btn-bg / --btn-bg-hover | --btn-gloss | --btn-fg
+             --btn-border / -hover | --btn-shadow                            */
+
+/* Un botón es el objeto por excelencia del pack: sobresale en reposo, se
+   despega al pasar el mouse y se HUNDE al apretarlo. Esos tres estados son
+   toda la interacción, y no hace falta cambiar ni un color. */
+
+.ui-btn {
+  --btn-shadow: var(--ui-soft-out-sm);
+
+  /* ⚠ EL CANTO Y EL BARRIDO SON LOS MISMOS EN TODAS LAS VARIANTES.
+     Van acá, en la clase base, y no en cada variante. Antes solo el secundario
+     los tenía: el primario quedaba como una pastilla de color plano, sin canto
+     y sin luz, al lado de una que sí los tenía — y se leían como dos
+     materiales distintos.
+
+     En este pack todas las piezas son LA MISMA LAMINA: una pintada y la otra
+     no. Así que la luz que las modela tiene que ser idéntica, y el color va
+     ADENTRO de ella.
+
+     El filete es el de siempre —un filete de TINTA, que sabe de tema— y lo
+     unico que cambio es que ahora lo llevan las tres variantes y no solo el
+     secundario. No es un canto blanco: un blanco funciona sobre una lamina
+     clara y en tema oscuro deja los botones con un contorno encendido.
+
+     El BARRIDO no va en `--btn-gloss` —que sería un velo encima del relleno—
+     sino en el relleno mismo: cada variante lo arma con SU color, del tono
+     pleno al mismo tono más oscuro. Ver la nota larga en tokens.css: el velo
+     blanco se midió y le bajaba el contraste al rótulo por debajo del mínimo. */
+  --btn-gloss: none;
+  --btn-border: var(--ui-line);
+  --btn-border-hover: var(--ui-border);
+
+  /* La mecánica solo transiciona `background`, `border-color`, `color` y
+     `transform`. El relieve se agrega acá, que es donde vive.
+
+     Y va con la duración CORTA: apretar un botón tiene que contestar en el
+     acto. Con la duración media el hundido llegaba tarde y el click se sentía
+     blando — que no es lo mismo que suave. */
+  transition:
+    box-shadow var(--ui-duration-fast) var(--ui-ease),
+    background var(--ui-duration-fast) var(--ui-ease),
+    color var(--ui-duration-fast) var(--ui-ease);
+}
+
+.ui-btn:hover:not(.is-disabled) {
+  --btn-bg: var(--btn-bg-hover);
+  --btn-shadow: var(--ui-soft-lift);
+  border-color: var(--btn-border-hover);
+}
+
+/* Apretado = hundido. `--ui-press-shift` es 0 en este pack a propósito: el
+   material no se mueve, se deforma. Correrlo además pelearía con la sombra. */
+.ui-btn:active:not(.is-disabled) {
+  --btn-shadow: var(--ui-soft-in-sm);
+}
+
+/* Deshabilitado: al ras. Sin relieve no hay objeto que tocar, que es
+   exactamente lo que se quiere comunicar. */
+.ui-btn.is-disabled {
+  --btn-shadow: var(--ui-soft-flat);
+}
+
+/* -- Variantes ------------------------------------------------------------ */
+
+/* Primario: la única pieza teñida. Sigue siendo el mismo material, pintado —
+   mismo canto, mismo barrido, misma diagonal. Lo único distinto es el color
+   sobre el que cae la luz. */
+.ui-btn--primary {
+  --btn-bg: linear-gradient(
+    var(--ui-soft-face-angle),
+    hsl(from var(--ui-accent) h s calc(l * var(--ui-soft-face-tint-hi))),
+    hsl(from var(--ui-accent) h s calc(l * var(--ui-soft-face-tint-lo)))
+  );
+  --btn-bg-hover: linear-gradient(
+    var(--ui-soft-face-angle),
+    hsl(from var(--ui-accent-hover) h s calc(l * var(--ui-soft-face-tint-hi))),
+    hsl(from var(--ui-accent-hover) h s calc(l * var(--ui-soft-face-tint-lo)))
+  );
+  --btn-fg: var(--ui-on-accent);
+}
+
+/* Secundario: la lámina cruda. Se distingue del fondo solo por el relieve. */
+.ui-btn--secondary {
+  /* ⛔ LA LAMINA CRUDA VA PLANA, Y NO ES UN OLVIDO.
+     Le puse un degradé de relleno y quedó agresivo: la lámina ya tiene su
+     modelado, que se lo da el RELIEVE —la luz de arriba-izquierda y la sombra
+     de abajo-derecha— y encima un degradé propio son dos luces sobre la misma
+     cara. El teñido sí lo lleva, porque ahí el relieve casi no se ve contra el
+     color. */
+  --btn-bg: var(--ui-surface);
+  --btn-bg-hover: var(--ui-surface-hover);
+  --btn-fg: var(--ui-text);
+}
+
+/* Terciario: plano hasta que lo tocás, y ahí recién emerge. Es el único sin
+   canto y sin barrido, y no por olvido: no tiene superficie. Un filo de luz
+   flotando sobre el fondo se leería como una caja vacía, y un barrido sobre
+   nada es una mancha blanca. */
+.ui-btn--ghost {
+  --btn-bg: transparent;
+  --btn-gloss: none;
+  --btn-border: transparent;
+  --btn-border-hover: transparent;
+  --btn-bg-hover: transparent;
+  --btn-fg: var(--ui-text-muted);
+  --btn-shadow: var(--ui-soft-flat);
+}
+.ui-btn--ghost:hover:not(.is-disabled) {
+  --btn-shadow: var(--ui-soft-out-sm);
+  color: var(--ui-text);
+}
+
+.ui-btn--danger {
+  --btn-bg: linear-gradient(
+    var(--ui-soft-face-angle),
+    hsl(from var(--ui-danger) h s calc(l * var(--ui-soft-face-tint-hi))),
+    hsl(from var(--ui-danger) h s calc(l * var(--ui-soft-face-tint-lo)))
+  );
+  --btn-bg-hover: linear-gradient(
+    var(--ui-soft-face-angle),
+    hsl(from var(--ui-danger-hover) h s calc(l * var(--ui-soft-face-tint-hi))),
+    hsl(from var(--ui-danger-hover) h s calc(l * var(--ui-soft-face-tint-lo)))
+  );
+  --btn-fg: var(--ui-on-danger);
+}

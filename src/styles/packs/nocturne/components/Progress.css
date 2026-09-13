@@ -1,0 +1,61 @@
+/* ---------------------------------------- Progress — PIEL del pack NOCTURNE */
+/* Interfaz: --progress-track | --progress-fill | --progress-ring-fill
+             --progress-label-fg | --progress-value-fg
+             --progress-radius | --progress-cap                             */
+
+/* Un canal hundido con el degradé del pack corriendo adentro. La barra es la
+   pieza donde este pack se ve entero: capa que baja, capa que brilla. */
+.ui-progress {
+  --progress-track: var(--ui-bg-subtle);
+  --progress-fill: var(--ui-nc-fill);
+  /* El aro lleva EL MISMO degradé que la barra. Antes no podía —un `stroke` no
+     acepta una imagen de CSS— y quedaba como la única pieza maciza del pack,
+     plana al lado de su propia barra. Ahora la mecánica define el degradé
+     adentro del SVG y acá alcanza con declarar los dos topes: son los mismos
+     que los de --ui-nc-fill. */
+  --progress-ring-fill: var(--ui-accent);
+  --progress-ring-from: var(--ui-nc-from);
+  --progress-ring-to: var(--ui-nc-to);
+  --progress-value-fg: var(--ui-accent-text);
+}
+
+/* Sin valor conocido la pieza se apaga de color pero no de forma: el sistema
+   está diciendo "no sé cuánto falta", y el degradé encendido afirmaría lo
+   contrario. */
+/* Apagado también en el aro: los dos topes van al mismo tono, así que el
+   degradé se vuelve un color plano sin tener que apagar nada aparte. */
+.ui-progress.is-indeterminate {
+  --progress-fill: var(--ui-nc-fill-soft);
+  --progress-ring-fill: var(--ui-accent-soft);
+  --progress-ring-from: var(--ui-accent-soft);
+  --progress-ring-to: var(--ui-accent-soft);
+}
+
+/* El aro apagado es el canal, hundido igual que el de la barra. */
+/* ⛔ NINGUN PACK DECLARA `stroke` EN EL ARO.
+   Una regla de CSS le gana al atributo del elemento, y el atributo es el que
+   apunta al degrade. Declarar `stroke` aca tapa el degrade y deja el aro plano
+   — que es exactamente lo que le pasaba a este canal. El color va por los topes. */
+.ui-progress {
+  --progress-ring-track-from: var(--ui-bg-subtle);
+  --progress-ring-track-to: var(--ui-bg-subtle);
+}
+
+/* ⛔ Y EL ARO SE DESPEGA DEL CANAL, COMO TODA CAPA DE ESTE PACK.
+   Era la pieza mas plana del estilo: un trazo macizo sobre otro trazo, sin
+   nada que dijera cual esta arriba. Un `stroke` no acepta `box-shadow`, asi
+   que el relieve va como sombra proyectada — lo unico que un trazo admite.
+
+   ⚠ LOS EJES VAN CAMBIADOS, Y NO ES UN ERROR. La mecanica dibuja el aro ROTADO
+   -90 grados para que el cero quede arriba, y un filtro se aplica en el espacio
+   del elemento: la sombra gira con el. Para que en PANTALLA caiga hacia abajo,
+   como todas las sombras del pack, hay que pedirla girada al reves — un
+   desplazamiento de pantalla (x, y) se escribe (-y, x). De ahi que el
+   desplazamiento este en la primera coordenada y en negativo. */
+.ui-progress__ring-fill {
+  filter:
+    drop-shadow(calc(var(--ui-nc-ring-lift) * -1) 0 var(--ui-nc-ring-lift)
+      rgb(from var(--ui-neutral-950) r g b / 0.55))
+    drop-shadow(0 0 calc(var(--ui-nc-ring-lift) * 2)
+      rgb(from var(--ui-accent) r g b / 0.35));
+}

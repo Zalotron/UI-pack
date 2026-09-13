@@ -1,0 +1,113 @@
+/* --------------------------------------------------- Separator — ESTRUCTURA */
+/* Mecánica. Agnóstico al estilo: la intensidad de cada tono la pone el pack.  */
+
+.ui-separator {
+  --separator-thickness: var(--ui-border-width);
+  --separator-color: var(--ui-line-soft);
+  --separator-space: var(--ui-sep-space-md);
+  --separator-inset: 0;
+  --separator-fade: var(--ui-sep-fade);
+
+  flex: none;
+  border: 0;
+  padding: 0;
+}
+
+/* -- Orientación ----------------------------------------------------------- */
+
+.ui-separator--horizontal {
+  width: auto;
+  height: var(--separator-thickness);
+  margin-block: var(--separator-space);
+  margin-inline: var(--separator-inset);
+  background: var(--separator-color);
+}
+
+.ui-separator--vertical {
+  width: var(--separator-thickness);
+  height: auto;
+  align-self: stretch;
+  min-height: 1em;
+  margin-inline: var(--separator-space);
+  margin-block: var(--separator-inset);
+  background: var(--separator-color);
+}
+
+/* -- Desvanecido en los extremos ------------------------------------------- */
+/* Se enmascara la línea en vez de degradar su color: así funciona con
+   cualquier tono, y también sobre los ::before/::after de la variante con
+   texto. El negro de la máscara es alfa pura, no un color visible.                 */
+
+.ui-separator--fade {
+  -webkit-mask-image: var(--separator-mask);
+  mask-image: var(--separator-mask);
+}
+
+.ui-separator--fade.ui-separator--horizontal {
+  --separator-mask: linear-gradient(
+    to right,
+    transparent,
+    rgb(0 0 0 / 1) var(--separator-fade),
+    rgb(0 0 0 / 1) calc(100% - var(--separator-fade)),
+    transparent
+  );
+}
+
+.ui-separator--fade.ui-separator--vertical {
+  --separator-mask: linear-gradient(
+    to bottom,
+    transparent,
+    rgb(0 0 0 / 1) var(--separator-fade),
+    rgb(0 0 0 / 1) calc(100% - var(--separator-fade)),
+    transparent
+  );
+}
+
+/* -- Aire ------------------------------------------------------------------ */
+
+.ui-separator--space-none { --separator-space: var(--ui-sep-space-none); }
+.ui-separator--space-xs   { --separator-space: var(--ui-sep-space-xs); }
+.ui-separator--space-sm   { --separator-space: var(--ui-sep-space-sm); }
+.ui-separator--space-md   { --separator-space: var(--ui-sep-space-md); }
+.ui-separator--space-lg   { --separator-space: var(--ui-sep-space-lg); }
+.ui-separator--space-xl   { --separator-space: var(--ui-sep-space-xl); }
+
+/* -- Con texto al medio ---------------------------------------------------- */
+/* El fondo pasa a las dos mitades: el elemento ya no es la línea. */
+
+.ui-separator--labeled {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-space-3);
+  background: none;
+  height: auto;
+}
+
+.ui-separator--labeled::before,
+.ui-separator--labeled::after {
+  content: "";
+  flex: 1;
+  height: var(--separator-thickness);
+  background: var(--separator-color);
+}
+
+.ui-separator--labeled.ui-separator--vertical {
+  flex-direction: column;
+  width: auto;
+}
+.ui-separator--labeled.ui-separator--vertical::before,
+.ui-separator--labeled.ui-separator--vertical::after {
+  width: var(--separator-thickness);
+  height: auto;
+  flex: 1;
+}
+
+.ui-separator__label {
+  flex: none;
+  color: var(--ui-text-subtle);
+  font-family: var(--ui-font-sans);
+  font-size: var(--ui-text-xs);
+  letter-spacing: var(--ui-tracking-wide);
+  text-transform: uppercase;
+  white-space: nowrap;
+}

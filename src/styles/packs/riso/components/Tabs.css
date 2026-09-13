@@ -1,0 +1,32 @@
+/* ------------------------------------------------- Tabs — PIEL del pack RISO */
+/* Interfaz: --tabs-fg | --tabs-fg-active | --tabs-bg-hover
+             --tabs-line | --tabs-indicator                                  */
+
+/* Rótulos impresos y una barra de tinta maciza debajo del activo. La barra
+   mide 4px: en una impresión una línea fina se pierde. */
+.ui-tabs {
+  --tabs-fg: var(--ui-text-muted);
+  --tabs-fg-active: var(--ui-accent-text);
+  --tabs-bg-hover: var(--ui-accent-subtle);
+  --tabs-line: var(--ui-line);
+  --tabs-indicator: var(--ui-accent);
+}
+
+.ui-tabs__tab {
+  font-weight: var(--ui-weight-semibold);
+  letter-spacing: var(--ui-tracking-wide);
+  text-transform: uppercase;
+}
+
+/* La barra del activo sale a dos tintas: la de arriba es el acento (la pinta
+   la mecánica con --tabs-indicator) y acá se le agrega la segunda plancha
+   corrida, que es lo que la vuelve risográfica en vez de una barra más. */
+.ui-tabs__indicator {
+  box-shadow: var(--ui-misprint);
+  /* LA TRAMA. Dos grillas corridas media celda: la diagonal a 45 grados.
+     Con longhands a proposito — ver tokens.css. */
+  background-image: var(--ui-riso-dot), var(--ui-riso-dot);
+  background-position: 0 0, var(--ui-halftone-half);
+  background-size: var(--ui-halftone-size), var(--ui-halftone-size);
+  background-blend-mode: multiply;
+}

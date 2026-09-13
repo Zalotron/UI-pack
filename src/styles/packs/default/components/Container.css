@@ -1,0 +1,50 @@
+/* ----------------------------------------- Container — PIEL del pack DEFAULT */
+/* Acá va SOLO la estética: qué aspecto tiene cada variante y cómo reacciona.
+   La mecánica (layout, escalas, medidas) está en
+     src/components/Container/Container.css
+   y no se toca al crear un pack nuevo.
+
+   Un pack solo necesita rellenar la interfaz --container-*:
+     --container-bg            fondo de la superficie
+     --container-border-color  color del borde
+     --container-shadow        sombra                                        */
+
+/* -- Variantes de superficie ---------------------------------------------- */
+
+/* El degradé vertical da volumen sin necesidad de sombra. */
+.ui-container--panel {
+  --container-bg: linear-gradient(180deg, var(--ui-panel-from), var(--ui-panel-to));
+  --container-border-color: var(--ui-line);
+}
+
+.ui-container--solid {
+  --container-bg: var(--ui-surface);
+  --container-border-color: var(--ui-line);
+}
+
+.ui-container--outline {
+  --container-bg: transparent;
+  --container-border-color: var(--ui-border-strong);
+}
+
+.ui-container--ghost {
+  --container-bg: transparent;
+  --container-border-color: transparent;
+}
+
+/* `border: false` gana sobre cualquier variante. */
+.ui-container--no-border {
+  --container-border-color: transparent;
+}
+
+/* -- Reacción al mouse ----------------------------------------------------- */
+
+.ui-container.is-interactive:hover {
+  --container-border-color: var(--ui-accent-soft);
+  --container-shadow: var(--ui-shadow-md);
+  transform: translateY(var(--ui-hover-lift));
+}
+
+.ui-container.is-interactive:active {
+  transform: translateY(0);
+}

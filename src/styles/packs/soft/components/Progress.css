@@ -1,0 +1,276 @@
+/* ----------------------------------------- Progress — PIEL del pack SOFT */
+/* Interfaz: --progress-track | --progress-fill | --progress-ring-fill
+             --progress-label-fg | --progress-value-fg
+             --progress-radius | --progress-cap                             */
+
+/* Las dos formas cuentan LA MISMA historia, que es la del pack: hay un HUECO
+   excavado en la lámina y hay una PIEZA que sobresale, corriendo por adentro.
+   Lo único que cambia es si el hueco es recto o es un anillo. */
+
+.ui-progress {
+  --progress-track: var(--ui-surface);
+  --progress-fill: var(--ui-accent);
+  --progress-ring-fill: var(--ui-accent);
+  /* El remate del arco va recto: es una medida, no un adorno. */
+  --progress-cap: butt;
+
+  /* El halo de ESTE componente, más fuerte y con más alcance que el del resto
+     del pack. El de ADENTRO en cambio sale del token del pack, sin override:
+     así la barra de progreso y el canal del slider —que son la misma pieza
+     contando la misma historia— encienden igual. Una barra de progreso es lo único que se mira mientras espera:
+     puede permitirse encender la lámina más que un botón, que está ahí todo el
+     tiempo. Los dos salen del calibre del pack, así que si se cambia el halo
+     general, este acompaña. */
+  --progress-glow: rgb(from var(--ui-accent) r g b / 0.75);
+  --progress-glow-reach: calc(var(--ui-soft-glow-reach) * 1.6);
+}
+
+/* ===========================================================================
+   LINEAL — un surco con material corriendo por adentro
+   ---------------------------------------------------------------------------
+   ⛔ DOS ESTRATEGIAS QUE NO FUNCIONARON, ANOTADAS PARA NO REPETIRLAS.
+
+     1. DARLE AIRE AL CANAL para que se viera el surco alrededor del relleno.
+        Con `box-sizing: border-box` el aire se come el ALTO: un canal de 12px
+        con 4px de padding deja 4px útiles, y el relleno —que mide `height:
+        100%`— quedó de 4px. Encima sus propias sombras interiores, calibradas
+        para piezas de 12px, lo taparon entero. La barra desapareció.
+
+     2. SOMBRA HACIA AFUERA EN EL RELLENO. El canal tiene `overflow: hidden`
+        (lo necesita para el barrido del indeterminado), así que un halo se
+        corta en seco contra el borde y lo que queda es un CONTORNO duro del
+        color de la pieza. Se veía como si la barra flotara sobre el canal.
+
+   La que sí funciona es la misma del aro: las paredes del surco se pintan
+   ENCIMA del relleno, en una capa propia. El relleno ocupa el canal entero
+   —sin achicar nada— y lo que lo mete adentro de la ranura es la sombra que
+   le cae de arriba. Nada sale hacia afuera, así que no hay nada que recortar.
+   =========================================================================== */
+
+.ui-progress--linear .ui-progress__track {
+  background: var(--progress-track);
+}
+
+/* Las paredes del surco, encima del relleno.
+
+   ⚠ EL RELIEVE ES PROPORCIONAL A LA BARRA, NO UNA MEDIDA FIJA.
+   El calibre del pack está en píxeles absolutos —4px de desplazamiento y 9px
+   de difuminado— que están pensados para una pieza de tamaño normal. En una
+   barra chica de 8px de alto, esa sombra entra por arriba y por abajo, se
+   cruza en el medio y APAGA EL RELLENO: cuanto más finita la barra, menos se
+   ve lo que hay adentro. El bug se notaba justo donde menos lugar hay.
+
+   El alto de la barra ya es una variable, así que la pared sale de
+   multiplicarlo por una fracción. `calc()` sabe multiplicar una medida por un
+   número sin problema — lo que NO sabe es dividir una medida por otra, que es
+   otra cosa y acá no hace falta.
+
+   Las dos primeras sombras son la luz de siempre —oscura arriba-izquierda,
+   clara abajo-derecha, o sea hueco— y la tercera es el halo hacia ADENTRO: el
+   canal se tiñe del color de lo que corre por él. Sin eso el canal es un hueco
+   gris al lado de una pieza de color y se leen como de sistemas distintos. */
+.ui-progress--linear .ui-progress__track::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+
+  /* ⚠ EL RELIEVE ES PROPORCIONAL A LA PIEZA, NO UNA MEDIDA FIJA.
+     El calibre del pack está en píxeles absolutos y eso es para una pieza de
+     tamaño normal. En la variante chica esa sombra entra por los dos lados, se
+     cruza en el medio y APAGA EL RELLENO: cuanto más fina la pieza, menos se
+     ve lo que tiene adentro. El bug se notaba justo donde menos lugar hay.
+     Multiplicar la medida de la pieza por una fracción lo resuelve para
+     cualquier tamaño, sin tablas ni variantes. */
+
+  /* Y va CORTO: el corte del relleno tiene que ser duro —es una medida,
+     termina donde termina— pero con la pared muy metida, ese corte queda
+     rodeado de oscuro justo en el borde y el golpe se vuelve chocante. */
+  --wall: calc(var(--progress-h) * 0.13);
+  box-shadow:
+    inset var(--wall) var(--wall) calc(var(--wall) * 1.4) var(--ui-soft-dark),
+    inset calc(var(--wall) * -1) calc(var(--wall) * -1) calc(var(--wall) * 1.4) var(--ui-soft-light);
+}
+
+/* ⚠ EL SOMBREADO VA EN LA PARTE RELLENA, Y SOLO ARRIBA-IZQUIERDA.
+   El material que corre por el surco recibe la sombra de la pared, igual que
+   cualquier pieza metida en una ranura. Dos cosas que estuvieron mal:
+
+     · Se lo puse al CANAL —la parte vacía— cuando lo que tiene que recibirla
+       es el relleno. El canal ya tiene su relieve y no necesita nada más.
+     · Y lo puse abajo-derecha. La luz de este pack viene de ARRIBA-IZQUIERDA,
+       así que ese es el rincón que queda en sombra: abajo-derecha es
+       justamente donde la luz SI llega, y ahí no va nada.
+
+   Una sola sombra, entonces, y de un solo lado. */
+.ui-progress--linear .ui-progress__fill {
+  --wall: calc(var(--progress-h) * 0.2);
+  box-shadow: inset var(--wall) var(--wall) calc(var(--wall) * 2) var(--ui-soft-dark);
+}
+
+/* ⛔ EL ARO NO PUEDE LLEVARLA. Un `stroke` de SVG no acepta `inset`, y no hay
+   con qué reemplazarlo: una sombra hacia afuera dibujaría un contorno, que es
+   lo contrario. Se queda con la pared que le tiran las dos capas de arriba. */
+
+/* ===========================================================================
+   RADIAL — un pozo redondo con un arco levantado
+   ---------------------------------------------------------------------------
+   ⚠ UN `stroke` DE SVG NO ACEPTA `box-shadow`. Es la razón por la que este
+   componente era, hasta acá, el único del pack que no hablaba su idioma.
+
+   Hay dos salidas y se usan las dos, cada una donde corresponde:
+
+     EL HUECO   no se dibuja con el aro: se dibuja con una CAPA REDONDA detrás,
+                que sí es una caja y sí acepta `inset`. Es un pozo de verdad,
+                con la misma luz que cualquier campo del pack.
+     LA PIEZA   con `filter: drop-shadow()`, que sigue la FORMA del trazo en
+                vez de su caja. Dos sombras, en las mismas dos direcciones de
+                siempre: brillo arriba-izquierda, sombra abajo-derecha. Así el
+                arco sobresale del pozo siguiendo su curva.
+   =========================================================================== */
+
+/* ⛔ EL HUECO ES UN CANAL, NO UN POZO.
+   La version ingenua es hundir un disco entero del tamano del aro. Queda mal y
+   ademas es mentira: si tallás un canal circular en una lámina, el centro NO
+   se hunde — sigue al nivel del resto del material. Lo único hundido es la
+   franja por donde después se pinta.
+
+   Se arma con dos discos, y cada uno hace una pared del canal:
+
+     ::before   el disco exterior, HUNDIDO. Su sombra interior cae contra la
+                pared de afuera del surco.
+     ::after    la isla del centro, que tapa el fondo del disco de arriba y
+                SOBRESALE respecto del surco. Su sombra exterior cae hacia
+                adentro del canal y hace la pared de adentro.
+
+   La isla no se ve levantada: está al nivel de la lámina. Lo que está por
+   debajo es el canal, y por eso la sombra de la isla se ve en el canal y no
+   sobre el centro.
+
+   ⚠ LAS DOS PAREDES VAN ARRIBA DEL ARCO, NO DEBAJO.
+   Es la corrección de un error que se veía: con las paredes pintadas debajo,
+   sus sombras caían en el canal VACIO pero no sobre el arco, así que la parte
+   completada quedaba flotando, plana, sin recibir nada de sus bordes. Y es al
+   revés de como funciona: una pieza metida en una ranura recibe la sombra de
+   las paredes ENCIMA.
+
+   Ninguna de las dos capas tapa el arco: la de afuera no tiene fondo —solo
+   sombra— y la de adentro empieza justo donde el arco termina. Lo único que
+   agregan sobre él es la sombra de cada pared en su borde. */
+
+.ui-progress--radial::before,
+.ui-progress--radial::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  border-radius: var(--ui-radius-circle);
+  pointer-events: none;
+  /* Arriba del aro (que va en 1) y debajo del porcentaje (que va en 3). */
+  z-index: 2;
+}
+
+/* La pared de AFUERA.
+
+   ⚠ MIDE --progress-ring-outer Y NO --progress-d.
+   El trazo del aro se dibuja CENTRADO sobre su círculo, así que medio grosor
+   queda por fuera: el aro es MAS GRANDE que el diámetro nominal. Con el
+   diámetro a secas el arco se salía del pozo por todos lados — se veía. La
+   mecánica ya publica las dos medidas de verdad, ver Progress.css.
+
+   Va corrido hacia arriba la diferencia, porque crece hacia los dos lados. */
+.ui-progress--radial::before {
+  width: var(--progress-ring-outer);
+  height: var(--progress-ring-outer);
+  top: calc((var(--progress-d) - var(--progress-ring-outer)) / 2);
+  translate: -50% 0;
+
+  /* Mismo problema y misma solución que en la barra, pero acá 1em es el ANCHO
+     DEL CANAL —no el diámetro— porque es esa franja la que la sombra puede
+     llegar a tapar. El ancho del canal es el diámetro por el grosor del trazo,
+     que es un porcentaje: sale de una multiplicación, que sí se puede. */
+  /* Mismo criterio que en la barra, pero la medida de referencia es el ANCHO
+     DEL CANAL —no el diámetro— porque es esa franja la que la sombra puede
+     llegar a tapar. Sale del diámetro por el grosor del trazo, que es un
+     porcentaje: una multiplicación, que calc sí sabe hacer. */
+  --canal: calc(var(--progress-d) * var(--ui-progress-ring-width) / 100);
+  --wall: calc(var(--canal) * 0.16);
+  box-shadow:
+    inset var(--wall) var(--wall) calc(var(--wall) * 1.4) var(--ui-soft-dark),
+    inset calc(var(--wall) * -1) calc(var(--wall) * -1) calc(var(--wall) * 1.4) var(--ui-soft-light);
+}
+
+/* La isla del centro, y la pared de ADENTRO.
+
+   Mide exactamente el hueco que deja el aro (--progress-ring-inner), así que
+   su borde toca el borde interno del arco y no queda ni un pelo de luz entre
+   los dos. Acompaña sola a las tres variantes de tamaño y a cualquier cambio
+   de grosor del trazo. */
+.ui-progress--radial::after {
+  width: var(--progress-ring-inner);
+  height: var(--progress-ring-inner);
+  top: calc((var(--progress-d) - var(--progress-ring-inner)) / 2);
+  translate: -50% 0;
+  background: var(--ui-surface);
+
+  /* Y la isla proyecta con el mismo calibre proporcional: si su sombra fuera
+     absoluta, en un aro chico cruzaría el canal entero y taparía el arco. */
+  --canal: calc(var(--progress-d) * var(--ui-progress-ring-width) / 100);
+  --wall: calc(var(--canal) * 0.16);
+  box-shadow:
+    calc(var(--wall) * -1) calc(var(--wall) * -1) calc(var(--wall) * 1.4) var(--ui-soft-light),
+    var(--wall) var(--wall) calc(var(--wall) * 1.4) var(--ui-soft-dark);
+}
+
+/* ⚠ EL PORCENTAJE TIENE QUE IR ARRIBA DE LA ISLA.
+   La isla es opaca y ocupa exactamente el hueco del aro, o sea el mismo lugar
+   donde va el numero. La mecanica lo pone en z-index 2, igual que las paredes,
+   y a igualdad de capa gana el que se pinta despues — que es `::after`, o sea
+   la isla. El numero desaparecia. Con 3 queda arriba de las dos paredes.
+
+   El aro no necesita z-index: al no estar posicionado, se pinta antes que
+   cualquier capa positiva, que es justo el orden que se busca. */
+.ui-progress--radial .ui-progress__value--inside {
+  z-index: 3;
+}
+
+/* El carril del aro no se pinta: el hueco ya lo hace el pozo de atrás, y dos
+   huecos superpuestos se leen como un borrón. */
+/* ⛔ NINGUN PACK DECLARA `stroke` EN EL ARO.
+   Una regla de CSS le gana al atributo del elemento, y el atributo es el que
+   apunta al degrade. Declarar `stroke` aca tapa el degrade y deja el aro plano
+   — que es exactamente lo que le pasaba a este canal. El color va por los topes. */
+.ui-progress {
+  --progress-ring-track-from: transparent;
+  --progress-ring-track-to: transparent;
+}
+
+/* ⛔ EL ARCO NO PROYECTA NADA HACIA AFUERA, SALVO SU HALO.
+
+   La versión anterior le ponía el relieve completo con dos `drop-shadow`
+   desplazadas, una clara y una oscura. Estaba de más y encima se veía mal: son
+   sombras que se dibujan POR FUERA de la forma, así que quedaba un contorno de
+   color alrededor del arco, como si estuviera despegado del canal.
+
+   Y ya era redundante: las dos paredes se pintan encima del arco y son ellas
+   las que lo sombrean, que es de donde tiene que venir la luz. Un `stroke` no
+   acepta `inset`, pero no hace falta — la sombra se la pone el canal.
+
+   Lo único que queda es el halo: sin desplazamiento, del color de la pieza y
+   con mucho radio. No es un contorno, es la lámina encendida alrededor. */
+.ui-progress__ring-fill {
+  filter: drop-shadow(0 0 var(--progress-glow-reach) var(--progress-glow));
+}
+
+/* ===========================================================================
+   SIN VALOR CONOCIDO
+   =========================================================================== */
+
+/* El sistema está diciendo "no sé cuánto falta": la pieza se apaga de color,
+   pero NO de relieve. Sigue siendo material que sobresale, solo que sin teñir
+   — que es como este pack dice "esto existe pero todavía no significa nada". */
+.ui-progress.is-indeterminate {
+  --progress-fill: var(--ui-accent-soft);
+  --progress-ring-fill: var(--ui-accent-soft);
+}

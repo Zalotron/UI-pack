@@ -1,0 +1,40 @@
+/* ---------------------------------------- Progress — PIEL del pack CYBER */
+/* Interfaz: --progress-track | --progress-fill | --progress-ring-fill
+             --progress-label-fg | --progress-value-fg
+             --progress-radius | --progress-cap                             */
+
+/* Una barra de carga de consola: canal oscuro, relleno de neon encendido y
+   puntas RECTAS. Nada de redondeos — en este pack el radio es 0 y una barra
+   con las puntas redondeadas se veria de otro sistema. */
+.ui-progress {
+  /* ⛔ EL MISMO CANAL Y EL MISMO RELLENO QUE EL SLIDER.
+     Son la misma pieza contando lo mismo: un tramo medido sobre un recorrido.
+     Se declaran con los MISMOS tokens y no con dos copias parecidas — dos
+     copias se despegan en cuanto alguien toca una sola. */
+  --progress-track: var(--ui-bg-subtle);
+  --progress-fill: linear-gradient(90deg, var(--ui-fill-from), var(--ui-fill-to));
+  --progress-ring-fill: var(--ui-accent);
+  --progress-ring-from: var(--ui-fill-from);
+  --progress-ring-to: var(--ui-fill-to);
+  --progress-radius: 0;
+  --progress-cap: butt;
+  --progress-value-fg: var(--ui-accent-text);
+}
+
+.ui-progress--linear .ui-progress__track {
+  border: var(--ui-border-width) solid var(--ui-border);
+}
+
+/* El neon no es un color: es un color MAS su resplandor. Sin esto el pack
+   pierde lo unico que lo define. */
+.ui-progress--linear .ui-progress__fill {
+  box-shadow: 0 0 var(--ui-glow-reach) var(--ui-accent-soft);
+}
+
+.ui-progress__ring-fill {
+  filter: drop-shadow(0 0 var(--ui-glow-reach) var(--ui-accent-soft));
+}
+
+.ui-progress__value {
+  letter-spacing: var(--ui-tracking-wide);
+}

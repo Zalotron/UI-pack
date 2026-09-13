@@ -1,0 +1,31 @@
+/* ---------------------------------------- Checkbox — PIEL del pack BLUEPRINT */
+/* Interfaz: --check-bg | --check-bg-on | --check-border | --check-mark
+             --check-ring                                                     */
+
+/* Una casilla dibujada. NO se rellena al marcarse: se traza el tilde adentro,
+   que es lo que se hace a mano sobre un plano. */
+.ui-checkbox {
+  --check-bg: transparent;
+  --check-bg-on: transparent;
+  --check-border: var(--ui-border);
+  --check-mark: var(--ui-accent);
+}
+
+.ui-checkbox:hover:not(.is-disabled) {
+  --check-border: var(--ui-accent);
+}
+
+/* :not(.is-disabled) para empatarle la especificidad al hover de arriba. */
+.ui-checkbox.is-checked:not(.is-disabled),
+.ui-checkbox.is-indeterminate:not(.is-disabled) {
+  --check-border: var(--ui-accent);
+}
+
+/* El tilde se DIBUJA. `clip-path` barre en el sistema de coordenadas propio
+   del elemento, que está rotado 45°, así que el barrido sale en la dirección
+   del propio trazo: se ve como si lo estuvieran marcando a mano.
+   La mecánica ya anima `scale`; el barrido es lo que suma este pack. */
+.ui-checkbox.is-checked .ui-checkbox__mark,
+.ui-checkbox.is-indeterminate .ui-checkbox__mark {
+  animation: ui-bp-stroke var(--ui-duration-base) var(--ui-ease) 1;
+}

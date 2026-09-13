@@ -1,0 +1,884 @@
+/* ===========================================================================
+   PACK "BLUEPRINT" — tokens
+   ---------------------------------------------------------------------------
+   Dibujo técnico. Acá no hay superficies: hay LINEAS sobre papel. Un botón no
+   es un objeto apoyado, es un rectángulo dibujado. Un contenedor no es una
+   caja con fondo, es una hoja de papel cuadriculado con su marco.
+
+   RIGE LA MISMA REGLA DURA: un solo color declarado (--ui-brand). Todo lo demás
+   sale de él con color relativo.
+
+   Las piezas:
+
+     1. CERO RELLENOS          --container-bg y compañía van en `transparent`.
+                               Lo que delimita algo es su trazo, nunca un bloque
+                               de color. Es lo que lo separa de los otros packs.
+     2. JERARQUIA DE TRAZO     Como en un plano de verdad: línea de construcción
+                               (finita, tenue), línea de objeto (llena) y línea
+                               de cota. El peso del trazo ES la jerarquía.
+     3. PAPEL CUADRICULADO     La grilla va DENTRO de los contenedores, no en la
+                               página: un contenedor es una hoja. El fondo de la
+                               página lo ambienta el catálogo, no la librería.
+     4. MARCAS DE REGISTRO     Cruces en las cuatro esquinas del panel, como las
+                               marcas de encuadre de una lámina.
+     5. COTAS                  El separador no es una línea: es una línea de cota
+                               con sus marcas en las puntas. ⊢————⊣
+     6. SE DIBUJA, NO APARECE  Lo que entra se traza de izquierda a derecha, como
+                               si lo estuviera pasando un plotter.
+
+   Los dos temas son los dos modos auténticos del oficio: en claro, tinta azul
+   sobre papel blanco (delineado moderno); en oscuro, trazo claro sobre papel
+   azul profundo (la cianotipia original).
+
+   Requiere color relativo (Chrome 119+, Safari 16.4+, Firefox 128+).
+   =========================================================================== */
+
+:root {
+  color-scheme: light dark;
+
+  /* ==================================================================== */
+  /*  =============   EL UNICO COLOR DECLARADO   ======================== */
+  /* ==================================================================== */
+  /* Azul de tinta, profundo y poco luminoso. No es el azul de interfaz del
+     pack `default`: este tiene que leerse como TRAZO sobre papel. */
+  --ui-brand: #0a4ea8;      /* pack settings -> BRAND_COLOR */
+
+  /* Un plano no tiene esquinas redondeadas. */
+  --ui-roundness: 0;
+
+  --ui-on-brand-light: hsl(from var(--ui-brand) h calc(s * 0.08) 99%);
+  --ui-on-brand-dark:  hsl(from var(--ui-brand) h calc(s * 0.50) 10%);
+  --ui-on-brand: var(--ui-on-brand-light);
+
+  /* ------------------------------------------------------ Tipografía ---- */
+  /* El rótulo de un plano está ROTULADO A MANO, no impreso. Pero a mano con
+     tiralíneas: trazo parejo, sin ligaduras y perfectamente legible — nada que
+     ver con una cursiva.
+
+     ⚠ `Handlee` NO LA CARGA LA LIBRERIA. Acá solo se la NOMBRA.
+     La regla del proyecto es que `src/` se pueda copiar a cualquier lado sin
+     arrastrar nada, así que un `@import` a un dominio ajeno no puede vivir en
+     un pack. La pide el visor, en el index.html del catálogo.
+
+     Consecuencia, y hay que tenerla clara: quien importe la librería y no
+     cargue la fuente va a ver el fallback. Por eso detrás hay una cadena de
+     HUMANISTAS DEL SISTEMA y no un `sans-serif` pelado — son las sans cuyas
+     formas derivan del trazo de una pluma y no del compás, y se les nota en
+     los remates, que se abren un poco, y en la 'a' o la 'g' de dos pisos.
+     Candara (Windows) y Optima (macOS) tienen astiles con éntasis; Gill Sans y
+     Trebuchet son más discretas. Sin la manuscrita el pack pierde la letra a
+     mano, pero no deja de ser el pack.
+
+     Helvetica salió del stack: es la geométrica más impersonal que hay, lo
+     contrario de lo que se busca acá.
+
+     `Handlee` trae UN SOLO peso. Los `--ui-weight-*` de más arriba los
+     resuelve el navegador engrosando por su cuenta, que en una manuscrita pasa
+     bastante desapercibido — y hace falta, porque el rótulo del botón primario
+     necesita peso para leerse sobre su trama.
+
+     ⚠ LA MONOESPACIADA TAMBIEN ES LA MANUSCRITA, y es un cambio de criterio.
+     El razonamiento anterior era que las cotas de un plano van estarcidas. Es
+     cierto de un plano impreso, no de uno ROTULADO A MANO — que es lo que este
+     pack es. Con la letra a mano en los rotulos y una mono de maquina en los
+     numeros, el aro de progreso y el valor del slider quedaban de otro pack.
+
+     Se pierde la monoespaciada de verdad: `Handlee` no lo es, asi que un numero
+     que cambia rapido va a bailar un poco de ancho. Es el precio de que todo
+     este escrito por la misma mano, y `font-variant-numeric: tabular-nums` —que
+     la mecanica ya pide— lo acota donde la fuente de reserva lo soporte. */
+  --ui-font-sans: "Handlee", Candara, Optima, "Gill Sans MT", "Gill Sans",
+                  "Trebuchet MS", "Lucida Sans Unicode", system-ui, sans-serif;
+  --ui-font-mono: "Handlee", ui-monospace, "Cascadia Mono", Consolas, monospace;
+
+  --ui-text-xs:   0.6875rem;
+  --ui-text-sm:   0.75rem;
+  --ui-text-md:   0.8125rem;
+  --ui-text-lg:   0.9375rem;
+  --ui-text-xl:   1.125rem;
+  --ui-text-2xl:  1.375rem;
+  --ui-text-3xl:  1.75rem;
+
+  --ui-weight-regular:  400;
+  --ui-weight-medium:   500;
+  --ui-weight-semibold: 600;
+  --ui-weight-bold:     700;
+
+  --ui-leading-tight:   1.25;
+  --ui-leading-normal:  1.55;
+  --ui-leading-relaxed: 1.75;
+
+  /* Letra espaciada: es como se rotula un plano. */
+  --ui-tracking-tight: 0.02em;
+  --ui-tracking-wide:  0.14em;
+
+  /* -------------------------------------------- Espaciado (escala 4px) -- */
+  --ui-space-0:  0;
+  --ui-space-1:  0.25rem;
+  --ui-space-2:  0.5rem;
+  --ui-space-3:  0.75rem;
+  --ui-space-4:  1rem;
+  --ui-space-5:  1.25rem;
+  --ui-space-6:  1.5rem;
+  --ui-space-8:  2rem;
+  --ui-space-10: 2.5rem;
+  --ui-space-12: 3rem;
+  --ui-space-16: 4rem;
+
+  /* --------------------------------------- Espaciado fluido ------------- */
+  /* Los paddings son múltiplos de la celda de la grilla: el contenido se
+     apoya en el cuadriculado en vez de flotar sobre él. */
+  --ui-pad-block-xs:  12px;
+  --ui-pad-inline-xs: 12px;
+  --ui-pad-block-sm:  clamp(16px, 2vw, 24px);
+  --ui-pad-inline-sm: clamp(16px, 2vw, 24px);
+  --ui-pad-block-md:  clamp(24px, 3vw, 36px);
+  --ui-pad-inline-md: clamp(24px, 3vw, 36px);
+  --ui-pad-block-lg:  clamp(36px, 4vw, 48px);
+  --ui-pad-inline-lg: clamp(36px, 4vw, 48px);
+  --ui-pad-block-xl:  clamp(48px, 5.5vw, 72px);
+  --ui-pad-inline-xl: clamp(48px, 5.5vw, 72px);
+
+  --ui-gap-none: 0;
+  --ui-gap-xs:   var(--ui-space-2);
+  --ui-gap-sm:   12px;
+  --ui-gap-md:   var(--ui-space-6);
+  --ui-gap-lg:   var(--ui-space-8);
+  --ui-gap-xl:   var(--ui-space-12);
+
+  --ui-col-min: 240px;
+
+  /* ------------------------------------------------ Separadores ---------- */
+  --ui-sep-space-none: 0;
+  --ui-sep-space-xs:   var(--ui-space-2);
+  --ui-sep-space-sm:   var(--ui-space-4);
+  --ui-sep-space-md:   clamp(18px, 2.5vh, 26px);
+  --ui-sep-space-lg:   clamp(26px, 4vh, 40px);
+  --ui-sep-space-xl:   clamp(34px, 5.5vh, 56px);
+
+  /* Una cota NO se desvanece en las puntas: ahí están justamente sus marcas. */
+  --ui-sep-fade: 0%;
+
+  /* ------------------------------------------- Controles ----------------- */
+  --ui-control-h-sm:    28px;
+  --ui-control-h-md:    36px;
+  --ui-control-h-lg:    44px;
+  --ui-control-pad-sm:  var(--ui-space-3);
+  --ui-control-pad-md:  var(--ui-space-4);
+  --ui-control-pad-lg:  var(--ui-space-5);
+  --ui-control-font-sm: var(--ui-text-xs);
+  --ui-control-font-md: var(--ui-text-sm);
+  --ui-control-font-lg: var(--ui-text-md);
+  --ui-control-gap-sm:  var(--ui-space-2);
+  --ui-control-gap-md:  var(--ui-space-2);
+  --ui-control-gap-lg:  var(--ui-space-3);
+  --ui-control-radius-sm: 0;
+  --ui-control-radius-md: 0;
+  --ui-control-radius-lg: 0;
+  /* Piso del spinner. NO es su ancho: el ancho lo reserva el propio
+     control segun sus limites. Esto es para que uno de un solo digito
+     siga siendo agarrable. */
+  --ui-spinner-min-w: 3ch;
+  /* Respiro sobre los caracteres reservados: la coma, el signo y el
+     cursor no miden lo que mide un cero, que es lo que mide `ch`. */
+   /* Handlee no es monoespaciada: `ch` le queda corto. */
+  --ui-spinner-slack: 1.25;
+
+  --ui-slider-track-ratio: 0.42;   /* la pista es una LINEA, no un canal */
+  /* La marca SOBRESALE del canal, arriba y abajo: en un plano una cota se
+     senala con una raya que cruza la linea, no con una pastilla que entra
+     justo. Por eso el tirador es mas alto que el control y mas fino que un
+     trazo grueso. */
+  --ui-slider-thumb-ratio: 1;
+  --ui-slider-thumb-w: 2px;        /* el cursor es una marca de cota */
+  --ui-slider-value-w: 5ch;
+
+  --ui-select-menu-max-h: 260px;
+  --ui-select-arrow: 8px;
+
+  --ui-toggle-track-ratio: 0.5;
+  --ui-toggle-aspect: 2.1;
+  --ui-toggle-knob-inset: 3px;
+  --ui-check-ratio: 0.46;
+
+  --ui-scroll-size: 10px;
+  --ui-scroll-inset: 3px;
+  --ui-scroll-size-regular: 14px;
+  --ui-scroll-inset-regular: 4px;
+
+  /* Window. ⛔ EL MARCO DE UNA VENTANA ES CUADRADO, SIEMPRE. */
+  --ui-window-radius: 0;
+  /* El oscurecido detras de una ventana modal. Sale de la marca como
+     todo lo demas: un negro puro no pertenece a ningun pack. */
+  --ui-window-scrim: hsl(from var(--ui-brand) h calc(s * 0.30) 6% / 0.62);
+  --ui-window-bar-h: 34px;
+  --ui-window-control-w: 44px;
+  --ui-window-glyph: 10px;
+
+  /* Progress. Sigue siendo de las mas finas del sistema —es una cota, no una
+     barra— pero no tanto como para no leerse.
+
+     ⚠ ACA HAY QUE CONTAR EL BORDE. El canal de este pack lleva contorno
+     dibujado, y con `box-sizing: border-box` ese contorno se come alto por
+     ARRIBA Y POR ABAJO. Con los 3px que tenia antes quedaba 1px de relleno: la
+     barra existia y no se veia. El alto util es siempre
+     `--ui-progress-h-* menos 2 * --ui-border-width`. */
+  --ui-progress-h-sm: 7px;
+  --ui-progress-h-md: 11px;
+  --ui-progress-h-lg: 16px;
+  --ui-progress-ring-sm: 30px;
+  --ui-progress-ring-md: 42px;
+  --ui-progress-ring-lg: 60px;
+  /* ⚠ ESTO NO SON PIXELES: es el PORCENTAJE DEL DIAMETRO.
+     El aro se dibuja en un SVG con `viewBox="0 0 100 100"`, asi que una unidad
+     del trazo vale un centesimo del diametro. Escrito como `px` el numero
+     mentia: un `16px` sobre un aro de 64 se dibujaba de 10. Y ademas asi es
+     como tiene que ser — el trazo acompana al tamano del aro en las tres
+     variantes en vez de quedarse fijo. */
+  --ui-progress-ring-width: 13;
+
+  /* Iconos. Son de TRAZO, asi que lo que los hace de este pack es el grosor:
+     el mismo dibujo con otro calibre ya es otro icono. */
+  --ui-icon-sm: 16px;
+  --ui-icon-md: 20px;
+  --ui-icon-lg: 24px;
+  --ui-icon-stroke: 1.25px;
+
+  --ui-tabs-indicator-h: 2px;
+
+  --ui-swatch-w: 2.6em;
+  --ui-picker-w: 232px;
+  --ui-picker-area-h: 136px;
+  --ui-picker-cursor: 12px;
+
+  /* Un trazo no se hunde ni se levanta: el papel no tiene relieve. */
+  --ui-press-shift: 0px;
+  --ui-hover-lift: 0px;
+  --ui-disabled-opacity: 0.4;
+
+  /* ---------------------------------------------------------- Radios ---- */
+  /* La escala existe y respeta ROUNDNESS, pero el pack arranca en 0. */
+  --ui-radius-xs:   calc(2px * var(--ui-roundness));
+  --ui-radius-sm:   calc(3px * var(--ui-roundness));
+  --ui-radius-md:   calc(4px * var(--ui-roundness));
+  --ui-radius-lg:   calc(6px * var(--ui-roundness));
+  --ui-radius-xl:   calc(8px * var(--ui-roundness));
+  --ui-radius-full: calc(999px * min(var(--ui-roundness), 1));
+  --ui-radius-circle: 50%;
+
+  /* -------------------------------------------------------- Bordes ------ */
+  --ui-border-width: 1px;
+
+  /* ------------------------------------------------------ Movimiento ---- */
+  /* Un plotter no acelera ni frena: avanza parejo. Por eso las curvas de este
+     pack son casi lineales, al revés que en los demás. */
+  --ui-duration-fast: 120ms;
+  --ui-duration-base: 220ms;
+  --ui-duration-slow: 340ms;
+  --ui-duration-loader: 900ms;
+  --ui-loader-width: 1px;
+  --ui-ease:      cubic-bezier(0.25, 0.1, 0.25, 1);
+  --ui-ease-out:  cubic-bezier(0.2, 0.6, 0.3, 1);
+  --ui-ease-in:   cubic-bezier(0.7, 0.4, 0.8, 0.5);
+
+  /* ----------------------------------------------------------- Capas ---- */
+  --ui-z-base:     0;
+  --ui-z-dropdown: 1000;
+  --ui-z-sticky:   1100;
+  --ui-z-overlay:  1200;
+  --ui-z-modal:    1300;
+  --ui-z-toast:    1400;
+  --ui-z-tooltip:  1500;
+
+  /* ==================================================================== */
+  /*  NEUTROS — el papel y la tinta.                                     */
+  /* ==================================================================== */
+  --ui-neutral-0:    hsl(from var(--ui-brand) h calc(s * 0.04) 100%);
+  --ui-neutral-50:   hsl(from var(--ui-brand) h calc(s * 0.06) 98%);
+  --ui-neutral-100:  hsl(from var(--ui-brand) h calc(s * 0.08) 96%);
+  --ui-neutral-200:  hsl(from var(--ui-brand) h calc(s * 0.10) 90%);
+  --ui-neutral-300:  hsl(from var(--ui-brand) h calc(s * 0.12) 80%);
+  --ui-neutral-400:  hsl(from var(--ui-brand) h calc(s * 0.14) 62%);
+  --ui-neutral-500:  hsl(from var(--ui-brand) h calc(s * 0.18) 46%);
+  --ui-neutral-600:  hsl(from var(--ui-brand) h calc(s * 0.24) 34%);
+  --ui-neutral-700:  hsl(from var(--ui-brand) h calc(s * 0.32) 24%);
+  --ui-neutral-800:  hsl(from var(--ui-brand) h calc(s * 0.42) 16%);
+  --ui-neutral-900:  hsl(from var(--ui-brand) h calc(s * 0.55) 10%);
+  --ui-neutral-950:  hsl(from var(--ui-brand) h calc(s * 0.70) 5%);
+
+  /* ==================================================================== */
+  /*  FAMILIA DE MARCA                                                   */
+  /* ==================================================================== */
+  --ui-brand-base:   var(--ui-brand);
+  --ui-brand-hover:  hsl(from var(--ui-brand) h s calc(l * 0.82));
+  --ui-brand-active: hsl(from var(--ui-brand) h s calc(l * 0.68));
+  --ui-brand-soft:   hsl(from var(--ui-brand) h calc(s * 0.60) 70%);
+  --ui-brand-subtle: hsl(from var(--ui-brand) h calc(s * 0.35) 92%);
+
+  /* ==================================================================== */
+  /*  ESTADOS — tono fijo, saturación aportada por el brand.             */
+  /* ==================================================================== */
+  --ui-red-100:   hsl(from var(--ui-brand) 4   calc(s * 0.30) 93%);
+  --ui-red-500:   hsl(from var(--ui-brand) 4   calc(s * 0.85) 54%);
+  --ui-red-600:   hsl(from var(--ui-brand) 2   calc(s * 0.85) 42%);
+  --ui-red-700:   hsl(from var(--ui-brand) 0   calc(s * 0.85) 34%);
+
+  --ui-green-100: hsl(from var(--ui-brand) 150 calc(s * 0.28) 92%);
+  --ui-green-500: hsl(from var(--ui-brand) 152 calc(s * 0.65) 40%);
+  --ui-green-600: hsl(from var(--ui-brand) 152 calc(s * 0.65) 32%);
+
+  --ui-amber-100: hsl(from var(--ui-brand) 40  calc(s * 0.35) 92%);
+  --ui-amber-500: hsl(from var(--ui-brand) 36  calc(s * 0.85) 48%);
+  --ui-amber-600: hsl(from var(--ui-brand) 32  calc(s * 0.85) 40%);
+
+  /* ==================================================================== */
+  /*  ===============   CALIBRE DEL TRAZO   ============================ */
+  /*  Las perillas del estilo. Todo el pack sale de estos números.        */
+  /* ==================================================================== */
+
+  /* Los tres pesos de línea de un plano. */
+  --ui-bp-hair: 1px;                              /* construcción */
+  --ui-bp-line: var(--ui-border-width);           /* objeto */
+  --ui-bp-bold: 2px;                              /* objeto destacado */
+
+  /* Cuanto se inclina el remate de un trazo, en fracciones de su propio alto.
+     Una mano derecha que pinta con un lapiz deja la punta de arriba MAS A LA
+     DERECHA que la de abajo, porque la muneca gira. Es el detalle que separa
+     un relleno dibujado de uno generado. En 0 el corte vuelve a ser recto. */
+  --ui-bp-hand-slant: 0.6;
+
+  /* LA INCLINACION DE LA MANO, EN GRADOS. No es un numero aparte: sale de la
+     MISMA fraccion con la que se corta el remate de un relleno, asi que la
+     marca del slider y el corte de la barra que tiene al lado no se pueden
+     despegar nunca. Si --ui-bp-hand-slant cambia, las dos giran juntas. */
+  --ui-bp-hand-angle: atan(var(--ui-bp-hand-slant));
+
+  /* Cuanto pinta un relleno. No llega a 1 a proposito: un lapiz apoyado sobre
+     papel deja pasar algo del fondo aunque uno insista, y un relleno opaco del
+     todo delata que lo puso una maquina. Lo comparten TODOS los rellenos
+     pintados del pack —barras, slider, botones llenos— para que sean el mismo
+     material. */
+  --ui-bp-fill-alpha: 0.78;
+
+  /* CUANTO ASOMA el contorno fino que va por detras del hueco. Es el filo que
+     se ve, no el ancho del trazo que lo dibuja — que es otra cosa, ver abajo. */
+  --ui-bp-ink-ring: calc(var(--ui-bp-ink-stroke) * 0.45);
+
+  /* ⛔ EL TRAZO DEL ANILLO ES MAS ANCHO QUE EL DEL HUECO, NO MAS FINO.
+     Un `text-stroke` se centra en el contorno de la letra: de un trazo de W
+     asoma W/2 para afuera. El hueco se pinta ENCIMA del anillo, asi que un
+     anillo mas fino que el hueco queda tapado entero y no se ve nada — que fue
+     justo lo que paso. Para que asome un filo de --ui-bp-ink-ring por lado, el
+     trazo tiene que medir el del hueco MAS dos veces ese filo. */
+  --ui-bp-ink-stroke-ring: calc(
+    var(--ui-bp-ink-stroke) + var(--ui-bp-ink-ring) * 2
+  );
+
+  /* El icono usa EL MISMO filo que la letra. Una sombra proyectada se corre
+     entera, o sea que lo que se ve ES el corrimiento — no hace falta
+     ensancharla como al `text-stroke`, que se centra. */
+  --ui-bp-ink-ring-icon: var(--ui-bp-ink-ring);
+
+  /* Cuanto se engrosa una letra cuando el pack le pide peso y la tipografia no
+     lo tiene. `Handlee` trae UN SOLO peso: pedirle `bold` deja que el navegador
+     lo invente, y un engrosado sintetico sobre una manuscrita embarra los
+     trazos finos en vez de darles cuerpo.
+
+     Un contorno sobre la propia letra hace el trabajo de verdad: reparte el
+     grosor parejo por todo el perfil, que es lo que hace una pluma mas gruesa.
+     En el boton primario ademas suma otra cosa — como ahi el rotulo es un HUECO
+     en el rayado, engrosar la letra AGRANDA EL HUECO, y eso es justo lo que
+     hace que se lea sobre una trama de 1px. */
+  /* ==================================================================== */
+  /*  EL COLOR DE LO QUE HAY DETRAS                                       */
+  /* ==================================================================== */
+  /* Este pack tiene piezas cuyo contenido se RECORTA del relleno: el rotulo y
+     el icono de un boton lleno son el hueco que el lapiz no rayo. Para que un
+     hueco se vea como hueco tiene que estar pintado del color de lo que hay
+     DETRAS de la pieza.
+
+     ⚠ Y ESO NO SE PUEDE LEER DESDE CSS. No hay forma de preguntar "de que color
+     pinto mi ancestro": no existe ni un `parent-background` ni un recorte de
+     contenido vivo (ver la nota en components/Button.css). Lo que si existe es
+     que una variable HEREDA — asi que cada superficie del pack DECLARA lo que
+     acaba de pintar, y quien necesita recortar lee la mas cercana.
+
+     ⛔ POR ESO NO PUEDE SER `--ui-bg` A SECAS, que fue el primer intento. Eso
+     da por sentado que toda pieza vive sobre el fondo de la pagina, y es falso
+     apenas se mete un boton adentro de una ventana — y mucho mas falso para
+     quien importe la libreria y la use sobre su propia superficie.
+
+     EL CONTRATO, PARA QUIEN IMPORTE ESTO: si ponés piezas de `blueprint` sobre
+     una superficie propia, declará `--ui-bp-behind` con ese color en tu
+     contenedor. Es una sola variable y hereda hacia adentro. */
+  --ui-bp-behind: var(--ui-bg);
+
+  /* ⛔ LETRA E ICONO NO SE MIDEN EN LA MISMA UNIDAD — SALVO QUE SE LAS OBLIGUE.
+
+     La letra se engorda con `-webkit-text-stroke`, que va en PIXELES DE
+     PANTALLA. El icono se engorda subiendo su `stroke-width`, que adentro de un
+     `viewBox` va en UNIDADES DE LA GRILLA: el `px` que uno escriba ahi se
+     ignora, y cuanto vale una unidad depende de a que tamano se dibuje. Con la
+     grilla de 24 y el icono a 1.05em sobre un cuerpo de 12px, una unidad son
+     0.52px — sumarle "1px" al calibre suma medio, y el ajuste no se nota.
+
+     La conversion NO se puede hacer con calc(): haria falta dividir el tamano
+     dibujado por 24, y calc() no divide una longitud por otra.
+
+     Pero hay una manera de que el navegador la haga solo: `vector-effect:
+     non-scaling-stroke` hace que el `stroke-width` se mida en pixeles de
+     pantalla, igual que el de la letra. Con eso puesto —ver Button.css— las dos
+     medidas VUELVEN A SER LA MISMA COSA y salen del mismo peso. */
+
+  /* Cuanto engorda el contenido por lado. En pixeles de pantalla, para los dos:
+     el icono llega a esta unidad via `non-scaling-stroke`. */
+  --ui-bp-ink-weight: 0.85px;
+
+  /* Un `text-stroke` se centra en el contorno del glifo: la mitad crece para
+     adentro y la mitad para afuera. Para engordar --ui-bp-ink-weight por lado,
+     el trazo tiene que medir el doble. */
+  --ui-bp-ink-stroke: calc(var(--ui-bp-ink-weight) * 2);
+
+  /* ⛔ EL ICONO ENGORDA MENOS QUE LA LETRA, Y NO ES UNA INCONSISTENCIA.
+     Una letra tiene masa propia: el trazo la rodea y la engorda. Un icono es
+     PURO trazo — su linea ES toda la marca — asi que el mismo engorde le pesa
+     mucho mas, y a 12.6px las lineas se le juntan y el dibujo se vuelve un
+     borron. Recibe la mitad, que lo deja por debajo del peso de la letra y a la
+     vez lo bastante firme para leerse como hueco. */
+  --ui-bp-ink-weight-icon: calc(var(--ui-bp-ink-weight) * 0.5);
+
+  /* Su linea ES la marca, asi que el engorde se le suma al calibre propio.
+     ⚠ Solo vale con `non-scaling-stroke` puesto. Sin eso, esto son unidades de
+     grilla y la suma no significa nada. */
+  --ui-bp-ink-stroke-icon: calc(
+    var(--ui-icon-stroke) + var(--ui-bp-ink-weight-icon) * 2
+  );
+
+  /* ⛔ AIRE ALREDEDOR DEL TEXTO, O EL TRAZO SE CORTA CONTRA SU PROPIA CAJA.
+     Un `text-stroke` se dibuja CENTRADO sobre el contorno del glifo, asi que la
+     mitad cae AFUERA de la caja del elemento. Y una mascara recorta contra esa
+     caja: fuera de ella no hay mascara, o sea que no se pinta nada.
+
+     Resultado: el contorno salia con las puntas cortadas en recto, y engrosarlo
+     no se notaba porque lo que se agregaba caia justo en la parte recortada. Es
+     el mismo problema que ya tenia el icono, y se arregla igual — ahi con
+     `overflow: visible`, ver Icon.css; aca con aire, porque hay que agrandar la
+     caja que la mascara usa de molde.
+
+     Alcanza con la mitad del trazo mas ancho, pero se toma el entero: sobra
+     poco y cortar de nuevo se nota mucho. */
+  --ui-bp-ink-slack: var(--ui-bp-ink-stroke-ring);
+
+  /* ⛔ LA VETA DE LA BARRA DE SCROLL SE DIBUJA, NO SE ENMASCARA.
+     El pulgar es `::-webkit-scrollbar-thumb`, un pseudo-elemento nativo que
+     acepta un puñado de propiedades y NO acepta `mask-image`: la declaracion se
+     pone y el navegador la ignora. Asi que el mismo rayado va con degradados,
+     que si acepta.
+
+     Los dos numeros que lo atan al resto del pack:
+       · el ANGULO de los trazos: los mismos 45 grados que lleva rotada la veta
+         de relleno. Va escrito en los dos lados porque el otro esta adentro del
+         SVG y un data-URI no lee variables — si se cambia uno hay que cambiar
+         el otro. OJO: un `repeating-linear-gradient` NO recibe este angulo
+         directo, recibe su perpendicular, porque el angulo de un degradado
+         apunta a traves de las bandas y no a lo largo.
+       · el PISO de opacidad, el mismo 0.18 de `tableValues` en esa veta: es lo
+         que hace que la parte "sin tinta" no desaparezca del todo.
+
+     Los anchos de banda son irregulares a proposito: parejos se leen como una
+     trama impresa, no como algo hecho a mano. */
+  --ui-bp-veta-angle: 45deg;
+  --ui-bp-veta-floor: 0.18;
+
+  /* El papel cuadriculado.
+
+     La celda y la opacidad salen de perillas del PACK (GRID_SCALE y
+     GRID_OPACITY, en pack.js), no de valores fijos: son las dos cosas que uno
+     quiere mover al mirar un plano. Los fallbacks de abajo son por si el JS no
+     corrio — config.js escribe las variables en <html>. */
+  --ui-bp-cell-base: 24px;     /* lado de la celda, antes de escalar */
+  --ui-bp-cell: calc(var(--ui-bp-cell-base) * var(--ui-grid-scale, 1));
+  --ui-bp-major: 5;            /* cada cuántas celdas va la línea fuerte */
+
+  /* Las marcas de registro de las esquinas. */
+  --ui-bp-mark: 9px;           /* largo de cada brazo de la cruz */
+  --ui-bp-inset: 7px;          /* a qué distancia de la esquina va el centro */
+
+  /* Las marcas de las puntas de una cota. */
+  --ui-bp-tick: 9px;
+
+
+  /* ------------------------------------------------ La textura del trazo -- */
+  /* Ver packs/blueprint/chalk.css: ahí está por qué se aplica donde se aplica,
+     y sobre todo por qué el alfa NO puede llegar a 0.
+
+     ⚠ UNA SOLA CAPA, Y ES DELIBERADO.
+     El intento anterior eran DOS capas de máscara —una trama direccional y una
+     de ruido— que se multiplicaban con `mask-composite: intersect`. El ruido
+     solo modula si esa multiplicación ocurre; si la composición no se aplica,
+     las capas se unen en vez de multiplicarse, el ruido no hace nada y queda
+     la trama sola. Que es exactamente lo que pasaba.
+
+     Depender de que el navegador componga capas de máscara es frágil. Acá el
+     grano Y la dirección se generan ADENTRO del mismo SVG, así que hay una
+     sola capa y nada que componer.
+
+     Cómo se consigue lo direccional sin una trama: `baseFrequency` acepta DOS
+     frecuencias, una por eje. Con la de X mucho más alta que la de Y, el ruido
+     varía rápido a lo ancho y lento a lo alto — o sea que se estira en vetas
+     verticales. Es ruido fractal, no un patrón: tiene dirección pero no tiene
+     período.
+
+     Qué hace cada pieza:
+
+       fractalNoise + numOctaves='4'  suma cuatro escalas de ruido: es lo que
+                                      lo hace parecer grano y no televisión
+                                      sin señal.
+       baseFrequency='0.72 0.09'      fino a lo ancho, estirado a lo alto.
+                                      Subir el segundo número acorta las vetas.
+       stitchTiles='stitch'           sin esto se ve la costura del mosaico,
+                                      que es EXACTAMENTE el problema que se
+                                      está tratando de resolver.
+       feFuncA slope/intercept        acota el alfa a [intercept, intercept +
+                                      slope] = [0.7, 1]. El intercept ES el
+                                      piso que protege al anillo de foco.
+
+     El `<rect>` no lleva color: el filtro reemplaza lo que pinte, y en una
+     máscara solo cuenta el alfa. Por eso acá no hay ningún color declarado.
+
+     ⚠ Los números viven adentro de la cadena y no pueden salir a un token: un
+     data URI es un documento aparte y no ve las variables CSS. Para recalibrar
+     hay que editarlos acá. */
+  --ui-bp-chalk: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='c'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72 0.09' numOctaves='4' stitchTiles='stitch'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='0.3' intercept='0.7'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23c)'/%3E%3C/svg%3E");
+
+  /* La misma idea, MUCHO más contrastada: el alfa baja hasta 0.18, así que un
+     trazo de 1px se corta a pedazos y el borde queda comido, con comisuras —
+     el trazo de una mano, no el de una máquina.
+
+     ⚠ POR QUE ESTA NO VA EN TODOS LADOS
+     Con este contraste un anillo de foco quedaría al 18% de opacidad en
+     algunos tramos, o sea invisible. Por eso solo se usa donde NO hay foco ni
+     contenido que leer: la capa del marco del contenedor (que es puro trazo
+     decorativo) y el separador. Todo lo demás sigue con --ui-bp-chalk, que
+     nunca baja de 0.7.
+
+     La frecuencia es más pareja entre ejes que la otra: acá no se busca veta
+     direccional sino mordidas repartidas por todo el contorno. */
+  /* La tercera, para el TEXTO. El piso va en 0.55: se ve mordido, con la
+     varianza gorda de una tiza, pero ninguna letra se corta lo suficiente como
+     para dejar de leerse. La fuerte (0.18) sobre un parrafo lo vuelve ilegible,
+     y la suave (0.7) sobre una letra no se nota.
+
+     La frecuencia es mas alta que las otras dos: el grano tiene que ser mas
+     chico que el trazo de una letra, o lo que se ve son manchones. */
+  --ui-bp-chalk-text: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='t'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1 0.7' numOctaves='3' stitchTiles='stitch'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='0.45' intercept='0.55'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23t)'/%3E%3C/svg%3E");
+
+  /* La tercera textura: la de los RELLENOS.
+
+     Un trazo y un relleno no se dibujan igual. Un trazo se recorre; un relleno
+     se SOMBREA, y a mano eso sale rayado en diagonal, porque la muñeca gira.
+     Por eso esta no es la misma veta que las otras dos:
+
+       RAYADA A LO ALTO     `baseFrequency` alta en X y MUY baja en Y: 0.75
+                            contra 0.012, o sea vetas ~83 veces mas largas que
+                            anchas. Eso no es grano, es un RAYADO — que es
+                            justo lo que hace una mano sombreando.
+
+                            ⚠ LO QUE TIENE QUE ENTRAR EN LA PIEZA ES EL ANCHO,
+                            NO EL LARGO. Es la correccion de un error propio:
+                            la primera version se estiro 17 veces y quedo un
+                            degrade sucio, y la conclusion que saque fue "que la
+                            veta sea corta". Era la conclusion equivocada.
+
+                            Lo que hace ilegible una textura en una pieza fina
+                            es que la raya no se REPITA adentro, y eso lo fija
+                            la frecuencia en X, no la de Y. Con 0.75 las rayas
+                            quedan a 1.3px una de otra: en la barra de progreso
+                            mas fina, de 7px, entran cinco. El largo puede ser
+                            todo lo que haga falta — de hecho, girado 45 grados,
+                            una raya de 20px CRUZA la barra entera, que es
+                            exactamente el efecto buscado.
+       ROTADA 45 GRADOS     el `<rect>` va adentro de un grupo con `rotate(45)`,
+                            que en SVG es en sentido horario. La veta rota CON
+                            el elemento porque el filtro se genera en el espacio
+                            de usuario de lo que filtra, y ese espacio ya viene
+                            rotado por el grupo. Las rayas terminan yendo de
+                            abajo-izquierda a arriba-derecha, que es la mano
+                            derecha sombreando.
+
+     El `<rect>` mide 620 y arranca en -100 para que, una vez rotado, siga
+     tapando los 420 del lienzo: un cuadrado girado 45 grados necesita ser raíz
+     de dos más grande o deja las esquinas sin pintar. Y el lienzo crecio a 300
+     junto con la veta: con rayas de 83px, uno chico se repetiria a la vista.
+
+     ⚠ LA IMAGEN ES BLANCO Y NEGRO, NO RUIDO DE COLOR.
+     `feTurbulence` genera los tres canales por separado, o sea ruido a COLOR.
+     Para una mascara eso sobra —solo se mira el alfa— pero deja la imagen
+     llena de pixeles de colores al azar, y cualquier cosa que en algun motor
+     llegue a mirar la luminancia en vez del alfa se trae ese ruido de color
+     puesto. Aca se resuelve en dos pasos: `feColorMatrix` la pasa a gris y las
+     tres `feFunc` de color la fuerzan a BLANCO puro. Lo que queda es blanco
+     con alfa variable — que es exactamente lo que tiene que ser una mascara:
+     donde es blanco pasa el relleno con su color y su opacidad, y donde es
+     transparente se ve lo que haya detras.
+
+     ⚠ EL ALFA NO VA EN RAMPA, VA EN ESCALON. Es la unica de las cuatro
+     texturas que usa `type='table'` en vez de `type='linear'`.
+
+     Una rampa lineal reparte la opacidad pareja de 0.1 a 1, y lo que sale es
+     un veteado suave — se ve un degrade entre lo claro y lo oscuro en vez de
+     rayas. Con `tableValues='0.06 0.06 0.45 0.45'` el cambio queda confinado al tercio
+     del medio: el primer tercio es 0.1 plano, el ultimo es 1 plano, y entre
+     los dos pasa todo. Eso es lo que convierte el ruido en RAYAS.
+
+     ⚠ Los números viven adentro de la cadena y no pueden salir a un token: un
+     data URI es un documento aparte y no ve las variables CSS. */
+  --ui-bp-chalk-fill: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='420'%3E%3Cfilter id='p' x='-40%25' y='-40%25' width='180%25' height='180%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.0 0.012' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='0' intercept='1'/%3E%3CfeFuncG type='linear' slope='0' intercept='1'/%3E%3CfeFuncB type='linear' slope='0' intercept='1'/%3E%3CfeFuncA type='table' tableValues='0.18 0.18 1 1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Cg transform='rotate(45 210 210)'%3E%3Crect x='-100' y='-100' width='620' height='620' filter='url(%23p)'/%3E%3C/g%3E%3C/svg%3E");
+
+  /* LA MISMA VETA, CONTRARROTADA, PARA EL ARO.
+     La mecanica dibuja el aro de progreso rotado -90 grados —para que el cero
+     quede arriba y no a la derecha— y una mascara rota CON el elemento. Con la
+     veta normal, el rayado del aro saldria a -45: al reves que el de todas las
+     demas piezas, y se notaria.
+  
+     135 menos los 90 que rota el aro da 45. O sea que en pantalla el rayado del
+     aro cae exactamente en la misma diagonal que el de un boton. */
+  --ui-bp-chalk-fill-ring: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='420'%3E%3Cfilter id='p' x='-40%25' y='-40%25' width='180%25' height='180%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.0 0.012' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='0' intercept='1'/%3E%3CfeFuncG type='linear' slope='0' intercept='1'/%3E%3CfeFuncB type='linear' slope='0' intercept='1'/%3E%3CfeFuncA type='table' tableValues='0.18 0.18 1 1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Cg transform='rotate(135 210 210)'%3E%3Crect x='-100' y='-100' width='620' height='620' filter='url(%23p)'/%3E%3C/g%3E%3C/svg%3E");
+
+  --ui-bp-chalk-rough: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='r'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.55 0.38' numOctaves='3' stitchTiles='stitch'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='0.82' intercept='0.18'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='260' height='260' filter='url(%23r)'/%3E%3C/svg%3E");
+
+  /* ==================================================================== */
+  /*  LAS PIEZAS — se arman UNA vez con el calibre de arriba.            */
+  /* ==================================================================== */
+
+  /* El cuadriculado. Cuatro capas: la trama fina en los dos ejes y la fuerte
+     cada --ui-bp-major celdas. Va como capa de `background` del contenedor,
+     no de la página: un contenedor ES una hoja de papel. */
+  --ui-bp-grid:
+    repeating-linear-gradient(90deg,
+      var(--ui-bp-grid-major) 0 var(--ui-bp-hair),
+      transparent var(--ui-bp-hair) calc(var(--ui-bp-cell) * var(--ui-bp-major))),
+    repeating-linear-gradient(0deg,
+      var(--ui-bp-grid-major) 0 var(--ui-bp-hair),
+      transparent var(--ui-bp-hair) calc(var(--ui-bp-cell) * var(--ui-bp-major))),
+    repeating-linear-gradient(90deg,
+      var(--ui-bp-grid-line) 0 var(--ui-bp-hair),
+      transparent var(--ui-bp-hair) var(--ui-bp-cell)),
+    repeating-linear-gradient(0deg,
+      var(--ui-bp-grid-line) 0 var(--ui-bp-hair),
+      transparent var(--ui-bp-hair) var(--ui-bp-cell));
+
+  /* Las cuatro cruces de registro. Ocho capas: dos barras por esquina.
+     Se dibujan con `background` y no con clip-path por lo mismo de siempre —
+     un contenedor puede tener adentro algo que se despliega fuera de la caja,
+     y clip-path se lo comería. Van INSET respecto de la esquina, así que un
+     ROUNDNESS distinto de 0 tampoco las recorta. */
+  --ui-bp-corners:
+    /* arriba-izquierda */
+    linear-gradient(var(--ui-accent) 0 0)
+      left  calc(var(--ui-bp-inset) - var(--ui-bp-mark) / 2)
+      top   calc(var(--ui-bp-inset) - var(--ui-bp-line) / 2)
+      / var(--ui-bp-mark) var(--ui-bp-line) no-repeat,
+    linear-gradient(var(--ui-accent) 0 0)
+      left  calc(var(--ui-bp-inset) - var(--ui-bp-line) / 2)
+      top   calc(var(--ui-bp-inset) - var(--ui-bp-mark) / 2)
+      / var(--ui-bp-line) var(--ui-bp-mark) no-repeat,
+    /* arriba-derecha */
+    linear-gradient(var(--ui-accent) 0 0)
+      right calc(var(--ui-bp-inset) - var(--ui-bp-mark) / 2)
+      top   calc(var(--ui-bp-inset) - var(--ui-bp-line) / 2)
+      / var(--ui-bp-mark) var(--ui-bp-line) no-repeat,
+    linear-gradient(var(--ui-accent) 0 0)
+      right calc(var(--ui-bp-inset) - var(--ui-bp-line) / 2)
+      top   calc(var(--ui-bp-inset) - var(--ui-bp-mark) / 2)
+      / var(--ui-bp-line) var(--ui-bp-mark) no-repeat,
+    /* abajo-izquierda */
+    linear-gradient(var(--ui-accent) 0 0)
+      left   calc(var(--ui-bp-inset) - var(--ui-bp-mark) / 2)
+      bottom calc(var(--ui-bp-inset) - var(--ui-bp-line) / 2)
+      / var(--ui-bp-mark) var(--ui-bp-line) no-repeat,
+    linear-gradient(var(--ui-accent) 0 0)
+      left   calc(var(--ui-bp-inset) - var(--ui-bp-line) / 2)
+      bottom calc(var(--ui-bp-inset) - var(--ui-bp-mark) / 2)
+      / var(--ui-bp-line) var(--ui-bp-mark) no-repeat,
+    /* abajo-derecha */
+    linear-gradient(var(--ui-accent) 0 0)
+      right  calc(var(--ui-bp-inset) - var(--ui-bp-mark) / 2)
+      bottom calc(var(--ui-bp-inset) - var(--ui-bp-line) / 2)
+      / var(--ui-bp-mark) var(--ui-bp-line) no-repeat,
+    linear-gradient(var(--ui-accent) 0 0)
+      right  calc(var(--ui-bp-inset) - var(--ui-bp-line) / 2)
+      bottom calc(var(--ui-bp-inset) - var(--ui-bp-mark) / 2)
+      / var(--ui-bp-line) var(--ui-bp-mark) no-repeat;
+
+  /* -------------------------------------------------------- Sombras ----- */
+  /* Un plano es plano. Lo que "flota" no proyecta sombra: se separa con un
+     trazo más fuerte, que es como se hace en un dibujo técnico. */
+  --ui-shadow-sm: none;
+  --ui-shadow-md: none;
+  --ui-shadow-lg: none;
+
+  /* ------------------------------------------- Semánticos — tema claro -- */
+  /* Delineado moderno: tinta azul sobre papel.
+
+     ⛔ EL PAPEL NO ES BLANCO. Ninguno lo es: una hoja de plano tiene tono, y
+     un blanco puro detras de una tinta azul saturada raspa la vista y delata
+     que es una pantalla y no un papel. Se baja la claridad un par de puntos y
+     se le sube un poco la tincion de marca — sigue leyendose blanco, pero
+     apoyado.
+
+     No sale del escalon de neutros (--ui-neutral-50, 98%) a proposito: ese
+     escalon lo usan tambien piezas que SI tienen que quedar casi blancas al
+     lado del papel, y bajarlo se las llevaria puestas a todas. */
+  --ui-bg:             hsl(from var(--ui-brand) h calc(s * 0.10) 95.5%);
+  --ui-bg-subtle:      hsl(from var(--ui-brand) h calc(s * 0.13) 92.5%);
+  --ui-surface:        hsl(from var(--ui-brand) h calc(s * 0.10) 95.5%);
+  --ui-surface-hover:  var(--ui-neutral-100);
+  --ui-surface-active: var(--ui-neutral-200);
+
+  --ui-bp-grid-line:   rgb(from var(--ui-accent) r g b / calc(0.10 * var(--ui-grid-opacity, 1)));
+  --ui-bp-grid-major:  rgb(from var(--ui-accent) r g b / calc(0.20 * var(--ui-grid-opacity, 1)));
+
+  --ui-border:         rgb(from var(--ui-accent) r g b / 0.45);
+  --ui-border-strong:  var(--ui-accent);
+  --ui-line:           rgb(from var(--ui-accent) r g b / 0.30);
+  --ui-line-soft:      rgb(from var(--ui-accent) r g b / 0.16);
+  --ui-scroll-thumb:       rgb(from var(--ui-accent) r g b / 0.35);
+  --ui-scroll-thumb-hover: rgb(from var(--ui-accent) r g b / 0.70);
+
+  --ui-panel-from:     var(--ui-neutral-50);
+  --ui-panel-to:       var(--ui-neutral-50);
+
+  --ui-text:           hsl(from var(--ui-brand) h calc(s * 0.65) 16%);
+  --ui-text-muted:     hsl(from var(--ui-brand) h calc(s * 0.55) 32%);
+  --ui-text-subtle:    hsl(from var(--ui-brand) h calc(s * 0.45) 42%);
+
+  --ui-accent:         var(--ui-brand-base);
+  --ui-accent-hover:   var(--ui-brand-hover);
+  --ui-accent-active:  var(--ui-brand-active);
+  --ui-accent-subtle:  rgb(from var(--ui-accent) r g b / 0.10);
+  --ui-accent-soft:    rgb(from var(--ui-accent) r g b / 0.40);
+  --ui-accent-text:    var(--ui-accent);
+  --ui-on-accent:      var(--ui-on-brand-light);
+
+  --ui-danger:         var(--ui-red-600);
+  --ui-danger-hover:   var(--ui-red-700);
+  --ui-danger-subtle:  var(--ui-red-100);
+  --ui-on-danger:      var(--ui-on-brand-light);
+
+  --ui-success:        var(--ui-green-600);
+  --ui-success-subtle: var(--ui-green-100);
+  --ui-warning:        var(--ui-amber-600);
+  --ui-warning-subtle: var(--ui-amber-100);
+
+  --ui-focus-ring:     var(--ui-accent);
+  --ui-focus-width:    var(--ui-bp-bold);
+  --ui-focus-offset:   2px;
+
+  --ui-selection-bg:   rgb(from var(--ui-accent) r g b / 0.20);
+  --ui-selection-fg:   var(--ui-text);
+
+  --ui-ring-width:     var(--ui-bp-bold);
+  --ui-ring:           rgb(from var(--ui-accent) r g b / 0.30);
+  --ui-ring-soft:      rgb(from var(--ui-accent) r g b / 0.15);
+}
+
+/* ===========================================================================
+   TEMA OSCURO — la cianotipia
+   ---------------------------------------------------------------------------
+   El original del oficio: papel azul profundo y trazo claro. No es el tema
+   claro invertido — el papel se tiñe del brand casi a pleno, y la tinta pasa
+   a ser un celeste muy claro.
+   =========================================================================== */
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ui-bg:             hsl(from var(--ui-brand) h calc(s * 0.85) 13%);
+    --ui-bg-subtle:      hsl(from var(--ui-brand) h calc(s * 0.85) 16%);
+    --ui-surface:        hsl(from var(--ui-brand) h calc(s * 0.85) 13%);
+    --ui-surface-hover:  hsl(from var(--ui-brand) h calc(s * 0.80) 18%);
+    --ui-surface-active: hsl(from var(--ui-brand) h calc(s * 0.75) 23%);
+
+    --ui-bp-grid-line:   rgb(from var(--ui-accent) r g b / calc(0.14 * var(--ui-grid-opacity, 1)));
+    --ui-bp-grid-major:  rgb(from var(--ui-accent) r g b / calc(0.26 * var(--ui-grid-opacity, 1)));
+
+    --ui-border:         rgb(from var(--ui-accent) r g b / 0.50);
+    --ui-border-strong:  var(--ui-accent);
+    --ui-line:           rgb(from var(--ui-accent) r g b / 0.32);
+    --ui-line-soft:      rgb(from var(--ui-accent) r g b / 0.18);
+    --ui-scroll-thumb:       rgb(from var(--ui-accent) r g b / 0.35);
+    --ui-scroll-thumb-hover: rgb(from var(--ui-accent) r g b / 0.75);
+
+    --ui-panel-from:     var(--ui-bg);
+    --ui-panel-to:       var(--ui-bg);
+
+    /* Tinta clara sobre papel azul. */
+    --ui-text:           hsl(from var(--ui-brand) h calc(s * 0.30) 96%);
+    --ui-text-muted:     hsl(from var(--ui-brand) h calc(s * 0.40) 80%);
+    --ui-text-subtle:    hsl(from var(--ui-brand) h calc(s * 0.45) 68%);
+
+    --ui-accent:         hsl(from var(--ui-brand) h calc(s * 0.75) 72%);
+    --ui-accent-hover:   hsl(from var(--ui-brand) h calc(s * 0.70) 84%);
+    --ui-accent-active:  hsl(from var(--ui-brand) h calc(s * 0.80) 62%);
+    --ui-accent-subtle:  rgb(from var(--ui-accent) r g b / 0.14);
+    --ui-accent-soft:    rgb(from var(--ui-accent) r g b / 0.45);
+    --ui-accent-text:    var(--ui-accent);
+    --ui-on-accent:      var(--ui-on-brand-dark);
+
+    --ui-danger:         var(--ui-red-500);
+    --ui-danger-hover:   hsl(from var(--ui-red-500) h s calc(l * 1.15));
+    --ui-danger-subtle:  rgb(from var(--ui-red-500) r g b / 0.18);
+
+    --ui-success:        var(--ui-green-500);
+    --ui-success-subtle: rgb(from var(--ui-green-500) r g b / 0.16);
+    --ui-warning:        var(--ui-amber-500);
+    --ui-warning-subtle: rgb(from var(--ui-amber-500) r g b / 0.16);
+
+    --ui-selection-bg:   rgb(from var(--ui-accent) r g b / 0.28);
+  }
+}
+
+:root[data-theme="dark"] {
+  --ui-bg:             hsl(from var(--ui-brand) h calc(s * 0.85) 13%);
+  --ui-bg-subtle:      hsl(from var(--ui-brand) h calc(s * 0.85) 16%);
+  --ui-surface:        hsl(from var(--ui-brand) h calc(s * 0.85) 13%);
+  --ui-surface-hover:  hsl(from var(--ui-brand) h calc(s * 0.80) 18%);
+  --ui-surface-active: hsl(from var(--ui-brand) h calc(s * 0.75) 23%);
+
+  --ui-bp-grid-line:   rgb(from var(--ui-accent) r g b / calc(0.14 * var(--ui-grid-opacity, 1)));
+  --ui-bp-grid-major:  rgb(from var(--ui-accent) r g b / calc(0.26 * var(--ui-grid-opacity, 1)));
+
+  --ui-border:         rgb(from var(--ui-accent) r g b / 0.50);
+  --ui-border-strong:  var(--ui-accent);
+  --ui-line:           rgb(from var(--ui-accent) r g b / 0.32);
+  --ui-line-soft:      rgb(from var(--ui-accent) r g b / 0.18);
+  --ui-scroll-thumb:       rgb(from var(--ui-accent) r g b / 0.35);
+  --ui-scroll-thumb-hover: rgb(from var(--ui-accent) r g b / 0.75);
+
+  --ui-panel-from:     var(--ui-bg);
+  --ui-panel-to:       var(--ui-bg);
+
+  /* Tinta clara sobre papel azul. */
+  --ui-text:           hsl(from var(--ui-brand) h calc(s * 0.30) 96%);
+  --ui-text-muted:     hsl(from var(--ui-brand) h calc(s * 0.40) 80%);
+  --ui-text-subtle:    hsl(from var(--ui-brand) h calc(s * 0.45) 68%);
+
+  --ui-accent:         hsl(from var(--ui-brand) h calc(s * 0.75) 72%);
+  --ui-accent-hover:   hsl(from var(--ui-brand) h calc(s * 0.70) 84%);
+  --ui-accent-active:  hsl(from var(--ui-brand) h calc(s * 0.80) 62%);
+  --ui-accent-subtle:  rgb(from var(--ui-accent) r g b / 0.14);
+  --ui-accent-soft:    rgb(from var(--ui-accent) r g b / 0.45);
+  --ui-accent-text:    var(--ui-accent);
+  --ui-on-accent:      var(--ui-on-brand-dark);
+
+  --ui-danger:         var(--ui-red-500);
+  --ui-danger-hover:   hsl(from var(--ui-red-500) h s calc(l * 1.15));
+  --ui-danger-subtle:  rgb(from var(--ui-red-500) r g b / 0.18);
+
+  --ui-success:        var(--ui-green-500);
+  --ui-success-subtle: rgb(from var(--ui-green-500) r g b / 0.16);
+  --ui-warning:        var(--ui-amber-500);
+  --ui-warning-subtle: rgb(from var(--ui-amber-500) r g b / 0.16);
+
+  --ui-selection-bg:   rgb(from var(--ui-accent) r g b / 0.28);
+}

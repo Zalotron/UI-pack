@@ -1,0 +1,147 @@
+/* ----------------------------------------------------- Spinner — ESTRUCTURA */
+/* Mecánica. Agnóstico al estilo: los colores los pone el pack.               */
+
+.ui-spinner {
+  /* Interfaz del componente. La piel del pack pisa estas variables. */
+  --spinner-h: var(--ui-control-h-md);
+  --spinner-pad: var(--ui-control-pad-md);
+  --spinner-font: var(--ui-control-font-md);
+  --spinner-radius: var(--ui-control-radius-md);
+  --spinner-bg: transparent;
+  --spinner-fg: var(--ui-text);
+  --spinner-border: transparent;
+  --spinner-caret: var(--ui-text);
+  /* Halo alrededor del control. Transparente = invisible, sin ocupar lugar. */
+  --spinner-ring: transparent;
+  /* Caracteres a reservar. Lo escribe el JS a partir de los LIMITES del
+     control; este valor es el que vale cuando algun limite es abierto. */
+  --spinner-chars: 5;
+
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  /* ⛔ EL ANCHO SE RESERVA, NO SE HEREDA DEL <input>.
+     Un <input> trae un `size` de 20 caracteres por defecto, y ESE era el ancho
+     de verdad del spinner: el `min-width` de abajo no llegaba a mandar nunca y
+     el control quedaba tres veces mas ancho de lo que necesitaba. Ahora mide lo
+     que tiene que mostrar en el peor caso — ver el getter `chars`.
+
+     El padding y el borde se suman porque la caja es `border-box`: si no, un
+     padding grande le come los decimales al numero.
+
+     --ui-spinner-slack es el respiro: `ch` mide el ancho del CERO, y ni la coma
+     ni el signo ni el cursor miden eso. Lo declara el pack porque depende de su
+     tipografia — una manuscrita no da lo mismo que una monoespaciada. */
+  width: calc(
+    (var(--spinner-chars) + var(--ui-spinner-slack)) * 1ch
+    + var(--spinner-pad) * 2
+    + var(--ui-border-width) * 2
+  );
+
+  /* Piso, para que un control de un solo digito siga siendo agarrable: se
+     arrastra y se clickea, no solo se lee. */
+  min-width: calc(var(--ui-spinner-min-w) + var(--spinner-pad) * 2);
+
+  height: var(--spinner-h);
+  padding: 0 var(--spinner-pad);
+  border: var(--ui-border-width) solid var(--spinner-border);
+  border-radius: var(--spinner-radius);
+  background: var(--spinner-bg);
+  color: var(--spinner-fg);
+  box-shadow: 0 0 0 var(--ui-ring-width) var(--spinner-ring);
+
+  /* Arrastre vertical: el cursor lo anuncia y touch-action deja pasar el
+     gesto al componente en vez de scrollear la página. */
+  cursor: ns-resize;
+  user-select: none;
+  touch-action: none;
+
+  transition:
+    border-color var(--ui-duration-fast) var(--ui-ease),
+    box-shadow var(--ui-duration-fast) var(--ui-ease),
+    background var(--ui-duration-fast) var(--ui-ease);
+}
+
+.ui-spinner__input {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  caret-color: var(--spinner-caret);
+
+  font-family: var(--ui-font-mono);
+  font-size: var(--spinner-font);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+
+  cursor: inherit;
+  user-select: none;
+}
+
+.ui-spinner__input:focus { outline: none; }
+
+/* Sin flechitas: ni las nativas de WebKit ni las de Firefox. */
+.ui-spinner__input::-webkit-outer-spin-button,
+.ui-spinner__input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.ui-spinner__input { -moz-appearance: textfield; appearance: textfield; }
+
+/* -- Alineación del número ------------------------------------------------- */
+
+.ui-spinner--align-start  .ui-spinner__input { text-align: start; }
+.ui-spinner--align-center .ui-spinner__input { text-align: center; }
+.ui-spinner--align-end    .ui-spinner__input { text-align: end; }
+
+/* -- Tamaños --------------------------------------------------------------- */
+
+.ui-spinner--sm {
+  --spinner-h: var(--ui-control-h-sm);
+  --spinner-pad: var(--ui-control-pad-sm);
+  --spinner-font: var(--ui-control-font-sm);
+  --spinner-radius: var(--ui-control-radius-sm);
+}
+
+.ui-spinner--md {
+  --spinner-h: var(--ui-control-h-md);
+  --spinner-pad: var(--ui-control-pad-md);
+  --spinner-font: var(--ui-control-font-md);
+  --spinner-radius: var(--ui-control-radius-md);
+}
+
+.ui-spinner--lg {
+  --spinner-h: var(--ui-control-h-lg);
+  --spinner-pad: var(--ui-control-pad-lg);
+  --spinner-font: var(--ui-control-font-lg);
+  --spinner-radius: var(--ui-control-radius-lg);
+}
+
+/* -- Estados --------------------------------------------------------------- */
+
+/* Durante el arrastre el cursor no debe cambiar al pasar sobre otras cosas. */
+.ui-spinner.is-dragging { cursor: ns-resize; }
+
+/* Al editar vuelve a comportarse como un campo de texto normal. */
+.ui-spinner.is-editing,
+.ui-spinner.is-editing .ui-spinner__input {
+  cursor: text;
+  user-select: text;
+}
+.ui-spinner.is-disabled {
+  opacity: var(--ui-disabled-opacity);
+  cursor: not-allowed;
+}
+.ui-spinner.is-disabled .ui-spinner__input { cursor: not-allowed; }
+
+.ui-spinner:focus-within:not(.is-editing) {
+  outline: var(--ui-focus-width) solid var(--ui-focus-ring);
+  outline-offset: var(--ui-focus-offset);
+}
+
+/* Mientras se edita manda el halo, no el outline: si estuvieran los dos
+   quedarían dos marcos encimados. */
+.ui-spinner.is-editing { outline: none; }

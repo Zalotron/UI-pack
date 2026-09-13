@@ -1,0 +1,62 @@
+/* ----------------------------------------------- Toggle — PIEL del pack SOFT */
+/* Interfaz: --toggle-track | --toggle-track-on | --toggle-knob-bg
+             --toggle-border | --toggle-ring                                  */
+
+/* La pista es un CANAL excavado y el tirador una pastilla que descansa
+   adentro. No hace falta ningún color para entender el estado: el tirador
+   está de un lado o del otro de un surco. */
+.ui-toggle {
+  --toggle-track: var(--ui-surface);
+  --toggle-track-on: var(--ui-accent);
+  --toggle-border: transparent;
+  --toggle-knob-bg: var(--ui-surface);
+}
+
+/* ⚠ EL RELIEVE ES PROPORCIONAL AL CARRIL, NO UNA MEDIDA FIJA.
+   El calibre del pack está en píxeles absolutos —4px de desplazamiento, 9px de
+   difuminado— y eso es para una pieza de tamaño normal. Un carril de toggle
+   mide unos 25px, así que ese excavado entra por los cuatro lados y se come el
+   relleno: encendido parecía que el acento solo llegaba al pedacito que el
+   tirador deja libre, cuando en realidad el carril está pintado entero.
+
+   La medida del carril ya es una variable, así que alcanza con multiplicarla
+   por una fracción — `calc()` sabe hacer eso perfectamente. Y va corto: lo
+   justo para que se lea el hueco sin comerse el color. */
+.ui-toggle__track {
+  --wall: calc(var(--toggle-track-h) * 0.09);
+  box-shadow:
+    inset var(--wall) var(--wall) calc(var(--wall) * 1.4) var(--ui-soft-dark),
+    inset calc(var(--wall) * -1) calc(var(--wall) * -1) calc(var(--wall) * 1.4) var(--ui-soft-light);
+}
+
+/* Encendido, el canal recibe ademas el rebote de su propio color — con el
+   mismo desplazamiento que la luz, desde abajo-derecha. Es la misma regla que
+   en la barra de progreso y en el slider: las tres piezas son un surco con
+   material de color adentro, y la luz de las tres tiene que venir del mismo
+   lado. */
+.ui-toggle.is-checked .ui-toggle__track {
+  --wall: calc(var(--toggle-track-h) * 0.12);
+  box-shadow: inset var(--wall) var(--wall) calc(var(--wall) * 2) var(--ui-soft-dark);
+}
+
+
+/* El tirador sobresale: es la única pieza que es un objeto. Su sombra también
+   es proporcional —a SU tamaño, no al del carril— porque si no, derrama sobre
+   el relleno y lo apaga alrededor. */
+.ui-toggle__knob {
+  --lift: calc(var(--toggle-knob) * 0.1);
+  box-shadow:
+    calc(var(--lift) * -1) calc(var(--lift) * -1) calc(var(--lift) * 1.6) var(--ui-soft-light),
+    var(--lift) var(--lift) calc(var(--lift) * 1.6) var(--ui-soft-dark);
+}
+
+.ui-toggle:hover:not(.is-disabled) {
+  --toggle-knob-bg: var(--ui-surface-hover);
+}
+
+/* Encendido, el canal se tiñe y el tirador queda blanco sobre el acento.
+   El deslizamiento ya rebota solo: la mecánica mueve el tirador con
+   `--ui-ease-out`, y este pack puso ahí una curva con sobrepaso. */
+.ui-toggle.is-checked:not(.is-disabled) {
+  --toggle-knob-bg: var(--ui-on-accent);
+}

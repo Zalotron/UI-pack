@@ -1,0 +1,685 @@
+/* ===========================================================================
+   PACK "GLASS" — tokens
+   ---------------------------------------------------------------------------
+   Vidrio: superficies translúcidas que desenfocan lo que tienen detrás, con
+   el canto iluminado como el filo de una placa de cristal.
+
+   RIGE LA MISMA REGLA DURA: acá hay UN SOLO color declarado (--ui-brand).
+   Todo lo demás sale de él con color relativo. Ni un #hex ni un rgb() literal.
+
+   Tres piezas hacen el efecto, y las tres son necesarias:
+
+     1. FONDO CON CONTENIDO   Un vidrio sobre un fondo plano no se ve. El pack
+                              pinta una malla de manchas de color (todas del
+                              brand, corridas de tono) para que haya algo que
+                              refractar.
+     2. PELICULA + DESENFOQUE La superficie es un velo translúcido y detrás va
+                              backdrop-filter: blur + saturate. El saturate es
+                              lo que hace que parezca vidrio y no niebla.
+     3. CANTO DEGRADADO       El borde NO es de un color: es un degradé que va
+                              de luz a sombra y vuelve a la luz. Es el detalle
+                              que separa "caja translúcida" de "vidrio".
+
+   Cómo se calibra: NO tocando los degradés, sino las escalas de alfa de la
+   sección "CALIBRE DEL VIDRIO". Los degradés se arman una sola vez y se
+   resuelven solos en cada tema, porque las alfas se redeclaran por tema y las
+   variables CSS se sustituyen al calcular, no al declararse.
+
+   Requiere color relativo (Chrome 119+, Safari 16.4+, Firefox 128+) y
+   backdrop-filter.
+   =========================================================================== */
+
+@property --ui-glass-set {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+
+:root {
+  color-scheme: light dark;
+
+  /* ==================================================================== */
+  /*  =============   EL UNICO COLOR DECLARADO   ======================== */
+  /* ==================================================================== */
+  --ui-brand: #6d5efc;      /* pack settings -> BRAND_COLOR */
+
+  /* El vidrio pide esquinas. Es el fallback: manda pack settings -> ROUNDNESS */
+  --ui-roundness: 1.4;
+
+  --ui-on-brand-light: hsl(from var(--ui-brand) h calc(s * 0.12) 98%);
+  --ui-on-brand-dark:  hsl(from var(--ui-brand) h calc(s * 0.34) 8%);
+  --ui-on-brand: var(--ui-on-brand-light);
+
+  /* ------------------------------------------------------ Tipografía ---- */
+  --ui-font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --ui-font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --ui-text-xs:   0.6875rem;
+  --ui-text-sm:   0.8125rem;
+  --ui-text-md:   0.875rem;
+  --ui-text-lg:   1rem;
+  --ui-text-xl:   1.25rem;
+  --ui-text-2xl:  1.5rem;
+  --ui-text-3xl:  2rem;
+
+  --ui-weight-regular:  400;
+  --ui-weight-medium:   500;
+  --ui-weight-semibold: 600;
+  --ui-weight-bold:     700;
+
+  --ui-leading-tight:   1.2;
+  --ui-leading-normal:  1.5;
+  --ui-leading-relaxed: 1.7;
+
+  --ui-tracking-tight: -0.01em;
+  --ui-tracking-wide:   0.02em;
+
+  /* -------------------------------------------- Espaciado (escala 4px) -- */
+  --ui-space-0:  0;
+  --ui-space-1:  0.25rem;
+  --ui-space-2:  0.5rem;
+  --ui-space-3:  0.75rem;
+  --ui-space-4:  1rem;
+  --ui-space-5:  1.25rem;
+  --ui-space-6:  1.5rem;
+  --ui-space-8:  2rem;
+  --ui-space-10: 2.5rem;
+  --ui-space-12: 3rem;
+  --ui-space-16: 4rem;
+
+  /* --------------------------------------- Espaciado fluido ------------- */
+  /* El vidrio necesita más aire que una superficie opaca: si el contenido
+     toca el canto iluminado, el degradé del borde se lee como un error. */
+  --ui-pad-block-xs:  clamp(12px, 1.4vw, 16px);
+  --ui-pad-inline-xs: clamp(12px, 1.4vw, 16px);
+  --ui-pad-block-sm:  clamp(18px, 2.2vw, 22px);
+  --ui-pad-inline-sm: clamp(14px, 1.8vw, 20px);
+  --ui-pad-block-md:  clamp(26px, 3.4vw, 36px);
+  --ui-pad-inline-md: clamp(20px, 2.6vw, 30px);
+  --ui-pad-block-lg:  clamp(34px, 4.4vw, 50px);
+  --ui-pad-inline-lg: clamp(26px, 3.4vw, 42px);
+  --ui-pad-block-xl:  clamp(46px, 5.8vw, 74px);
+  --ui-pad-inline-xl: clamp(34px, 4.4vw, 58px);
+
+  --ui-gap-none: 0;
+  --ui-gap-xs:   var(--ui-space-2);
+  --ui-gap-sm:   clamp(10px, 1.2vw, 14px);
+  --ui-gap-md:   clamp(14px, 1.8vw, 20px);
+  --ui-gap-lg:   clamp(20px, 2.6vw, 32px);
+  --ui-gap-xl:   clamp(28px, 3.6vw, 48px);
+
+  --ui-col-min: 240px;
+
+  /* ------------------------------------------------ Separadores ---------- */
+  --ui-sep-space-none: 0;
+  --ui-sep-space-xs:   var(--ui-space-1);
+  --ui-sep-space-sm:   var(--ui-space-3);
+  --ui-sep-space-md:   clamp(16px, 2.5vh, 24px);
+  --ui-sep-space-lg:   clamp(24px, 4vh, 40px);
+  --ui-sep-space-xl:   clamp(32px, 5.5vh, 56px);
+
+  /* El desvanecido es más largo: una línea de luz que se apaga de a poco. */
+  --ui-sep-fade: 20%;
+
+  /* ------------------------------------------- Controles ----------------- */
+  --ui-control-h-sm:    28px;
+  --ui-control-h-md:    36px;
+  --ui-control-h-lg:    44px;
+  --ui-control-pad-sm:  var(--ui-space-3);
+  --ui-control-pad-md:  var(--ui-space-4);
+  --ui-control-pad-lg:  var(--ui-space-6);
+  --ui-control-font-sm: var(--ui-text-sm);
+  --ui-control-font-md: var(--ui-text-md);
+  --ui-control-font-lg: var(--ui-text-lg);
+  --ui-control-gap-sm:  var(--ui-space-1);
+  --ui-control-gap-md:  var(--ui-space-2);
+  --ui-control-gap-lg:  var(--ui-space-2);
+  --ui-control-radius-sm: var(--ui-radius-sm);
+  --ui-control-radius-md: var(--ui-radius-md);
+  --ui-control-radius-lg: var(--ui-radius-lg);
+  /* Piso del spinner. NO es su ancho: el ancho lo reserva el propio
+     control segun sus limites. Esto es para que uno de un solo digito
+     siga siendo agarrable. */
+  --ui-spinner-min-w: 3ch;
+  /* Respiro sobre los caracteres reservados: la coma, el signo y el
+     cursor no miden lo que mide un cero, que es lo que mide `ch`. */
+--ui-spinner-slack: 0.75;
+
+  --ui-slider-track-ratio: 0.3;
+  --ui-slider-thumb-ratio: 0.62;
+  --ui-slider-thumb-w: 6px;
+  --ui-slider-value-w: 5ch;
+
+  --ui-select-menu-max-h: 260px;
+  --ui-select-arrow: 8px;
+
+  --ui-toggle-track-ratio: 0.56;
+  --ui-toggle-aspect: 1.85;
+  --ui-toggle-knob-inset: 3px;
+  --ui-check-ratio: 0.48;
+
+  --ui-scroll-size: 10px;
+  --ui-scroll-inset: 3px;
+  --ui-scroll-size-regular: 14px;
+  --ui-scroll-inset-regular: 4px;
+
+  /* Window. ⛔ EL MARCO DE UNA VENTANA ES CUADRADO, SIEMPRE.
+     No deriva de --ui-radius-* (ROUNDNESS no lo toca) y tampoco es una
+     licencia del pack: ningún pack lo redondea, por vidrioso que sea. Es 0 en
+     todos lados y se queda en 0. */
+  --ui-window-radius: 0;
+  /* El oscurecido detras de una ventana modal. Sale de la marca como
+     todo lo demas: un negro puro no pertenece a ningun pack. */
+  --ui-window-scrim: hsl(from var(--ui-brand) h calc(s * 0.30) 6% / 0.62);
+  --ui-window-bar-h: 38px;
+  --ui-window-control-w: 46px;
+  --ui-window-glyph: 10px;
+
+  /* Progress. Gorda: una lamina de vidrio finita no refracta nada. */
+  --ui-progress-h-sm: 6px;
+  --ui-progress-h-md: 10px;
+  --ui-progress-h-lg: 14px;
+  --ui-progress-ring-sm: 36px;
+  --ui-progress-ring-md: 52px;
+  --ui-progress-ring-lg: 72px;
+  /* ⚠ ESTO NO SON PIXELES: es el PORCENTAJE DEL DIAMETRO.
+     El aro se dibuja en un SVG con `viewBox="0 0 100 100"`, asi que una unidad
+     del trazo vale un centesimo del diametro. Escrito como `px` el numero
+     mentia: un `16px` sobre un aro de 64 se dibujaba de 10. Y ademas asi es
+     como tiene que ser — el trazo acompana al tamano del aro en las tres
+     variantes en vez de quedarse fijo. */
+  --ui-progress-ring-width: 15;
+
+  /* Iconos. Son de TRAZO, asi que lo que los hace de este pack es el grosor:
+     el mismo dibujo con otro calibre ya es otro icono. */
+  --ui-icon-sm: 16px;
+  --ui-icon-md: 20px;
+  --ui-icon-lg: 26px;
+  --ui-icon-stroke: 1.6px;
+
+  --ui-tabs-indicator-h: 2px;
+
+  --ui-swatch-w: 2.6em;
+  --ui-picker-w: 232px;
+  --ui-picker-area-h: 136px;
+  --ui-picker-cursor: 12px;
+
+  --ui-press-shift: 1px;
+  --ui-hover-lift: -2px;
+  --ui-disabled-opacity: 0.5;
+
+  /* ---------------------------------------------------------- Radios ---- */
+  /* Escala más generosa que la del default: el vidrio pide curva. */
+  --ui-radius-xs:   calc(5px  * var(--ui-roundness));
+  --ui-radius-sm:   calc(8px  * var(--ui-roundness));
+  --ui-radius-md:   calc(11px * var(--ui-roundness));
+  --ui-radius-lg:   calc(16px * var(--ui-roundness));
+  --ui-radius-xl:   calc(22px * var(--ui-roundness));
+  --ui-radius-full: calc(999px * min(var(--ui-roundness), 1));
+  --ui-radius-circle: 50%;
+
+  /* -------------------------------------------------------- Bordes ------ */
+  --ui-border-width: 1px;
+
+  /* ------------------------------------------------------ Movimiento ---- */
+  --ui-duration-fast: 120ms;
+  --ui-duration-base: 200ms;
+  --ui-duration-slow: 320ms;
+  --ui-duration-loader: 600ms;
+  --ui-loader-width: 2px;
+  --ui-ease:      cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ui-ease-out:  cubic-bezier(0.16, 1, 0.3, 1);
+  --ui-ease-in:   cubic-bezier(0.55, 0, 1, 0.45);
+
+  /* ----------------------------------------------------------- Capas ---- */
+  --ui-z-base:     0;
+  --ui-z-dropdown: 1000;
+  --ui-z-sticky:   1100;
+  --ui-z-overlay:  1200;
+  --ui-z-modal:    1300;
+  --ui-z-toast:    1400;
+  --ui-z-tooltip:  1500;
+
+  /* ==================================================================== */
+  /*  NEUTROS — el tono del brand, casi sin saturación.                  */
+  /*  Un poco más teñidos que en el default: el vidrio toma color del    */
+  /*  ambiente, no es gris.                                              */
+  /* ==================================================================== */
+  --ui-neutral-0:    hsl(from var(--ui-brand) h calc(s * 0.06) 100%);
+  --ui-neutral-50:   hsl(from var(--ui-brand) h calc(s * 0.10) 98.5%);
+  --ui-neutral-100:  hsl(from var(--ui-brand) h calc(s * 0.13) 96%);
+  --ui-neutral-200:  hsl(from var(--ui-brand) h calc(s * 0.16) 91%);
+  --ui-neutral-300:  hsl(from var(--ui-brand) h calc(s * 0.19) 83%);
+  --ui-neutral-400:  hsl(from var(--ui-brand) h calc(s * 0.21) 66%);
+  --ui-neutral-500:  hsl(from var(--ui-brand) h calc(s * 0.22) 49%);
+  --ui-neutral-600:  hsl(from var(--ui-brand) h calc(s * 0.24) 37%);
+  --ui-neutral-700:  hsl(from var(--ui-brand) h calc(s * 0.26) 27%);
+  --ui-neutral-800:  hsl(from var(--ui-brand) h calc(s * 0.30) 17%);
+  --ui-neutral-900:  hsl(from var(--ui-brand) h calc(s * 0.34) 10%);
+  --ui-neutral-950:  hsl(from var(--ui-brand) h calc(s * 0.40) 4%);
+
+  /* ==================================================================== */
+  /*  FAMILIA DE MARCA                                                   */
+  /* ==================================================================== */
+  --ui-brand-base:   var(--ui-brand);
+  --ui-brand-hover:  hsl(from var(--ui-brand) h s calc(l * 1.12));
+  --ui-brand-active: hsl(from var(--ui-brand) h s calc(l * 0.88));
+  --ui-brand-soft:   hsl(from var(--ui-brand) h calc(s * 0.80) 76%);
+  --ui-brand-subtle: hsl(from var(--ui-brand) h calc(s * 0.60) 93%);
+
+  /* ==================================================================== */
+  /*  ESTADOS — tono fijo, saturación aportada por el brand.             */
+  /* ==================================================================== */
+  --ui-red-100:   hsl(from var(--ui-brand) 4   calc(s * 0.45) 94%);
+  --ui-red-500:   hsl(from var(--ui-brand) 3   calc(s * 1.05) 60%);
+  --ui-red-600:   hsl(from var(--ui-brand) 2   calc(s * 1.05) 50%);
+  --ui-red-700:   hsl(from var(--ui-brand) 0   calc(s * 1.05) 42%);
+
+  --ui-green-100: hsl(from var(--ui-brand) 148 calc(s * 0.40) 92%);
+  --ui-green-500: hsl(from var(--ui-brand) 150 calc(s * 0.85) 47%);
+  --ui-green-600: hsl(from var(--ui-brand) 150 calc(s * 0.85) 39%);
+
+  --ui-amber-100: hsl(from var(--ui-brand) 45  calc(s * 0.50) 92%);
+  --ui-amber-500: hsl(from var(--ui-brand) 38  calc(s * 1.10) 52%);
+  --ui-amber-600: hsl(from var(--ui-brand) 32  calc(s * 1.10) 46%);
+
+  /* ==================================================================== */
+  /*  ===============   CALIBRE DEL VIDRIO   =========================== */
+  /*  Las perillas del efecto. Para hacer el pack más o menos vidrioso,  */
+  /*  se tocan ESTOS números, no los degradés de abajo.                  */
+  /* ==================================================================== */
+
+  /* De qué está hecho el vidrio: la luz y la sombra que lo forman. */
+  --ui-glass-tint:  var(--ui-neutral-0);
+  --ui-glass-shade: var(--ui-neutral-950);
+
+  /* La película: qué tan opaca es la superficie, de arriba a abajo. */
+  --ui-glass-film-top:    0.66;
+  --ui-glass-film-mid:    0.50;
+  --ui-glass-film-bottom: 0.40;
+
+  /* El canto: luz en una esquina, sombra al cruzar, reflejo en la opuesta. */
+  --ui-glass-edge-hi:   0.95;
+  --ui-glass-edge-lo:   0.20;
+  --ui-glass-edge-tail: 0.60;
+
+  /* La luz que corre por dentro del canto superior, y su sombra abajo. */
+  --ui-glass-inner-hi: 0.70;
+
+  /* Cuanto se derrama el halo del aro de progreso. Un `stroke` no acepta
+     box-shadow, asi que su unico cuerpo posible es una sombra proyectada. */
+  --ui-glass-ring-glow: 6px;
+  --ui-glass-inner-lo: 0.10;
+
+  /* Cuánto pesa la sombra proyectada. */
+  --ui-glass-cast: 0.16;
+
+  /* El reflejo que corre por arriba de una barra llena, como un tubo. */
+  --ui-glass-sheen: 0.42;
+
+  /* CUANTO FRAGUO EL VIDRIO, de 0 a 1. Calibra SOLO el desenfoque del fondo:
+     en 1 es el de siempre, en 0 el cristal todavía no desenfoca nada.
+
+     No calibra la película ni el canto, y no es un descuido: esos se ven
+     perfectamente mientras la pieza se funde, así que no necesitan nada. El
+     desenfoque es el único que NO se puede ver mientras la pieza se funde
+     —ver motion.css— y por eso es el único que hay que apagar y volver a
+     encender.
+
+     Hace falta @property: una custom property sin registrar no interpola. */
+  --ui-glass-set: 1;
+
+  /* El desenfoque. El saturate es la mitad del truco: sin él, el fondo
+     detrás del vidrio se apaga y parece niebla en vez de cristal.
+
+     Los dos van calibrados por --ui-glass-set, y los dos tienen que arrancar
+     en su valor NEUTRO, no en cero: blur(0) no desenfoca, pero saturate(0)
+     deja el fondo en blanco y negro. El neutro del saturate es 100%. */
+  --ui-glass-blur-sm:
+    blur(calc(10px * var(--ui-glass-set)))
+    saturate(calc(100% + 50% * var(--ui-glass-set)));
+  --ui-glass-blur-md:
+    blur(calc(20px * var(--ui-glass-set)))
+    saturate(calc(100% + 70% * var(--ui-glass-set)));
+  --ui-glass-blur-lg:
+    blur(calc(34px * var(--ui-glass-set)))
+    saturate(calc(100% + 85% * var(--ui-glass-set)));
+
+  /* ==================================================================== */
+  /*  LAS PIEZAS — se arman UNA vez con las alfas de arriba.             */
+  /*  Al cambiar de tema solo cambian esas alfas: estos degradés se       */
+  /*  resuelven de nuevo solos.                                           */
+  /* ==================================================================== */
+
+  /* La película translúcida de una superficie. */
+  --ui-glass-film: linear-gradient(
+    158deg,
+    rgb(from var(--ui-glass-tint) r g b / var(--ui-glass-film-top)) 0%,
+    rgb(from var(--ui-glass-tint) r g b / var(--ui-glass-film-mid)) 48%,
+    rgb(from var(--ui-glass-tint) r g b / var(--ui-glass-film-bottom)) 100%
+  );
+
+  /* Versión tenue, para controles chicos que no deben pesar tanto. */
+  --ui-glass-film-light: linear-gradient(
+    158deg,
+    rgb(from var(--ui-glass-tint) r g b / var(--ui-glass-film-mid)) 0%,
+    rgb(from var(--ui-glass-tint) r g b / var(--ui-glass-film-bottom)) 100%
+  );
+
+  /* Versión densa: lo que flota sobre el contenido (menús, paneles) tiene que
+     dejarse leer. Un desplegable demasiado translúcido es ilegible. */
+  --ui-glass-film-dense: linear-gradient(
+    158deg,
+    rgb(from var(--ui-glass-tint) r g b / calc(var(--ui-glass-film-top) + 0.12)) 0%,
+    rgb(from var(--ui-glass-tint) r g b / calc(var(--ui-glass-film-mid) + 0.08)) 100%
+  );
+
+  /* Sin película: un cristal completamente limpio, solo el canto. */
+  --ui-glass-film-none: linear-gradient(
+    rgb(from var(--ui-glass-tint) r g b / 0),
+    rgb(from var(--ui-glass-tint) r g b / 0)
+  );
+
+  /* El canto. Luz arriba-izquierda, sombra al cruzar, reflejo abajo-derecha:
+     es como toma la luz una placa de cristal, y es lo que hace la diferencia
+     entre esto y una caja translúcida cualquiera. */
+  --ui-glass-edge: linear-gradient(
+    145deg,
+    rgb(from var(--ui-glass-tint)  r g b / var(--ui-glass-edge-hi))   0%,
+    rgb(from var(--ui-glass-tint)  r g b / var(--ui-glass-edge-lo))   34%,
+    rgb(from var(--ui-glass-shade) r g b / var(--ui-glass-edge-lo))   58%,
+    rgb(from var(--ui-glass-tint)  r g b / var(--ui-glass-edge-tail)) 100%
+  );
+
+  /* El mismo canto, pero encendido con la marca: para lo que está activo. */
+  --ui-glass-edge-accent: linear-gradient(
+    145deg,
+    rgb(from var(--ui-glass-tint) r g b / var(--ui-glass-edge-hi))    0%,
+    rgb(from var(--ui-accent)     r g b / 0.85)                       38%,
+    rgb(from var(--ui-accent)     r g b / 0.55)                       64%,
+    rgb(from var(--ui-glass-tint) r g b / var(--ui-glass-edge-tail)) 100%
+  );
+
+  /* ==================================================================== */
+  /*  SUPERFICIES LISTAS PARA USAR                                       */
+  /*  Dos capas en una sola variable: la película recortada al borde     */
+  /*  interno, y el canto recortado al externo. Eso deja el degradé       */
+  /*  justo en el ancho del borde — un borde degradado de verdad, que     */
+  /*  border-color no puede hacer. Pide border-color: transparent.        */
+  /* ==================================================================== */
+  /* Superficies grandes: contenedores, ventanas. */
+  --ui-glass-surface:     var(--ui-glass-film) padding-box,       var(--ui-glass-edge) border-box;
+  --ui-glass-surface-on:  var(--ui-glass-film) padding-box,       var(--ui-glass-edge-accent) border-box;
+
+  /* Lo que flota sobre el contenido: menús, paneles. */
+  --ui-glass-surface-dense: var(--ui-glass-film-dense) padding-box, var(--ui-glass-edge) border-box;
+
+  /* Controles chicos: spinner, campo, disparador de un select. */
+  --ui-glass-control:    var(--ui-glass-film-light) padding-box, var(--ui-glass-edge) border-box;
+  --ui-glass-control-on: var(--ui-glass-film-light) padding-box, var(--ui-glass-edge-accent) border-box;
+
+  /* Cristal limpio: sin película, solo el canto. */
+  --ui-glass-hollow: var(--ui-glass-film-none) padding-box, var(--ui-glass-edge) border-box;
+
+  /* ==================================================================== */
+  /*  EL ACENTO NO ES UN COLOR PLANO                                     */
+  /*  Un relleno de un solo tono al lado de superficies que refractan se  */
+  /*  ve muerto. El acento recorre un corrimiento de tono — el mismo      */
+  /*  gesto que hace la malla del fondo — así que barras, botones y       */
+  /*  controles marcados comparten la misma iridiscencia.                 */
+  /* ==================================================================== */
+  --ui-fill-from: hsl(from var(--ui-accent) calc(h - 26) calc(s * 1.05) calc(l * 1.12));
+  --ui-fill-to:   hsl(from var(--ui-accent) calc(h + 14) s calc(l * 0.94));
+
+  /* El reflejo de arriba, para barras. Va sobre TODO el canal, lleno o no:
+     la luz pega en el tubo entero, no solo en la parte llena. */
+  --ui-fill-sheen: linear-gradient(
+    180deg,
+    rgb(from var(--ui-glass-tint) r g b / var(--ui-glass-sheen)) 0%,
+    rgb(from var(--ui-glass-tint) r g b / 0) 62%
+  );
+
+  /* Vidrio teñido con la marca: lo que está encendido (botón primario, un
+     control marcado). El color va translúcido, no pleno: sigue siendo vidrio,
+     y toma el mismo degradé de tono que el relleno de las barras. */
+  --ui-glass-accent: linear-gradient(
+      158deg,
+      rgb(from var(--ui-fill-from) r g b / 0.95),
+      rgb(from var(--ui-fill-to) r g b / 0.72)
+    ) padding-box,
+    var(--ui-glass-edge-accent) border-box;
+
+  --ui-glass-accent-hover: linear-gradient(
+      158deg,
+      rgb(from var(--ui-fill-from) r g b / 1),
+      rgb(from var(--ui-fill-to) r g b / 0.86)
+    ) padding-box,
+    var(--ui-glass-edge-accent) border-box;
+
+  /* El grosor del vidrio, visto desde adentro: una línea de luz apoyada en
+     el canto de arriba y su sombra en el de abajo. */
+  --ui-glass-inner:
+    inset 0 var(--ui-border-width) 0 rgb(from var(--ui-glass-tint) r g b / var(--ui-glass-inner-hi)),
+    inset 0 calc(var(--ui-border-width) * -1) 0 rgb(from var(--ui-glass-shade) r g b / var(--ui-glass-inner-lo));
+
+  /* Resplandor de la marca, para lo encendido. */
+  --ui-glass-glow: 0 0 0 var(--ui-border-width) rgb(from var(--ui-accent) r g b / 0.35),
+                   0 6px 22px rgb(from var(--ui-accent) r g b / 0.30);
+
+  /* -------------------------------------------------------- Sombras ----- */
+  /* Difusas y largas: el vidrio flota, no está apoyado. */
+  --ui-shadow-sm: 0 2px 10px rgb(from var(--ui-glass-shade) r g b / var(--ui-glass-cast));
+  --ui-shadow-md:
+    0 10px 30px rgb(from var(--ui-glass-shade) r g b / var(--ui-glass-cast)),
+    0 2px 6px   rgb(from var(--ui-glass-shade) r g b / calc(var(--ui-glass-cast) * 0.5));
+  --ui-shadow-lg:
+    0 28px 70px rgb(from var(--ui-glass-shade) r g b / calc(var(--ui-glass-cast) * 2)),
+    0 6px 16px  rgb(from var(--ui-glass-shade) r g b / var(--ui-glass-cast));
+
+  /* ==================================================================== */
+  /*  LA MALLA DEL FONDO                                                 */
+  /*  Un vidrio sobre un fondo plano no se ve: no hay nada que refractar. */
+  /*  Estas manchas son todas el brand corrido de tono — sigue habiendo   */
+  /*  un solo color declarado.                                            */
+  /* ==================================================================== */
+  --ui-mesh-a:    hsl(from var(--ui-brand) calc(h - 38) calc(s * 0.80) 84%);
+  --ui-mesh-b:    hsl(from var(--ui-brand) calc(h + 56) calc(s * 0.75) 86%);
+  --ui-mesh-c:    hsl(from var(--ui-brand) calc(h + 18) calc(s * 0.85) 80%);
+  --ui-mesh-base: hsl(from var(--ui-brand) h calc(s * 0.30) 96%);
+
+  /* Se desvanecen hacia SU PROPIO color con alfa 0, no hacia `transparent`:
+     transparent es negro transparente y al interpolar ensucia de gris. */
+  --ui-bg:
+    radial-gradient(58rem 44rem at  8% -10%,
+      var(--ui-mesh-a) 0%, rgb(from var(--ui-mesh-a) r g b / 0) 62%) fixed,
+    radial-gradient(52rem 40rem at 96%   6%,
+      var(--ui-mesh-b) 0%, rgb(from var(--ui-mesh-b) r g b / 0) 58%) fixed,
+    radial-gradient(48rem 48rem at 52% 108%,
+      var(--ui-mesh-c) 0%, rgb(from var(--ui-mesh-c) r g b / 0) 60%) fixed,
+    linear-gradient(180deg, var(--ui-mesh-base), var(--ui-mesh-base)) fixed;
+
+  /* ------------------------------------------- Semánticos — tema claro -- */
+  --ui-bg-subtle:      var(--ui-neutral-100);
+  --ui-surface:        rgb(from var(--ui-glass-tint) r g b / var(--ui-glass-film-mid));
+  --ui-surface-hover:  rgb(from var(--ui-glass-tint) r g b / var(--ui-glass-film-top));
+  --ui-surface-active: rgb(from var(--ui-glass-shade) r g b / 0.08);
+
+  --ui-border:         rgb(from var(--ui-text) r g b / 0.12);
+  --ui-border-strong:  rgb(from var(--ui-text) r g b / 0.22);
+  --ui-line:           rgb(from var(--ui-text) r g b / 0.14);
+  --ui-line-soft:      rgb(from var(--ui-text) r g b / 0.09);
+  --ui-scroll-thumb:       rgb(from var(--ui-text) r g b / 0.20);
+  --ui-scroll-thumb-hover: rgb(from var(--ui-text) r g b / 0.38);
+
+  --ui-panel-from:     rgb(from var(--ui-glass-tint) r g b / var(--ui-glass-film-top));
+  --ui-panel-to:       rgb(from var(--ui-glass-tint) r g b / var(--ui-glass-film-bottom));
+
+  /* ⚠ El texto sobre vidrio necesita MAS contraste que sobre una superficie
+     opaca: no se apoya en un color, se apoya en una película translúcida y
+     abajo la malla cambia de tono. Estos valores están medidos contra el peor
+     caso (la mancha más clara de la malla, con la película más fina), no
+     elegidos a ojo. Ver el guard de contraste en la suite de packs. */
+  --ui-text:           hsl(from var(--ui-brand) h calc(s * 0.45) 15%);
+  --ui-text-muted:     hsl(from var(--ui-brand) h calc(s * 0.34) 30%);
+  --ui-text-subtle:    hsl(from var(--ui-brand) h calc(s * 0.30) 40%);
+
+  --ui-accent:         var(--ui-brand-base);
+  --ui-accent-hover:   var(--ui-brand-hover);
+  --ui-accent-active:  var(--ui-brand-active);
+  /* El acento cuando es LETRA, no relleno. Un acento vivo puede no tener
+     luminancia para leerse; este esta medido contra los fondos del pack. */
+  /* El violeta pleno como letra sobre vidrio claro daba 2.49:1. */
+  --ui-accent-text:    hsl(from var(--ui-accent) h s 40%);
+  --ui-accent-subtle:  rgb(from var(--ui-accent) r g b / 0.16);
+  --ui-accent-soft:    rgb(from var(--ui-accent) r g b / 0.45);
+  --ui-on-accent:      var(--ui-on-brand);
+
+  --ui-danger:         var(--ui-red-600);
+  --ui-danger-hover:   var(--ui-red-700);
+  --ui-danger-subtle:  var(--ui-red-100);
+  --ui-on-danger:      var(--ui-on-brand-light);
+
+  --ui-success:        var(--ui-green-600);
+  --ui-success-subtle: var(--ui-green-100);
+  --ui-warning:        var(--ui-amber-600);
+  --ui-warning-subtle: var(--ui-amber-100);
+
+  --ui-focus-ring:     var(--ui-accent);
+  --ui-focus-width:    2px;
+  --ui-focus-offset:   2px;
+
+  --ui-selection-bg:   rgb(from var(--ui-accent) r g b / 0.26);
+  --ui-selection-fg:   var(--ui-text);
+
+  --ui-ring-width:     3px;
+  --ui-ring:           rgb(from var(--ui-accent) r g b / 0.26);
+  --ui-ring-soft:      rgb(from var(--ui-accent) r g b / 0.14);
+}
+
+/* ===========================================================================
+   TEMA OSCURO
+   ---------------------------------------------------------------------------
+   Lo único que cambia del efecto son las ALFAS y la malla. Los degradés de
+   arriba no se repiten: se resuelven de nuevo con estos valores.
+
+   Vidrio oscuro = película muy tenue (se ve el fondo) y canto más apagado:
+   con las alfas del tema claro, sobre un fondo oscuro, quedaría lechoso.
+   =========================================================================== */
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ui-glass-film-top:    0.13;
+    --ui-glass-film-mid:    0.07;
+    --ui-glass-film-bottom: 0.04;
+
+    --ui-glass-edge-hi:   0.40;
+    --ui-glass-edge-lo:   0.06;
+    --ui-glass-edge-tail: 0.18;
+
+    --ui-glass-inner-hi: 0.16;
+    --ui-glass-inner-lo: 0.22;
+
+    --ui-glass-cast: 0.40;
+    --ui-glass-sheen: 0.32;
+
+    /* Contenidas a proposito. El texto claro sobre vidrio pierde contraste
+       cuando la pelicula blanca se apoya sobre una mancha clara: con estas
+       manchas mas arriba, --ui-text-subtle caia a 1.4:1 — ilegible.
+       Bajan en LUZ, no en saturacion: el fondo sigue teniendo color, que es
+       lo que le da algo que refractar al vidrio. Medido en contrast.test. */
+    --ui-mesh-a:    hsl(from var(--ui-brand) calc(h - 38) calc(s * 0.95) 18%);
+    --ui-mesh-b:    hsl(from var(--ui-brand) calc(h + 56) calc(s * 0.85) 15%);
+    --ui-mesh-c:    hsl(from var(--ui-brand) calc(h + 18) calc(s * 0.90) 13%);
+    --ui-mesh-base: hsl(from var(--ui-brand) h calc(s * 0.50) 6%);
+
+    --ui-bg-subtle:      hsl(from var(--ui-brand) h calc(s * 0.40) 9%);
+    --ui-surface-active: rgb(from var(--ui-glass-tint) r g b / 0.14);
+
+    --ui-border:         rgb(from var(--ui-glass-tint) r g b / 0.14);
+    --ui-border-strong:  rgb(from var(--ui-glass-tint) r g b / 0.26);
+    --ui-line:           rgb(from var(--ui-glass-tint) r g b / 0.12);
+    --ui-line-soft:      rgb(from var(--ui-glass-tint) r g b / 0.07);
+    --ui-scroll-thumb:       rgb(from var(--ui-glass-tint) r g b / 0.22);
+    --ui-scroll-thumb-hover: rgb(from var(--ui-glass-tint) r g b / 0.42);
+
+    /* Medidos contra la mancha mas clara con la pelicula mas fina. */
+    --ui-text:           hsl(from var(--ui-brand) h calc(s * 0.28) 97%);
+    --ui-text-muted:     hsl(from var(--ui-brand) h calc(s * 0.20) 86%);
+    --ui-text-subtle:    hsl(from var(--ui-brand) h calc(s * 0.18) 76%);
+
+    --ui-accent:         hsl(from var(--ui-brand) h s calc(l * 1.14));
+    --ui-accent-hover:   hsl(from var(--ui-brand) h s calc(l * 1.28));
+    --ui-accent-active:  var(--ui-brand);
+    /* Sobre vidrio oscuro daba 2.48:1: hay que subirlo mucho. */
+    --ui-accent-text:    hsl(from var(--ui-accent) h s 91%);
+    --ui-accent-subtle:  rgb(from var(--ui-accent) r g b / 0.22);
+    --ui-accent-soft:    rgb(from var(--ui-accent) r g b / 0.50);
+
+    --ui-danger:         var(--ui-red-500);
+    --ui-danger-hover:   var(--ui-red-600);
+    --ui-danger-subtle:  rgb(from var(--ui-red-500) r g b / 0.20);
+
+    --ui-success:        var(--ui-green-500);
+    --ui-success-subtle: rgb(from var(--ui-green-500) r g b / 0.18);
+    --ui-warning:        var(--ui-amber-500);
+    --ui-warning-subtle: rgb(from var(--ui-amber-500) r g b / 0.18);
+  }
+}
+
+:root[data-theme="dark"] {
+  --ui-glass-film-top:    0.13;
+  --ui-glass-film-mid:    0.07;
+  --ui-glass-film-bottom: 0.04;
+
+  --ui-glass-edge-hi:   0.40;
+  --ui-glass-edge-lo:   0.06;
+  --ui-glass-edge-tail: 0.18;
+
+  --ui-glass-inner-hi: 0.16;
+  --ui-glass-inner-lo: 0.22;
+
+  --ui-glass-cast: 0.40;
+  --ui-glass-sheen: 0.32;
+
+  /* Contenidas a proposito. El texto claro sobre vidrio pierde contraste
+     cuando la pelicula blanca se apoya sobre una mancha clara: con estas
+     manchas mas arriba, --ui-text-subtle caia a 1.4:1 — ilegible.
+     Bajan en LUZ, no en saturacion: el fondo sigue teniendo color, que es
+     lo que le da algo que refractar al vidrio. Medido en contrast.test. */
+  --ui-mesh-a:    hsl(from var(--ui-brand) calc(h - 38) calc(s * 0.95) 18%);
+  --ui-mesh-b:    hsl(from var(--ui-brand) calc(h + 56) calc(s * 0.85) 15%);
+  --ui-mesh-c:    hsl(from var(--ui-brand) calc(h + 18) calc(s * 0.90) 13%);
+  --ui-mesh-base: hsl(from var(--ui-brand) h calc(s * 0.50) 6%);
+
+  --ui-bg-subtle:      hsl(from var(--ui-brand) h calc(s * 0.40) 9%);
+  --ui-surface-active: rgb(from var(--ui-glass-tint) r g b / 0.14);
+
+  --ui-border:         rgb(from var(--ui-glass-tint) r g b / 0.14);
+  --ui-border-strong:  rgb(from var(--ui-glass-tint) r g b / 0.26);
+  --ui-line:           rgb(from var(--ui-glass-tint) r g b / 0.12);
+  --ui-line-soft:      rgb(from var(--ui-glass-tint) r g b / 0.07);
+  --ui-scroll-thumb:       rgb(from var(--ui-glass-tint) r g b / 0.22);
+  --ui-scroll-thumb-hover: rgb(from var(--ui-glass-tint) r g b / 0.42);
+
+  /* Medidos contra la mancha mas clara con la pelicula mas fina. */
+  --ui-text:           hsl(from var(--ui-brand) h calc(s * 0.28) 97%);
+  --ui-text-muted:     hsl(from var(--ui-brand) h calc(s * 0.20) 86%);
+  --ui-text-subtle:    hsl(from var(--ui-brand) h calc(s * 0.18) 76%);
+
+  --ui-accent:         hsl(from var(--ui-brand) h s calc(l * 1.14));
+  --ui-accent-hover:   hsl(from var(--ui-brand) h s calc(l * 1.28));
+  --ui-accent-active:  var(--ui-brand);
+  /* Sobre vidrio oscuro daba 2.48:1: hay que subirlo mucho. */
+  --ui-accent-text:    hsl(from var(--ui-accent) h s 91%);
+  --ui-accent-subtle:  rgb(from var(--ui-accent) r g b / 0.22);
+  --ui-accent-soft:    rgb(from var(--ui-accent) r g b / 0.50);
+
+  --ui-danger:         var(--ui-red-500);
+  --ui-danger-hover:   var(--ui-red-600);
+  --ui-danger-subtle:  rgb(from var(--ui-red-500) r g b / 0.20);
+
+  --ui-success:        var(--ui-green-500);
+  --ui-success-subtle: rgb(from var(--ui-green-500) r g b / 0.18);
+  --ui-warning:        var(--ui-amber-500);
+  --ui-warning-subtle: rgb(from var(--ui-amber-500) r g b / 0.18);
+}

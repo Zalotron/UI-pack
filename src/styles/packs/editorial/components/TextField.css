@@ -1,0 +1,34 @@
+/* --------------------------------------- TextField — PIEL del pack EDITORIAL */
+/* Interfaz: --field-bg | --field-fg | --field-border | --field-ring
+             --field-placeholder                                              */
+
+/* Un renglon sobre el que se escribe, igual que el Spinner. Ver la nota larga
+   ahi: es el mismo gesto y por el mismo motivo. */
+.ui-textfield {
+  --field-bg: transparent;
+  --field-border: transparent;
+  --field-placeholder: var(--ui-text-subtle);
+  border-bottom-color: var(--ui-border);
+}
+
+.ui-textfield:hover:not(.is-disabled) {
+  border-bottom-color: var(--ui-text-muted);
+}
+
+/* :not(.is-disabled) para empatarle la especificidad al hover de arriba. */
+.ui-textfield:focus-within:not(.is-disabled) {
+  border-bottom-color: var(--ui-accent);
+  /* El filete se DOBLA sin tocar el borde: engrosarlo de verdad achica el
+     area de contenido y el texto salta un pixel justo cuando lo estas
+     escribiendo. Una sombra interior dibuja el segundo filete encima.
+     El halo va en la misma lista porque `box-shadow` se reemplaza entera. */
+  box-shadow:
+    inset 0 calc(var(--ui-border-width) * -1) 0 0 var(--ui-accent),
+    0 0 0 var(--ui-ring-width) var(--field-ring);
+}
+
+/* El texto tecleado se compone como el resto de la pagina, no en letra de
+   formulario: misma serif, mismo cuerpo. */
+.ui-textfield__input {
+  padding-inline: 0;
+}

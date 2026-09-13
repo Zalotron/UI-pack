@@ -1,0 +1,26 @@
+/* ------------------------------------------- TextField — PIEL del pack CYBER */
+/* Interfaz: --field-bg | --field-fg | --field-border | --field-ring
+             --field-placeholder                                              */
+
+.ui-textfield {
+  --field-bg: var(--ui-bg-subtle);
+  --field-border: var(--ui-border);
+  --field-placeholder: var(--ui-text-subtle);
+}
+
+.ui-textfield:hover:not(.is-disabled) {
+  --field-border: var(--ui-border-strong);
+}
+
+/* Al tomar el foco, un tirón de señal. Variante de texto por lo mismo que
+   el Spinner: no se le cortan bandas a algo donde se está escribiendo. */
+.ui-textfield:focus-within {
+  animation: var(--ui-glitch-anim-text);
+}
+
+/* :not(.is-disabled) para empatarle la especificidad al hover de arriba. */
+.ui-textfield:focus-within:not(.is-disabled) {
+  --field-border: var(--ui-accent);
+  --field-ring: var(--ui-ring);
+  --field-fg: var(--ui-accent-text);
+}

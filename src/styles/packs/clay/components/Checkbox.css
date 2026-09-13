@@ -1,0 +1,38 @@
+/* --------------------------------------------- Checkbox — PIEL del pack CLAY */
+/* Interfaz: --check-bg | --check-bg-on | --check-border | --check-mark
+             --check-ring                                                     */
+
+/* Sin marcar es un HUECO en la plastilina; marcado se llena y se convierte en
+   una PIEZA con volumen propio. Es el mismo cambio de estado que en `soft`,
+   pero acá además cambia de color: allá todo era la misma lámina. */
+.ui-checkbox {
+  --check-bg: var(--ui-bg-subtle);
+  --check-bg-on: var(--ui-accent);
+  --check-border: transparent;
+  --check-mark: var(--ui-on-accent);
+}
+
+.ui-checkbox__box {
+  box-shadow: var(--ui-clay-pressed);
+  transition:
+    background var(--ui-duration-fast) var(--ui-ease),
+    box-shadow var(--ui-duration-base) var(--ui-ease-out),
+    scale var(--ui-duration-fast) var(--ui-ease-out);
+}
+
+.ui-checkbox:hover:not(.is-disabled) {
+  --check-bg: var(--ui-surface-active);
+}
+
+/* :not(.is-disabled) para empatarle la especificidad al hover de arriba.
+   El tilde ya entra rebotando: la mecánica lo anima con `scale` y
+   --ui-ease-out, que en este pack es la curva con más sobrepaso del sistema. */
+.ui-checkbox.is-checked:not(.is-disabled) .ui-checkbox__box,
+.ui-checkbox.is-indeterminate:not(.is-disabled) .ui-checkbox__box {
+  box-shadow: var(--ui-clay-body);
+}
+
+/* Al apretarlo se achata, como todo lo demás. */
+.ui-checkbox:active:not(.is-disabled) .ui-checkbox__box {
+  scale: calc(1 + var(--ui-squash)) calc(1 - var(--ui-squash));
+}

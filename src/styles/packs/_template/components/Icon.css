@@ -1,0 +1,8 @@
+/* ------------------------------------------ Icon — PIEL del pack PLANTILLA */
+/* Interfaz: --icon-color | --icon-stroke | --icon-cap | --icon-join        */
+
+.ui-icon {
+  --icon-color: currentColor;
+  --icon-cap: round;
+  --icon-join: round;
+}

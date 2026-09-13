@@ -1,0 +1,50 @@
+/* --------------------------------------- Container — PIEL del pack EDITORIAL */
+/* Interfaz: --container-bg | --container-border-color | --container-shadow    */
+
+/* En una página bien compuesta un bloque no se encierra en una caja: se separa
+   con AIRE, y como mucho con un filete. Por eso acá casi ninguna variante
+   dibuja un borde completo — lo que agrupa es el espacio, que en este pack es
+   el más generoso de todos. */
+
+/* El panel es papel, sin marco: apenas un tono distinto del fondo. */
+.ui-container--panel {
+  --container-bg: var(--ui-surface);
+  --container-border-color: transparent;
+}
+
+/* `solid` es el mismo papel con un filete arriba, como una sección de revista
+   que arranca bajo una línea. */
+.ui-container--solid {
+  --container-bg: var(--ui-surface);
+  --container-border-color: transparent;
+  border-top: var(--ui-border-width) solid var(--ui-border);
+}
+
+/* El único que se encierra, y con el filete más fino que se ve. */
+.ui-container--outline {
+  --container-bg: transparent;
+  --container-border-color: var(--ui-line);
+}
+
+.ui-container--ghost {
+  --container-bg: transparent;
+  --container-border-color: transparent;
+}
+
+.ui-container--no-border {
+  --container-border-color: transparent;
+}
+
+/* -- Elevación ------------------------------------------------------------- */
+/* Una página no tiene profundidad: nada flota sobre nada. La jerarquía se
+   lee en el aire alrededor y en el peso del filete, no en una sombra. */
+
+.ui-container--elev-sm { --container-border-color: var(--ui-line-soft); }
+.ui-container--elev-md { --container-border-color: var(--ui-line); }
+.ui-container--elev-lg { --container-border-color: var(--ui-border); }
+
+/* -- Reacción al mouse ----------------------------------------------------- */
+
+.ui-container.is-interactive:hover {
+  --container-bg: var(--ui-surface-hover);
+}

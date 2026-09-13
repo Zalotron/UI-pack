@@ -1,0 +1,51 @@
+/* --------------------------------------- ColorPicker — PIEL del pack ------ */
+/* Interfaz: --cp-bg | --cp-border | --cp-ring | --cp-value-fg | --cp-panel-border
+             --cp-panel-bg | --cp-panel-shadow                               */
+
+.ui-colorpicker {
+  --cp-bg: var(--ui-surface);
+  --cp-border: var(--ui-border);
+  --cp-value-fg: var(--ui-text-muted);
+  --cp-panel-bg: var(--ui-surface);
+  --cp-panel-border: var(--ui-border);
+  --cp-panel-shadow: var(--ui-shadow-lg);
+}
+
+/* Mismo lenguaje de halo que el Spinner y el Slider. */
+.ui-colorpicker:hover:not(.is-disabled) {
+  --cp-border: var(--ui-border-strong);
+  --cp-ring: var(--ui-ring-soft);
+  --cp-value-fg: var(--ui-text);
+}
+
+/* Los estados activos llevan :not(.is-disabled) para empatarle la
+   especificidad al :hover de arriba. Sin eso el hover gana y el control
+   se ve MAS apagado con el mouse encima que sin el. */
+.ui-colorpicker.is-open:not(.is-disabled) {
+  --cp-border: var(--ui-accent);
+  --cp-ring: var(--ui-ring);
+  --cp-value-fg: var(--ui-text);
+}
+
+/* La rueda de matices: es el dominio del componente, no una decisión de
+   estilo. Un selector de color tiene que mostrar todo el espectro. */
+.ui-colorpicker__hue .ui-slider__input::-webkit-slider-runnable-track {
+  background: linear-gradient(
+    to right,
+    hsl(0 100% 50%), hsl(60 100% 50%), hsl(120 100% 50%),
+    hsl(180 100% 50%), hsl(240 100% 50%), hsl(300 100% 50%), hsl(360 100% 50%)
+  );
+}
+.ui-colorpicker__hue .ui-slider__input::-moz-range-track {
+  background: linear-gradient(
+    to right,
+    hsl(0 100% 50%), hsl(60 100% 50%), hsl(120 100% 50%),
+    hsl(180 100% 50%), hsl(240 100% 50%), hsl(300 100% 50%), hsl(360 100% 50%)
+  );
+}
+
+/* Sobre la rueda, el tirador va neutro: si tomara el acento se perdería. */
+.ui-colorpicker__hue {
+  --slider-thumb: var(--ui-neutral-0);
+  --slider-ring: rgb(from var(--ui-neutral-950) r g b / 0.35);
+}

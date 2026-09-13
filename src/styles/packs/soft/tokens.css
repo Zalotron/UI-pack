@@ -1,0 +1,756 @@
+/* ===========================================================================
+   PACK "SOFT" — tokens (Neumorphic)
+   ---------------------------------------------------------------------------
+   Todo está hecho del MISMO material que el fondo. No hay superficies de otro
+   color: hay una sola lámina de plástico blando, y lo que distingue a un botón
+   de la página es únicamente cómo le pega la luz.
+
+   RIGE LA MISMA REGLA DURA: un solo color declarado (--ui-brand). Todo lo demás
+   sale de él con color relativo.
+
+   Las piezas:
+
+     1. UNA SOLA LUZ, FIJA     Viene de arriba-izquierda. Todo el sistema la
+                               respeta: lo que sobresale tiene su brillo arriba
+                               a la izquierda y su sombra abajo a la derecha.
+                               Lo hundido tiene exactamente lo contrario.
+     2. SALIR / HUNDIRSE       Son los dos únicos estados del material. Un botón
+                               sobresale y al apretarlo se hunde. Un campo de
+                               texto está hundido siempre: es un hueco, no un
+                               objeto. Es toda la gramática del estilo.
+     3. MOVIMIENTO ELASTICO    El material es blando, así que rebota: las
+                               entradas usan una curva con sobrepaso.
+
+   ⚠ LA DEBILIDAD CONOCIDA DEL NEUMORFISMO, Y CÓMO SE TRATA ACÁ
+   Si la superficie es del mismo color que el fondo, el BORDE de un control no
+   tiene contraste: se ve la sombra, pero el límite del objeto no existe. Eso
+   incumple el contraste mínimo de componentes de interfaz (WCAG 1.4.11, 3:1) y
+   es por lo que el estilo tiene mala fama.
+
+   Acá no se ignora: todos los controles llevan --ui-line, un filete de baja
+   opacidad que les da un borde real. Se nota poco y sostiene la forma cuando
+   la sombra no alcanza (pantallas con poco brillo, modo de alto contraste).
+   Si se saca, el estilo se ve "más puro" y deja de ser usable.
+
+   Requiere color relativo (Chrome 119+, Safari 16.4+, Firefox 128+).
+   =========================================================================== */
+
+@property --ui-soft-relief {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+
+:root {
+  color-scheme: light dark;
+
+  /* ==================================================================== */
+  /*  =============   EL UNICO COLOR DECLARADO   ======================== */
+  /* ==================================================================== */
+  /* Un coral cálido. Elegido a propósito fuera de la familia azul de los
+     otros packs, y porque los neutros se tiñen del brand: con un brand
+     cálido, toda la lámina queda de un gris cálido en vez de gris azulado. */
+  --ui-brand: #e8615a;      /* pack settings -> BRAND_COLOR */
+
+  /* El material es blando: pide esquinas generosas. */
+  --ui-roundness: 1.8;
+
+  --ui-on-brand-light: hsl(from var(--ui-brand) h calc(s * 0.12) 99%);
+  --ui-on-brand-dark:  hsl(from var(--ui-brand) h calc(s * 0.45) 12%);
+  --ui-on-brand: var(--ui-on-brand-light);
+
+  /* ------------------------------------------------------ Tipografía ---- */
+  --ui-font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --ui-font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --ui-text-xs:   0.6875rem;
+  --ui-text-sm:   0.8125rem;
+  --ui-text-md:   0.875rem;
+  --ui-text-lg:   1rem;
+  --ui-text-xl:   1.25rem;
+  --ui-text-2xl:  1.5rem;
+  --ui-text-3xl:  2rem;
+
+  --ui-weight-regular:  400;
+  --ui-weight-medium:   500;
+  --ui-weight-semibold: 600;
+  --ui-weight-bold:     700;
+
+  --ui-leading-tight:   1.2;
+  --ui-leading-normal:  1.5;
+  --ui-leading-relaxed: 1.7;
+
+  --ui-tracking-tight: -0.01em;
+  --ui-tracking-wide:   0.03em;
+
+  /* -------------------------------------------- Espaciado (escala 4px) -- */
+  --ui-space-0:  0;
+  --ui-space-1:  0.25rem;
+  --ui-space-2:  0.5rem;
+  --ui-space-3:  0.75rem;
+  --ui-space-4:  1rem;
+  --ui-space-5:  1.25rem;
+  --ui-space-6:  1.5rem;
+  --ui-space-8:  2rem;
+  --ui-space-10: 2.5rem;
+  --ui-space-12: 3rem;
+  --ui-space-16: 4rem;
+
+  /* --------------------------------------- Espaciado fluido ------------- */
+  /* El más aireado de los packs, y no por gusto: las sombras necesitan lugar
+     para caer. Con poco aire, la sombra de un elemento se mete sobre el de al
+     lado y el relieve se ensucia. */
+  --ui-pad-block-xs:  clamp(12px, 1.5vw, 16px);
+  --ui-pad-inline-xs: clamp(12px, 1.5vw, 16px);
+  --ui-pad-block-sm:  clamp(18px, 2.2vw, 24px);
+  --ui-pad-inline-sm: clamp(16px, 2vw, 22px);
+  --ui-pad-block-md:  clamp(28px, 3.6vw, 40px);
+  --ui-pad-inline-md: clamp(24px, 3vw, 34px);
+  --ui-pad-block-lg:  clamp(36px, 4.6vw, 54px);
+  --ui-pad-inline-lg: clamp(30px, 3.8vw, 46px);
+  --ui-pad-block-xl:  clamp(48px, 6vw, 78px);
+  --ui-pad-inline-xl: clamp(38px, 4.8vw, 62px);
+
+  --ui-gap-none: 0;
+  --ui-gap-xs:   var(--ui-space-2);
+  --ui-gap-sm:   clamp(12px, 1.5vw, 16px);
+  --ui-gap-md:   clamp(18px, 2.2vw, 26px);
+  --ui-gap-lg:   clamp(26px, 3.2vw, 38px);
+  --ui-gap-xl:   clamp(34px, 4.2vw, 54px);
+
+  --ui-col-min: 240px;
+
+  /* ------------------------------------------------ Separadores ---------- */
+  --ui-sep-space-none: 0;
+  --ui-sep-space-xs:   var(--ui-space-1);
+  --ui-sep-space-sm:   var(--ui-space-4);
+  --ui-sep-space-md:   clamp(20px, 3vh, 28px);
+  --ui-sep-space-lg:   clamp(28px, 4.5vh, 44px);
+  --ui-sep-space-xl:   clamp(36px, 6vh, 60px);
+
+  --ui-sep-fade: 16%;
+
+  /* ------------------------------------------- Controles ----------------- */
+  /* Altos: un control hundido necesita lugar adentro para que se vea el
+     relieve del borde. Apretado, el hueco no se lee. */
+  --ui-control-h-sm:    32px;
+  --ui-control-h-md:    42px;
+  --ui-control-h-lg:    52px;
+  --ui-control-pad-sm:  var(--ui-space-3);
+  --ui-control-pad-md:  var(--ui-space-5);
+  --ui-control-pad-lg:  var(--ui-space-6);
+  --ui-control-font-sm: var(--ui-text-sm);
+  --ui-control-font-md: var(--ui-text-md);
+  --ui-control-font-lg: var(--ui-text-lg);
+  --ui-control-gap-sm:  var(--ui-space-2);
+  --ui-control-gap-md:  var(--ui-space-2);
+  --ui-control-gap-lg:  var(--ui-space-3);
+  --ui-control-radius-sm: var(--ui-radius-md);
+  --ui-control-radius-md: var(--ui-radius-lg);
+  --ui-control-radius-lg: var(--ui-radius-xl);
+  /* Piso del spinner. NO es su ancho: el ancho lo reserva el propio
+     control segun sus limites. Esto es para que uno de un solo digito
+     siga siendo agarrable. */
+  --ui-spinner-min-w: 3ch;
+  /* Respiro sobre los caracteres reservados: la coma, el signo y el
+     cursor no miden lo que mide un cero, que es lo que mide `ch`. */
+--ui-spinner-slack: 0.75;
+
+  --ui-slider-track-ratio: 0.34;   /* canal ancho: tiene que verse hundido */
+  --ui-slider-thumb-ratio: 0.72;
+  --ui-slider-thumb-w: 22px;       /* pastilla, no aguja: es un objeto */
+  --ui-slider-value-w: 5ch;
+
+  --ui-select-menu-max-h: 260px;
+  --ui-select-arrow: 8px;
+
+  --ui-toggle-track-ratio: 0.62;
+  --ui-toggle-aspect: 1.8;
+  --ui-toggle-knob-inset: 4px;
+  --ui-check-ratio: 0.52;
+
+  --ui-scroll-size: 14px;
+  --ui-scroll-inset: 4px;
+  --ui-scroll-size-regular: 18px;
+  --ui-scroll-inset-regular: 5px;
+
+  /* Window. ⛔ EL MARCO DE UNA VENTANA ES CUADRADO, SIEMPRE. No sigue
+     ROUNDNESS y ningún pack lo redondea. */
+  --ui-window-radius: 0;
+  /* El oscurecido detras de una ventana modal. Sale de la marca como
+     todo lo demas: un negro puro no pertenece a ningun pack. */
+  --ui-window-scrim: hsl(from var(--ui-brand) h calc(s * 0.30) 6% / 0.62);
+  --ui-window-bar-h: 44px;
+  --ui-window-control-w: 48px;
+  --ui-window-glyph: 10px;
+
+  /* Progress. Gorda: el relieve necesita lugar para curvarse. */
+  --ui-progress-h-sm: 8px;
+  --ui-progress-h-md: 12px;
+  --ui-progress-h-lg: 18px;
+  /* El aro va GORDO, y no es capricho: el relieve de este pack necesita lugar
+     para curvarse. Un aro de 10px con la luz encima se ve como una raya sucia;
+     recien pasados los 15 se lee como una pieza de material. */
+  --ui-progress-ring-sm: 46px;
+  --ui-progress-ring-md: 64px;
+  --ui-progress-ring-lg: 88px;
+  /* ⚠ ESTO NO SON PIXELES: es el PORCENTAJE DEL DIAMETRO.
+     El aro se dibuja en un SVG con `viewBox="0 0 100 100"`, asi que una unidad
+     del trazo vale un centesimo del diametro. Escrito como `px` el numero
+     mentia: un `16px` sobre un aro de 64 se dibujaba de 10. Y ademas asi es
+     como tiene que ser — el trazo acompana al tamano del aro en las tres
+     variantes en vez de quedarse fijo. */
+  --ui-progress-ring-width: 25;
+
+  /* Iconos. Son de TRAZO, asi que lo que los hace de este pack es el grosor:
+     el mismo dibujo con otro calibre ya es otro icono. */
+  --ui-icon-sm: 18px;
+  --ui-icon-md: 22px;
+  --ui-icon-lg: 28px;
+  --ui-icon-stroke: 2.0px;
+
+  --ui-tabs-indicator-h: 3px;
+
+  --ui-swatch-w: 2.8em;
+  --ui-picker-w: 240px;
+  --ui-picker-area-h: 140px;
+  --ui-picker-cursor: 14px;
+
+  /* No hay desplazamiento al apretar: el material NO se mueve, se HUNDE.
+     El relieve hace todo el trabajo; correr además el elemento se lee como
+     otro efecto distinto y pelea con la sombra. */
+  --ui-press-shift: 0px;
+  --ui-hover-lift: -1px;
+  --ui-disabled-opacity: 0.45;
+
+  /* ---------------------------------------------------------- Radios ---- */
+  /* La escala más generosa de todos los packs. */
+  --ui-radius-xs:   calc(6px  * var(--ui-roundness));
+  --ui-radius-sm:   calc(9px  * var(--ui-roundness));
+  --ui-radius-md:   calc(13px * var(--ui-roundness));
+  --ui-radius-lg:   calc(18px * var(--ui-roundness));
+  --ui-radius-xl:   calc(26px * var(--ui-roundness));
+  --ui-radius-full: calc(999px * min(var(--ui-roundness), 1));
+  --ui-radius-circle: 50%;
+
+  /* -------------------------------------------------------- Bordes ------ */
+  --ui-border-width: 1px;
+
+  /* ------------------------------------------------------ Movimiento ---- */
+  --ui-duration-fast: 140ms;
+  --ui-duration-base: 240ms;
+  --ui-duration-slow: 380ms;
+  --ui-duration-loader: 700ms;
+  --ui-loader-width: 3px;
+  --ui-ease:      cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* La curva del material blando: se pasa y vuelve. Es la firma del pack.
+     La mecánica ya usa --ui-ease-out para las ENTRADAS (el tilde del
+     checkbox, el punto del radio, la rayita de tabs), así que con cambiarla
+     acá todo el sistema rebota, sin tocar un solo componente. */
+  --ui-ease-out:  cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* La curva para una animacion CON PARADAS INTERMEDIAS. Simetrica: arranca y
+     termina quieta. Una curva se aplica entre CADA PAR de keyframes, no a la
+     animacion entera, y en una parada la pieza cambia de sentido — o sea que
+     ahi su velocidad es cero y la curva tiene que decir lo mismo de los dos
+     lados. Con la de rebote saltaba de cero a maximo en cada borde. */
+  --ui-ease-settle: cubic-bezier(0.45, 0, 0.55, 1);
+  --ui-ease-in:   cubic-bezier(0.6, -0.28, 0.74, 0.05);
+
+  /* ----------------------------------------------------------- Capas ---- */
+  --ui-z-base:     0;
+  --ui-z-dropdown: 1000;
+  --ui-z-sticky:   1100;
+  --ui-z-overlay:  1200;
+  --ui-z-modal:    1300;
+  --ui-z-toast:    1400;
+  --ui-z-tooltip:  1500;
+
+  /* ==================================================================== */
+  /*  NEUTROS — muy poco saturados, pero teñidos del brand.              */
+  /*  Con el coral de arriba dan grises cálidos; con un brand frío,       */
+  /*  darían grises fríos. La lámina entera acompaña al color de marca.   */
+  /* ==================================================================== */
+  --ui-neutral-0:    hsl(from var(--ui-brand) h calc(s * 0.10) 100%);
+  --ui-neutral-50:   hsl(from var(--ui-brand) h calc(s * 0.14) 97%);
+  --ui-neutral-100:  hsl(from var(--ui-brand) h calc(s * 0.16) 93%);
+  --ui-neutral-200:  hsl(from var(--ui-brand) h calc(s * 0.18) 88%);
+  --ui-neutral-300:  hsl(from var(--ui-brand) h calc(s * 0.20) 78%);
+  --ui-neutral-400:  hsl(from var(--ui-brand) h calc(s * 0.20) 62%);
+  --ui-neutral-500:  hsl(from var(--ui-brand) h calc(s * 0.20) 46%);
+  --ui-neutral-600:  hsl(from var(--ui-brand) h calc(s * 0.22) 34%);
+  --ui-neutral-700:  hsl(from var(--ui-brand) h calc(s * 0.24) 25%);
+  --ui-neutral-800:  hsl(from var(--ui-brand) h calc(s * 0.28) 17%);
+  --ui-neutral-900:  hsl(from var(--ui-brand) h calc(s * 0.32) 11%);
+  --ui-neutral-950:  hsl(from var(--ui-brand) h calc(s * 0.38) 5%);
+
+  /* ==================================================================== */
+  /*  FAMILIA DE MARCA                                                   */
+  /* ==================================================================== */
+  --ui-brand-base:   var(--ui-brand);
+  --ui-brand-hover:  hsl(from var(--ui-brand) h s calc(l * 0.92));
+  --ui-brand-active: hsl(from var(--ui-brand) h s calc(l * 0.82));
+  --ui-brand-soft:   hsl(from var(--ui-brand) h calc(s * 0.70) 78%);
+  --ui-brand-subtle: hsl(from var(--ui-brand) h calc(s * 0.50) 93%);
+
+  /* ==================================================================== */
+  /*  ESTADOS — tono fijo, saturación aportada por el brand.             */
+  /* ==================================================================== */
+  --ui-red-100:   hsl(from var(--ui-brand) 2   calc(s * 0.45) 94%);
+  --ui-red-500:   hsl(from var(--ui-brand) 2   calc(s * 0.95) 58%);
+  --ui-red-600:   hsl(from var(--ui-brand) 0   calc(s * 0.95) 46%);
+  --ui-red-700:   hsl(from var(--ui-brand) 358 calc(s * 0.95) 38%);
+
+  --ui-green-100: hsl(from var(--ui-brand) 152 calc(s * 0.35) 92%);
+  --ui-green-500: hsl(from var(--ui-brand) 155 calc(s * 0.70) 44%);
+  --ui-green-600: hsl(from var(--ui-brand) 155 calc(s * 0.70) 34%);
+
+  --ui-amber-100: hsl(from var(--ui-brand) 42  calc(s * 0.45) 92%);
+  --ui-amber-500: hsl(from var(--ui-brand) 38  calc(s * 0.95) 52%);
+  --ui-amber-600: hsl(from var(--ui-brand) 34  calc(s * 0.95) 42%);
+
+  /* ==================================================================== */
+  /*  ===============   CALIBRE DEL RELIEVE   ========================== */
+  /*  Las perillas del estilo. Todo el relieve sale de estos números.     */
+  /* ==================================================================== */
+
+  /* CUANTO RELIEVE HAY, de 0 a 1. En 1 es el material normal; en 0 la lámina
+     es lisa y no hay ni luz ni sombra en ninguna parte.
+
+     Es UN SOLO número del que cuelga TODO el relieve del pack, y existe para
+     que el ciclo de vida pueda animarlo. La entrada del pack es "el material
+     sale de la lámina", y la manera ingenua de escribirlo — que es la que
+     estaba — era poner `box-shadow: var(--ui-soft-out-sm)` en el 100% del
+     keyframe. Eso tiene dos defectos graves:
+
+       1. La animación termina en una sombra ELEGIDA POR EL KEYFRAME, no en la
+          que el elemento tiene en reposo. En cuanto la mecánica saca la clase
+          `.is-entering`, la sombra vuelve a la suya DE GOLPE. Y casi ningún
+          control lleva relieve en su raíz (el del Checkbox vive en __box, el
+          del Toggle en __track y __knob, el del Slider en los pseudo del
+          input, y el TextField y el Spinner van HUNDIDOS, o sea al revés):
+          así que lo que se veía era un resplandor que aparecía alrededor de
+          cada pieza y se apagaba de un salto al terminar.
+       2. Solo alcanzaba a la raíz. Las piezas de adentro no se movían.
+
+     Animando este número los dos problemas desaparecen juntos: la animación
+     no nombra ninguna sombra, solo ESCALA la que cada pieza ya tiene, y
+     termina exactamente en 1, que es el valor de reposo — no hay nada a lo que
+     saltar. Y como hereda, todas las piezas internas emergen con su padre.
+
+     Hace falta @property: una custom property sin registrar no interpola, va a
+     los saltos. Con `<number>` el navegador la anima como al número que es. */
+  --ui-soft-relief: 1;
+
+  /* Qué tan lejos cae la luz y qué tan difusa es. */
+  --ui-soft-distance: calc(7px * var(--ui-soft-relief));
+  --ui-soft-blur: calc(16px * var(--ui-soft-relief));
+  /* La versión chica, para controles: la misma luz pero más corta. */
+  --ui-soft-distance-sm: calc(4px * var(--ui-soft-relief));
+  --ui-soft-blur-sm: calc(9px * var(--ui-soft-relief));
+
+  /* ==================================================================== */
+  /*  EL BARRIDO DE LA CARA                                              */
+  /*  Lo que hace que una pieza se vea del MATERIAL del pack y no de un   */
+  /*  color. Una pieza tenida y una sin tenir lo comparten, y por eso se  */
+  /*  leen como la misma lamina — una pintada y la otra no.               */
+  /*                                                                      */
+  /*  ⛔ EL FILETE NO VIVE ACA. Es `--ui-line`, un token semantico que    */
+  /*  sabe de tema. Estuvo un rato siendo un canto casi blanco derivado   */
+  /*  de la luz del pack, y en tema oscuro dejaba todos los botones con   */
+  /*  un contorno encendido: un blanco sirve sobre una lamina clara y no  */
+  /*  sobre una oscura.                                                   */
+  /* ==================================================================== */
+
+
+  /* El barrido de la cara: la misma luz, en diagonal, pero hecha CON EL COLOR
+     DE LA PIEZA y no con un velo blanco encima.
+
+     ⚠ EL VELO BLANCO SE PROBO Y SE MIDIO: NO VA.
+     Un `linear-gradient` de blanco translucido sobre el relleno es la forma
+     obvia, y arruina el rotulo. Sobre el acento de este pack el texto ya esta
+     en 3.78:1 sin nada encima; con un velo al 30% cae a 2.55:1, que no llega
+     ni al minimo de texto grande. La luz tiene que salir del color, no
+     taparlo: el extremo claro ES el color de la pieza y el otro es ese mismo
+     color mas oscuro. Asi el peor punto para leer sigue siendo el de siempre.
+
+     ⚠ EL EXTREMO QUE PEOR SE LEE VA PEGADO AL COLOR. ESA ES LA REGLA.
+     La luz siempre cae de arriba-izquierda, asi que el degrade siempre va de
+     claro a oscuro en esa diagonal. Lo que cambia entre temas es CUAL de los
+     dos extremos es el peligroso para el rotulo:
+
+       tema claro   el rotulo del primario es BLANCO -> lo peor es el extremo
+                    CLARO. Se lo deja en el acento tal cual y todo el recorrido
+                    va hacia abajo, donde el contraste ademas mejora.
+       tema oscuro  el rotulo es OSCURO -> lo peor es el extremo OSCURO, asi
+                    que el recorrido tiene que ser CORTO. El tope sigue siendo
+                    el acento tal cual —el boton tiene que ser DEL COLOR, no de
+                    una version aclarada— y el pie baja lo justo: con 0.88
+                    queda en 4.58:1, apenas arriba del minimo.
+
+     Sin esto el mismo factor sirve en un tema y arruina el otro: con 0.62 el
+     rotulo en tema oscuro caia a 2.75:1. Medido, no estimado.
+
+     ⚠ Y LOS FACTORES NO SE COMPARTEN ENTRE FAMILIAS NI ENTRE TEMAS.
+     Un factor multiplica, asi que recorre distinto segun de donde arranque.
+     La lamina clara sale de 95%, la oscura de 17% y el acento de 58% o 67%:
+     el mismo numero les da recorridos que no se parecen. Cada combinacion
+     tiene el suyo, elegido para que el degrade SE LEA sin romper el rotulo. */
+  --ui-soft-face-angle: 145deg;
+
+  /* La pieza tenida. En claro el tope es el acento (hi = 1) y todo el
+     recorrido va hacia abajo. */
+  --ui-soft-face-tint-hi: 1;
+  --ui-soft-face-tint-lo: 0.62;
+
+  /* EL HALO. Es la tercera luz del pack y no se parece a las otras dos: las
+     dos de arriba son la MISMA luz blanca y gris que modela el material, y
+     esta es el color de la pieza derramándose sobre la lámina.
+
+     Va con MAS radio que el relieve —de ahí el 1.9— porque un halo que alcanza
+     lo mismo que la sombra no se lee como halo: se lee como una sombra de
+     color, que es otra cosa.
+
+     Solo queda la version de ADENTRO. La de afuera vivia acá y ya no la usa
+     nadie: el aro del progress es lo único que proyecta halo, y se lo calibra
+     él mismo porque necesita más carga que el resto del pack. */
+  --ui-soft-glow-reach: calc(var(--ui-soft-blur) * 1.9);
+  /* La versión de adentro: la misma luz rebotando en las paredes del surco. */
+  --ui-soft-glow-inner: rgb(from var(--ui-accent) r g b / 0.48);
+
+  /* Los dos extremos de la luz. Son colores derivados, no opacidades: sobre
+     una lámina opaca un blanco translúcido no aclara lo suficiente. */
+  /* ⚠ LA LUZ ES BLANCO CON ALFA, NO UN CLARO YA MEZCLADO.
+     Es la diferencia entre ILUMINAR y REPINTAR. Un color claro opaco tapa lo
+     que tiene debajo con SU tono: puesto sobre una pieza teñida —el arco de
+     una barra de progreso, el carril encendido de un toggle— no la aclara, la
+     destiñe hacia el gris de la propia luz. Se veia clarisimo en tema oscuro,
+     donde esta luz es un gris calido: el rojo del arco quedaba amarronado en
+     el rincon de abajo a la derecha.
+
+     Blanco translucido hace lo que hace la luz de verdad: levanta la claridad
+     de lo que sea que este abajo y le deja su tono. Sobre la lamina da el
+     mismo resultado de siempre —esta calibrado para eso— y sobre el rojo lo
+     aclara sin ensuciarlo.
+
+     LA SOMBRA VA IGUAL, Y POR LO MISMO. Era un gris teñido de marca, opaco:
+     puesto sobre el arco rojo de una barra o sobre el carril encendido de un
+     toggle no lo oscurecia, lo REPINTABA con su propio tono. Negro translucido
+     hace lo que hace una sombra de verdad: baja la claridad de lo que sea que
+     este abajo y le deja su tono.
+
+     El alfa no es a ojo: es el que reproduce sobre la lamina el mismo peso que
+     tenia el gris opaco. Sobre 93% de claridad, 0.22 cae en la misma luminancia
+     que el 74% de antes; en tema oscuro, sobre 17%, hace falta 0.60 para llegar
+     al 7%. Asi el relieve del pack no se recalibra: cambia de que esta hecho,
+     no cuanto pesa.
+
+     El blanco y el negro se derivan con `calc(s * 0)`, que es como se consigue
+     un neutro en este proyecto. Nunca un hex. */
+  --ui-soft-light: hsl(from var(--ui-brand) h calc(s * 0) 100% / 0.90);
+  --ui-soft-dark:  hsl(from var(--ui-brand) h calc(s * 0) 0% / 0.22);
+
+  /* ==================================================================== */
+  /*  LAS DOS FORMAS DEL MATERIAL                                        */
+  /*  Todo el pack es esto: algo sale, o algo se hunde. La luz viene       */
+  /*  SIEMPRE de arriba-izquierda, así que lo que sobresale lleva el       */
+  /*  brillo con desplazamiento negativo y la sombra con positivo; lo que  */
+  /*  se hunde tiene exactamente lo contrario, hacia adentro.              */
+  /*                                                                       */
+  /*  ⚠ POR QUE LAS CUATRO SOMBRAS ESTAN SIEMPRE, INCLUSO EN CERO         */
+  /*  CSS NO interpola entre una box-shadow `inset` y una que no lo es:    */
+  /*  si la lista cambia de forma, el navegador SALTA en vez de animar. Y  */
+  /*  el gesto central de este pack es justamente pasar de sobresalir a    */
+  /*  hundirse, o sea de outset a inset.                                   */
+  /*  La solución es que TODAS las variantes tengan las mismas cuatro      */
+  /*  sombras, en el mismo orden y con el mismo inset: dos de afuera y dos */
+  /*  de adentro. Lo único que cambia es su tamaño, y el par que no se usa */
+  /*  queda en 0 0 0. Así el par de afuera se encoge hasta desaparecer     */
+  /*  mientras el de adentro crece, y el hundimiento se ANIMA de verdad.   */
+  /*  Si alguna variante acorta la lista, esa transición vuelve a saltar.  */
+  /* ==================================================================== */
+
+  /* SALE: el par de afuera al máximo, el de adentro apagado. */
+  --ui-soft-out:
+    calc(var(--ui-soft-distance) * -1) calc(var(--ui-soft-distance) * -1)
+      var(--ui-soft-blur) var(--ui-soft-light),
+    var(--ui-soft-distance) var(--ui-soft-distance)
+      var(--ui-soft-blur) var(--ui-soft-dark),
+    inset 0 0 0 var(--ui-soft-dark),
+    inset 0 0 0 var(--ui-soft-light);
+
+  --ui-soft-out-sm:
+    calc(var(--ui-soft-distance-sm) * -1) calc(var(--ui-soft-distance-sm) * -1)
+      var(--ui-soft-blur-sm) var(--ui-soft-light),
+    var(--ui-soft-distance-sm) var(--ui-soft-distance-sm)
+      var(--ui-soft-blur-sm) var(--ui-soft-dark),
+    inset 0 0 0 var(--ui-soft-dark),
+    inset 0 0 0 var(--ui-soft-light);
+
+  /* SE HUNDE: el par de afuera apagado, el de adentro al máximo. */
+  --ui-soft-in:
+    0 0 0 var(--ui-soft-light),
+    0 0 0 var(--ui-soft-dark),
+    inset var(--ui-soft-distance) var(--ui-soft-distance)
+      var(--ui-soft-blur) var(--ui-soft-dark),
+    inset calc(var(--ui-soft-distance) * -1) calc(var(--ui-soft-distance) * -1)
+      var(--ui-soft-blur) var(--ui-soft-light);
+
+  --ui-soft-in-sm:
+    0 0 0 var(--ui-soft-light),
+    0 0 0 var(--ui-soft-dark),
+    inset var(--ui-soft-distance-sm) var(--ui-soft-distance-sm)
+      var(--ui-soft-blur-sm) var(--ui-soft-dark),
+    inset calc(var(--ui-soft-distance-sm) * -1) calc(var(--ui-soft-distance-sm) * -1)
+      var(--ui-soft-blur-sm) var(--ui-soft-light);
+
+  /* LEVANTADO: la misma luz, más lejos. Es el hover — el objeto se despega. */
+  --ui-soft-lift:
+    calc(var(--ui-soft-distance) * -1.5) calc(var(--ui-soft-distance) * -1.5)
+      calc(var(--ui-soft-blur) * 1.4) var(--ui-soft-light),
+    calc(var(--ui-soft-distance) * 1.5) calc(var(--ui-soft-distance) * 1.5)
+      calc(var(--ui-soft-blur) * 1.4) var(--ui-soft-dark),
+    inset 0 0 0 var(--ui-soft-dark),
+    inset 0 0 0 var(--ui-soft-light);
+
+  /* PLANO: sin relieve, los dos pares en cero. Es el punto de partida de lo
+     que emerge, y el paso por el que cruza el material al darse vuelta. */
+  --ui-soft-flat:
+    0 0 0 var(--ui-soft-light),
+    0 0 0 var(--ui-soft-dark),
+    inset 0 0 0 var(--ui-soft-dark),
+    inset 0 0 0 var(--ui-soft-light);
+
+  /* ==================================================================== */
+  /*  LA PLACA — el mismo relieve, SIN la luz de arriba a la izquierda.   */
+  /*                                                                      */
+  /*  ⛔ UNA VENTANA NO EMITE LUZ, LA RECIBE.                              */
+  /*  En una pieza chica —un boton, una casilla— el par de sombras se lee  */
+  /*  como un bulto en la lamina: la luz que pega arriba a la izquierda es */
+  /*  parte del volumen. En una superficie GRANDE deja de leerse asi y     */
+  /*  pasa a leerse como un halo que la pieza tira hacia afuera, como si   */
+  /*  la ventana brillara. Una placa apoyada no hace eso: tapa la luz y    */
+  /*  proyecta sombra, nada mas.                                          */
+  /*                                                                      */
+  /*  ⚠ LA LUZ SE APAGA, NO SE SACA. Las cuatro sombras y su orden se      */
+  /*  respetan: CSS no interpola entre una lista de tres y una de cuatro,  */
+  /*  ni entre `inset` y no-`inset`. Sacarla de la lista rompe la          */
+  /*  transicion de toda la familia — por eso se apaga con `0 0 0`.        */
+  /* ==================================================================== */
+
+  --ui-soft-plate-sm:
+    0 0 0 var(--ui-soft-light),
+    var(--ui-soft-distance-sm) var(--ui-soft-distance-sm)
+      var(--ui-soft-blur-sm) var(--ui-soft-dark),
+    inset 0 0 0 var(--ui-soft-dark),
+    inset 0 0 0 var(--ui-soft-light);
+
+  --ui-soft-plate:
+    0 0 0 var(--ui-soft-light),
+    var(--ui-soft-distance) var(--ui-soft-distance)
+      var(--ui-soft-blur) var(--ui-soft-dark),
+    inset 0 0 0 var(--ui-soft-dark),
+    inset 0 0 0 var(--ui-soft-light);
+
+  --ui-soft-plate-lift:
+    0 0 0 var(--ui-soft-light),
+    calc(var(--ui-soft-distance) * 1.5) calc(var(--ui-soft-distance) * 1.5)
+      calc(var(--ui-soft-blur) * 1.4) var(--ui-soft-dark),
+    inset 0 0 0 var(--ui-soft-dark),
+    inset 0 0 0 var(--ui-soft-light);
+
+  /* La transición del relieve. Va aparte porque casi toda piel la necesita. */
+
+  /* -------------------------------------------------------- Sombras ----- */
+  /* Los tokens genéricos apuntan al relieve: en este pack no hay "sombra
+     proyectada" separada del material. */
+  --ui-shadow-sm: var(--ui-soft-out-sm);
+  --ui-shadow-md: var(--ui-soft-out);
+  --ui-shadow-lg: var(--ui-soft-lift);
+
+  /* ------------------------------------------- Semánticos — tema claro -- */
+  /* Todas las superficies son EL MISMO color. Es la premisa del estilo: una
+     sola lámina. Lo que cambia entre un panel y la página es el relieve. */
+  --ui-bg:             var(--ui-neutral-100);
+  --ui-bg-subtle:      var(--ui-neutral-100);
+  --ui-surface:        var(--ui-neutral-100);
+  --ui-surface-hover:  var(--ui-neutral-50);
+  --ui-surface-active: var(--ui-neutral-200);
+
+  /* El filete que salva el problema de contraste. Ver la nota del encabezado. */
+  --ui-border:         rgb(from var(--ui-text) r g b / 0.10);
+  --ui-border-strong:  rgb(from var(--ui-text) r g b / 0.20);
+  --ui-line:           rgb(from var(--ui-text) r g b / 0.08);
+  --ui-line-soft:      rgb(from var(--ui-text) r g b / 0.05);
+  --ui-scroll-thumb:       rgb(from var(--ui-text) r g b / 0.18);
+  --ui-scroll-thumb-hover: rgb(from var(--ui-text) r g b / 0.32);
+
+  --ui-panel-from:     var(--ui-neutral-100);
+  --ui-panel-to:       var(--ui-neutral-100);
+
+  --ui-text:           hsl(from var(--ui-brand) h calc(s * 0.35) 22%);
+  --ui-text-muted:     hsl(from var(--ui-brand) h calc(s * 0.28) 38%);
+  --ui-text-subtle:    hsl(from var(--ui-brand) h calc(s * 0.25) 44%);
+
+  --ui-accent:         hsl(from var(--ui-brand) h s calc(l * 0.92));
+  --ui-accent-hover:   hsl(from var(--ui-brand) h s calc(l * 0.82));
+  --ui-accent-active:  hsl(from var(--ui-brand) h s calc(l * 0.72));
+  --ui-accent-subtle:  rgb(from var(--ui-accent) r g b / 0.14);
+  --ui-accent-soft:    rgb(from var(--ui-accent) r g b / 0.45);
+  --ui-accent-text:    hsl(from var(--ui-brand) h s 38%);
+  --ui-on-accent:      var(--ui-on-brand-light);
+
+  --ui-danger:         var(--ui-red-600);
+  --ui-danger-hover:   var(--ui-red-700);
+  --ui-danger-subtle:  var(--ui-red-100);
+  --ui-on-danger:      var(--ui-on-brand-light);
+
+  --ui-success:        var(--ui-green-600);
+  --ui-success-subtle: var(--ui-green-100);
+  --ui-warning:        var(--ui-amber-600);
+  --ui-warning-subtle: var(--ui-amber-100);
+
+  --ui-focus-ring:     var(--ui-accent);
+  --ui-focus-width:    2px;
+  --ui-focus-offset:   3px;
+
+  --ui-selection-bg:   rgb(from var(--ui-accent) r g b / 0.22);
+  --ui-selection-fg:   var(--ui-text);
+
+  --ui-ring-width:     3px;
+  --ui-ring:           rgb(from var(--ui-accent) r g b / 0.22);
+  --ui-ring-soft:      rgb(from var(--ui-accent) r g b / 0.12);
+}
+
+/* ===========================================================================
+   TEMA OSCURO
+   ---------------------------------------------------------------------------
+   El neumorfismo oscuro NO es el claro con los colores dados vuelta: la luz
+   sigue viniendo de arriba-izquierda. Lo que cambia es que el "brillo" ya no
+   es blanco sino un gris apenas más claro que la lámina, y la sombra se va a
+   casi negro. Con blanco puro sobre una lámina oscura, el relieve se ve como
+   un borde pintado en vez de como luz.
+   =========================================================================== */
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    /* El degrade de la cara tenida, recalibrado para este tema. Ver la nota
+       larga arriba: aca el rotulo del primario es OSCURO, asi que el extremo
+       peligroso es el de ABAJO y el recorrido tiene que ser corto. El tope
+       sigue siendo el acento tal cual —el boton tiene que ser DEL COLOR, no
+       de una version aclarada— y el pie baja lo justo: 4.58:1, apenas
+       arriba del minimo. En claro, con rotulo blanco, se puede bajar mucho
+       mas porque ahi oscurecer MEJORA el contraste. */
+    --ui-soft-face-tint-hi: 1;
+    --ui-soft-face-tint-lo: 0.88;
+
+    /* Blanco al 11%: sobre la lamina de este tema (17% de claridad) levanta
+       exactamente hasta el 26% que tenia la luz opaca de antes, asi que el
+       relieve se ve igual — pero sobre una pieza tenida la aclara en vez de
+       destenirla. Ver la nota larga arriba. */
+    --ui-soft-light: hsl(from var(--ui-brand) h calc(s * 0) 100% / 0.11);
+    --ui-soft-dark:  hsl(from var(--ui-brand) h calc(s * 0) 0% / 0.60);
+
+    --ui-neutral-100: hsl(from var(--ui-brand) h calc(s * 0.20) 17%);
+    --ui-neutral-50:  hsl(from var(--ui-brand) h calc(s * 0.20) 20%);
+    --ui-neutral-200: hsl(from var(--ui-brand) h calc(s * 0.20) 14%);
+
+    --ui-bg:             var(--ui-neutral-100);
+    --ui-bg-subtle:      var(--ui-neutral-100);
+    --ui-surface:        var(--ui-neutral-100);
+    --ui-surface-hover:  var(--ui-neutral-50);
+    --ui-surface-active: var(--ui-neutral-200);
+
+    --ui-border:         rgb(from var(--ui-text) r g b / 0.12);
+    --ui-border-strong:  rgb(from var(--ui-text) r g b / 0.24);
+    --ui-line:           rgb(from var(--ui-text) r g b / 0.09);
+    --ui-line-soft:      rgb(from var(--ui-text) r g b / 0.06);
+    --ui-scroll-thumb:       rgb(from var(--ui-text) r g b / 0.20);
+    --ui-scroll-thumb-hover: rgb(from var(--ui-text) r g b / 0.38);
+
+    --ui-panel-from:     var(--ui-neutral-100);
+    --ui-panel-to:       var(--ui-neutral-100);
+
+    --ui-text:           hsl(from var(--ui-brand) h calc(s * 0.22) 93%);
+    --ui-text-muted:     hsl(from var(--ui-brand) h calc(s * 0.25) 74%);
+    --ui-text-subtle:    hsl(from var(--ui-brand) h calc(s * 0.28) 64%);
+
+    --ui-accent:         hsl(from var(--ui-brand) h s calc(l * 1.06));
+    --ui-accent-hover:   hsl(from var(--ui-brand) h s calc(l * 1.18));
+    --ui-accent-active:  var(--ui-brand);
+    --ui-accent-subtle:  rgb(from var(--ui-accent) r g b / 0.18);
+    --ui-accent-soft:    rgb(from var(--ui-accent) r g b / 0.50);
+    --ui-accent-text:    hsl(from var(--ui-brand) h calc(s * 0.9) 78%);
+    --ui-on-accent:      var(--ui-on-brand-dark);
+
+    --ui-danger:         var(--ui-red-500);
+    --ui-danger-hover:   var(--ui-red-600);
+    --ui-danger-subtle:  rgb(from var(--ui-red-500) r g b / 0.18);
+
+    --ui-success:        var(--ui-green-500);
+    --ui-success-subtle: rgb(from var(--ui-green-500) r g b / 0.16);
+    --ui-warning:        var(--ui-amber-500);
+    --ui-warning-subtle: rgb(from var(--ui-amber-500) r g b / 0.16);
+  }
+}
+
+:root[data-theme="dark"] {
+  /* El degrade de la cara tenida, recalibrado para este tema. Ver la nota
+     larga arriba: aca el rotulo del primario es OSCURO, asi que el extremo
+     peligroso es el de ABAJO y el recorrido tiene que ser corto. El tope
+     sigue siendo el acento tal cual —el boton tiene que ser DEL COLOR, no de
+     una version aclarada— y el pie baja lo justo: 4.58:1, apenas arriba del
+     minimo. En claro, con rotulo blanco, se puede bajar mucho mas porque ahi
+     oscurecer MEJORA el contraste. */
+  --ui-soft-face-tint-hi: 1;
+  --ui-soft-face-tint-lo: 0.88;
+
+  /* Blanco al 11%: sobre la lamina de este tema (17% de claridad) levanta
+     exactamente hasta el 26% que tenia la luz opaca de antes, asi que el
+     relieve se ve igual — pero sobre una pieza tenida la aclara en vez de
+     destenirla. Ver la nota larga arriba. */
+  --ui-soft-light: hsl(from var(--ui-brand) h calc(s * 0) 100% / 0.11);
+  --ui-soft-dark:  hsl(from var(--ui-brand) h calc(s * 0) 0% / 0.60);
+
+  --ui-neutral-100: hsl(from var(--ui-brand) h calc(s * 0.20) 17%);
+  --ui-neutral-50:  hsl(from var(--ui-brand) h calc(s * 0.20) 20%);
+  --ui-neutral-200: hsl(from var(--ui-brand) h calc(s * 0.20) 14%);
+
+  --ui-bg:             var(--ui-neutral-100);
+  --ui-bg-subtle:      var(--ui-neutral-100);
+  --ui-surface:        var(--ui-neutral-100);
+  --ui-surface-hover:  var(--ui-neutral-50);
+  --ui-surface-active: var(--ui-neutral-200);
+
+  --ui-border:         rgb(from var(--ui-text) r g b / 0.12);
+  --ui-border-strong:  rgb(from var(--ui-text) r g b / 0.24);
+  --ui-line:           rgb(from var(--ui-text) r g b / 0.09);
+  --ui-line-soft:      rgb(from var(--ui-text) r g b / 0.06);
+  --ui-scroll-thumb:       rgb(from var(--ui-text) r g b / 0.20);
+  --ui-scroll-thumb-hover: rgb(from var(--ui-text) r g b / 0.38);
+
+  --ui-panel-from:     var(--ui-neutral-100);
+  --ui-panel-to:       var(--ui-neutral-100);
+
+  --ui-text:           hsl(from var(--ui-brand) h calc(s * 0.22) 93%);
+  --ui-text-muted:     hsl(from var(--ui-brand) h calc(s * 0.25) 74%);
+  --ui-text-subtle:    hsl(from var(--ui-brand) h calc(s * 0.28) 64%);
+
+  --ui-accent:         hsl(from var(--ui-brand) h s calc(l * 1.06));
+  --ui-accent-hover:   hsl(from var(--ui-brand) h s calc(l * 1.18));
+  --ui-accent-active:  var(--ui-brand);
+  --ui-accent-subtle:  rgb(from var(--ui-accent) r g b / 0.18);
+  --ui-accent-soft:    rgb(from var(--ui-accent) r g b / 0.50);
+  --ui-accent-text:    hsl(from var(--ui-brand) h calc(s * 0.9) 78%);
+  --ui-on-accent:      var(--ui-on-brand-dark);
+
+  --ui-danger:         var(--ui-red-500);
+  --ui-danger-hover:   var(--ui-red-600);
+  --ui-danger-subtle:  rgb(from var(--ui-red-500) r g b / 0.18);
+
+  --ui-success:        var(--ui-green-500);
+  --ui-success-subtle: rgb(from var(--ui-green-500) r g b / 0.16);
+  --ui-warning:        var(--ui-amber-500);
+  --ui-warning-subtle: rgb(from var(--ui-amber-500) r g b / 0.16);
+}

@@ -1,0 +1,48 @@
+/* ---------------------------------------------- Slider — PIEL del pack CYBER */
+/* Interfaz: --slider-track | --slider-track-border | --slider-fill
+             --slider-thumb | --slider-ring                                   */
+
+/* Canal hundido y una barra de energía que lo llena. El cursor es una aguja
+   angosta (--ui-slider-thumb-w), no un tirador redondo. */
+.ui-slider {
+  --slider-track: var(--ui-bg-subtle);
+  --slider-track-border: var(--ui-border);
+  --slider-thumb: var(--ui-accent);
+  --slider-ring: var(--ui-ring);
+
+  /* Sigue definido aunque el relleno lo pinte el degradé de abajo: si alguien
+     usa el Slider sin esta piel, la mecánica necesita un color válido. */
+  --slider-fill: var(--ui-accent);
+}
+
+.ui-slider:hover:not(.is-disabled) { --slider-thumb: var(--ui-accent-hover); }
+
+.ui-slider.is-dragging { --slider-ring: rgb(from var(--ui-accent) r g b / 0.7); }
+
+/* -- El relleno ------------------------------------------------------------ */
+/* El neón se corre de tono a lo largo de la barra, como un tubo cargándose.
+   El degradé ocupa el relleno entero, que mide --slider-progress: se reescala
+   con el valor, así que siempre se ve completo y no un recorte. */
+
+.ui-slider__fill {
+  background: linear-gradient(to right, var(--ui-fill-from), var(--ui-fill-to));
+}
+
+/* La aguja va siempre encendida: es el punto de lectura del instrumento.
+
+   ⚠ Hay que contestar TODOS los estados, no solo el de reposo. La mecánica
+   marca hover, foco y arrastre del tirador con `0 0 0 <ring-width>` — un aro
+   duro, con más especificidad que la regla de acá abajo, así que la REEMPLAZA.
+   Sin estas reglas, la aguja perdía el resplandor justo al pasarle el mouse y
+   quedaba con un borde plano. */
+
+.ui-slider__thumb,
+.ui-slider:hover .ui-slider__thumb,
+.ui-slider__input:focus-visible ~ .ui-slider__thumb {
+  box-shadow: 0 0 var(--ui-glow-reach) var(--slider-ring);
+}
+
+/* Arrastrando sube el voltaje: el mismo halo, más largo. */
+.ui-slider.is-dragging .ui-slider__thumb {
+  box-shadow: 0 0 calc(var(--ui-glow-reach) * 2) var(--slider-ring);
+}

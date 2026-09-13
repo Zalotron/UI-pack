@@ -1,0 +1,11 @@
+/* ---------------------------------------------- Scroll — PIEL del pack GLASS */
+/* Interfaz: --scroll-track | --scroll-thumb | --scroll-thumb-hover          */
+
+/* El pulgar no se puede desenfocar — es un pseudo-elemento nativo, no acepta
+   backdrop-filter. Se queda en vidrio "plano": translúcido, y encendido con la
+   marca al tocarlo. */
+.ui-scroll {
+  --scroll-track: transparent;
+  --scroll-thumb: var(--ui-scroll-thumb);
+  --scroll-thumb-hover: rgb(from var(--ui-accent) r g b / 0.55);
+}

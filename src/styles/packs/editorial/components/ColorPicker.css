@@ -1,0 +1,59 @@
+/* -------------------------------------- ColorPicker — PIEL del pack EDITORIAL */
+/* Interfaz: --cp-bg | --cp-border | --cp-ring | --cp-value-fg
+             --cp-panel-bg | --cp-panel-border | --cp-panel-shadow           */
+
+.ui-colorpicker {
+  --cp-bg: transparent;
+  --cp-border: transparent;
+  --cp-value-fg: var(--ui-text-muted);
+
+  --cp-panel-bg: var(--ui-surface);
+  --cp-panel-border: var(--ui-border);
+  --cp-panel-shadow: none;
+}
+
+.ui-colorpicker__trigger {
+  border-bottom-color: var(--ui-border);
+}
+
+.ui-colorpicker:hover:not(.is-disabled) {
+  --cp-value-fg: var(--ui-text);
+}
+.ui-colorpicker:hover:not(.is-disabled) .ui-colorpicker__trigger {
+  border-bottom-color: var(--ui-text-muted);
+}
+
+/* :not(.is-disabled) para empatarle la especificidad al hover de arriba. */
+.ui-colorpicker.is-open:not(.is-disabled) {
+  --cp-value-fg: var(--ui-text);
+}
+.ui-colorpicker.is-open:not(.is-disabled) .ui-colorpicker__trigger {
+  border-bottom-color: var(--ui-accent);
+}
+
+/* El valor va en monoespaciada: es un dato, no texto corrido. */
+.ui-colorpicker__value {
+  letter-spacing: var(--ui-tracking-wide);
+}
+
+/* La rueda de matices: es el dominio del componente, no una decision de
+   estilo. Un selector de color tiene que mostrar todo el espectro, y eso no
+   cambia de un pack a otro. */
+.ui-colorpicker__hue .ui-slider__input::-webkit-slider-runnable-track {
+  background: linear-gradient(
+    to right,
+    hsl(0 100% 50%), hsl(60 100% 50%), hsl(120 100% 50%),
+    hsl(180 100% 50%), hsl(240 100% 50%), hsl(300 100% 50%), hsl(360 100% 50%)
+  );
+}
+.ui-colorpicker__hue .ui-slider__input::-moz-range-track {
+  background: linear-gradient(
+    to right,
+    hsl(0 100% 50%), hsl(60 100% 50%), hsl(120 100% 50%),
+    hsl(180 100% 50%), hsl(240 100% 50%), hsl(300 100% 50%), hsl(360 100% 50%)
+  );
+}
+
+.ui-colorpicker__hue {
+  --slider-thumb: var(--ui-neutral-0);
+}

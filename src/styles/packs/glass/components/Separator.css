@@ -1,0 +1,44 @@
+/* ------------------------------------------- Separator — PIEL del pack GLASS */
+/* Interfaz: --separator-color, --separator-thickness.
+   --separator-color se usa como `background`, así que acepta un degradé.     */
+
+.ui-separator--soft   { --separator-color: var(--ui-line-soft); }
+.ui-separator--base   { --separator-color: var(--ui-line); }
+
+/* El fuerte es el canto de una placa vista de perfil: sombra arriba, luz
+   abajo. Dos píxeles, uno de cada cosa — es el bisel, no una línea gruesa. */
+.ui-separator--strong {
+  --separator-thickness: calc(var(--ui-border-width) * 2);
+  --separator-color: linear-gradient(
+    180deg,
+    rgb(from var(--ui-glass-shade) r g b / var(--ui-glass-inner-lo)) 0 50%,
+    rgb(from var(--ui-glass-tint) r g b / var(--ui-glass-inner-hi)) 50% 100%
+  );
+}
+
+/* Vertical: el mismo bisel, girado. */
+.ui-separator--strong.ui-separator--vertical {
+  --separator-color: linear-gradient(
+    90deg,
+    rgb(from var(--ui-glass-shade) r g b / var(--ui-glass-inner-lo)) 0 50%,
+    rgb(from var(--ui-glass-tint) r g b / var(--ui-glass-inner-hi)) 50% 100%
+  );
+}
+
+.ui-separator--accent {
+  --separator-color: linear-gradient(
+    90deg,
+    rgb(from var(--ui-accent) r g b / 0) 0%,
+    var(--ui-accent) 50%,
+    rgb(from var(--ui-accent) r g b / 0) 100%
+  );
+}
+
+.ui-separator--accent.ui-separator--vertical {
+  --separator-color: linear-gradient(
+    180deg,
+    rgb(from var(--ui-accent) r g b / 0) 0%,
+    var(--ui-accent) 50%,
+    rgb(from var(--ui-accent) r g b / 0) 100%
+  );
+}

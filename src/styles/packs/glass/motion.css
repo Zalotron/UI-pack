@@ -1,0 +1,126 @@
+/* ===========================================================================
+   PACK "GLASS" — entradas y salidas
+   ---------------------------------------------------------------------------
+   Contrato de `UIComponent`: la mecánica pone `.is-entering` al montar y
+   `.is-leaving` en `leave()`, y espera a que termine lo que corra acá.
+
+   La idea: el vidrio SE CONDENSA. La pieza crece desde nada y, mientras crece,
+   el cristal cuaja: el desenfoque del fondo va de cero al suyo.
+
+   ⚠ ACA NO HAY `opacity`, NI `filter`, NI `clip-path`. NINGUNO ES UN OLVIDO.
+
+   Las tres propiedades convierten al elemento en BACKDROP ROOT: todo lo que
+   tiene adentro deja de ver lo que hay detrás y pasa a desenfocar un fondo
+   vacío. Y este pack ES el desenfoque del fondo. Mientras la pieza es backdrop
+   root no se ve NADA de desenfoque, y cuando deja de serlo aparece entero de
+   golpe. Eso es el bug, y costó tres intentos:
+
+     1. Con `filter: blur()`. El keyframe hasta terminaba en `filter: blur(0)`,
+        que sigue siendo un filter: la pieza era backdrop root hasta el último
+        cuadro y el desenfoque entraba al SACARSE LA CLASE.
+     2. Con `opacity`, secuenciando: que cada elemento espere a ser opaco antes
+        de mover su desenfoque. No alcanza, porque están ANIDADOS — mientras un
+        contenedor se funde, todo lo de adentro está en SU backdrop root, y los
+        hijos entran escalonados. El que rompe es el padre.
+     3. Con `opacity` + el desenfoque en una transición, para que al soltarse la
+        clase no saltara. Tampoco: el salto volvió igual.
+
+   Lo que funciona es no crear backdrop root en ningún momento. O sea `scale` y
+   nada más, que es la única forma de mover algo sin aislarlo.
+
+   Y para que igual ARRANQUE INVISIBLE —regla del proyecto: nada puede aparecer
+   ya visible— el `scale` arranca en CERO. Un elemento de área cero no se ve, y
+   no le cuesta un backdrop root a nadie.
+
+   El desenfoque va como un número calibrado (--ui-glass-set) y no como una
+   propiedad: así la animación no fija ningún valor propio, hereda hacia
+   adentro, y termina exactamente en 1, que es el reposo.
+
+   La salida es MAS CORTA que la entrada: lo que aparece se presenta, lo que se
+   va no debe hacerte esperar.
+   =========================================================================== */
+
+/* -- Condensar: la entrada del material ------------------------------------ */
+/* Las placas se despliegan: crecen en alto desde una línea. Crecer también en
+   ancho mandaría el contenido a un tamaño ilegible por media animación. */
+
+@keyframes ui-glass-condense-in {
+  0%   { scale: 1 0; --ui-glass-set: 0; }
+  100% { scale: 1 1; --ui-glass-set: 1; }
+}
+
+@keyframes ui-glass-condense-out {
+  0%   { scale: 1 1; --ui-glass-set: 1; }
+  100% { scale: 1 0; --ui-glass-set: 0; }
+}
+
+/* -- Versión liviana, para los controles ----------------------------------- */
+/* Una pieza chica sí puede crecer desde un punto: es una gota de vidrio que se
+   forma. En una placa grande ese mismo gesto es un zoom, en un control es el
+   gesto del pack. */
+
+@keyframes ui-glass-veil-in {
+  0%   { scale: 0; --ui-glass-set: 0; }
+  100% { scale: 1; --ui-glass-set: 1; }
+}
+
+@keyframes ui-glass-veil-out {
+  0%   { scale: 1;    --ui-glass-set: 1; }
+  100% { scale: 0.4;  --ui-glass-set: 0; }
+}
+
+/* ===========================================================================
+   Asignación por componente
+   =========================================================================== */
+
+/* -- Las placas grandes: el gesto completo --------------------------------- */
+
+.ui-container.is-entering,
+.ui-window.is-entering,
+.ui-select.is-entering,
+.ui-colorpicker.is-entering {
+  animation: ui-glass-condense-in var(--ui-duration-slow) var(--ui-ease-out) both;
+  /* Escalonado: lo reparte UIComponent al montar. Va DESPUES del shorthand,
+     que resetea animation-delay a 0. */
+  animation-delay: var(--ui-enter-delay, 0ms);
+}
+.ui-container.is-leaving,
+.ui-window.is-leaving,
+.ui-select.is-leaving,
+.ui-colorpicker.is-leaving {
+  animation: ui-glass-condense-out var(--ui-duration-base) var(--ui-ease-in) both;
+}
+
+/* -- Controles y estructura: el velo --------------------------------------- */
+
+.ui-btn.is-entering,
+.ui-spinner.is-entering,
+.ui-slider.is-entering,
+.ui-toggle.is-entering,
+.ui-checkbox.is-entering,
+.ui-radiogroup.is-entering,
+.ui-textfield.is-entering,
+.ui-tabs.is-entering,
+.ui-scroll.is-entering,
+.ui-progress.is-entering,
+.ui-icon.is-entering,
+.ui-separator.is-entering {
+  animation: ui-glass-veil-in var(--ui-duration-base) var(--ui-ease-out) both;
+  /* Escalonado: lo reparte UIComponent al montar. Va DESPUES del shorthand,
+     que resetea animation-delay a 0. */
+  animation-delay: var(--ui-enter-delay, 0ms);
+}
+.ui-btn.is-leaving,
+.ui-spinner.is-leaving,
+.ui-slider.is-leaving,
+.ui-toggle.is-leaving,
+.ui-checkbox.is-leaving,
+.ui-radiogroup.is-leaving,
+.ui-textfield.is-leaving,
+.ui-tabs.is-leaving,
+.ui-scroll.is-leaving,
+.ui-progress.is-leaving,
+.ui-icon.is-leaving,
+.ui-separator.is-leaving {
+  animation: ui-glass-veil-out var(--ui-duration-fast) var(--ui-ease-in) both;
+}

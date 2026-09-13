@@ -1,0 +1,21 @@
+/* ---------------------------------------------- Checkbox — PIEL del pack default */
+/* Interfaz: --check-bg | --check-bg-on | --check-border | --check-mark
+             --check-ring                                                     */
+
+.ui-checkbox {
+  --check-bg: var(--ui-surface);
+  --check-bg-on: var(--ui-accent);
+  --check-border: var(--ui-border-strong);
+  --check-mark: var(--ui-on-accent);
+}
+
+.ui-checkbox:hover:not(.is-disabled) {
+  --check-border: var(--ui-accent-soft);
+  --check-ring: var(--ui-ring-soft);
+}
+
+/* :not(.is-disabled) para empatarle la especificidad al hover de arriba. */
+.ui-checkbox.is-checked:not(.is-disabled),
+.ui-checkbox.is-indeterminate:not(.is-disabled) {
+  --check-border: var(--ui-accent);
+}

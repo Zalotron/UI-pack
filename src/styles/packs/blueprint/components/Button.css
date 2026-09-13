@@ -1,0 +1,261 @@
+/* ------------------------------------------ Button — PIEL del pack BLUEPRINT */
+/* Interfaz: --btn-bg / --btn-bg-hover | --btn-gloss | --btn-fg
+             --btn-border / -hover | --btn-shadow                            */
+
+/* Un botón es un rectángulo rotulado. El estado no cambia el relleno: cambia
+   el PESO DEL TRAZO, como en un plano. */
+
+.ui-btn {
+  --btn-gloss: none;
+  text-transform: uppercase;
+  letter-spacing: var(--ui-tracking-wide);
+  font-weight: var(--ui-weight-medium);
+}
+
+.ui-btn:hover:not(.is-disabled) {
+  --btn-bg: var(--btn-bg-hover);
+  border-color: var(--btn-border-hover);
+}
+
+/* -- Variantes ------------------------------------------------------------ */
+
+/* Primario: es el único relleno de todo el pack, y está a propósito. En un
+   plano siempre hay una pieza marcada en macizo; esa es la acción principal. */
+/* ⚠ EL ROTULO ES EL COLOR DE LO QUE HAY DETRAS: es un hueco en el rayado.
+   No se pinta la palabra encima del relleno — se la SACA. Pintándola del mismo
+   color que la superficie que tiene atrás, las letras quedan como la parte que
+   el lápiz no rayó, que es como se rotula sobre un tramado a mano.
+
+   ⛔ Y NO ES `--ui-bg`. Ese es el fondo de la PAGINA, y da por sentado que el
+   botón vive ahí — falso apenas se lo mete en una ventana, y mucho más falso
+   para quien importe la librería y lo use sobre su propia superficie. Sale de
+   `--ui-bp-behind`, que cada superficie del pack redeclara con lo que acaba de
+   pintar y que hereda hacia adentro. Ver tokens.css.
+
+   Da 7.5:1 en los dos temas, medido. Y por eso el relleno puede ir a tinta
+   plena: cuanto más cargado el rayado, más se lee el hueco.
+
+   El peso extra no es decorativo. Es la única pieza del pack con algo pintado
+   detrás, y un trazo liviano sobre un rayado de 1px se pierde entre las
+   rayas — la letra tiene que ser más gruesa que el surco.
+
+   ⚠ Y EL PESO NO SALE SOLO DE `font-weight`. La tipografía del pack trae un
+   único peso, así que pedirle `bold` deja que el navegador lo invente, y un
+   engrosado sintético sobre una manuscrita embarra los trazos finos. El cuerpo
+   real lo da el contorno: reparte grosor parejo por todo el perfil de la letra,
+   como una pluma más gruesa. Los dos juntos, porque en las tipografías de
+   reserva —que sí tienen negrita de verdad— el `font-weight` sigue sirviendo.
+
+   `paint-order: stroke fill` pinta el contorno DEBAJO del relleno. Sin eso el
+   contorno se come el interior de las letras más finas y la palabra se cierra.
+
+   ⚠ Y EL CUERPO VA EN TODO EL CONTENIDO, NO SOLO EN LA LETRA.
+   El icono es puro trazo: su grosor ES su cuerpo, no tiene masa propia como
+   una letra. Con el calibre normal del pack —1.25px— queda como un alambre
+   sobre un rayado de 1px y desaparece adentro. Ver la regla del icono abajo.
+
+   ⛔ POR QUE NO ES UN RECORTE DE VERDAD.
+   Lo correcto conceptualmente seria SUSTRAER el contenido del relleno. CSS no
+   lo permite sobre contenido vivo: no hay `destination-out` para elementos, y
+   una `mask` no puede tomar la forma de un texto o de un SVG sin duplicarlos
+   en la mascara. Pintar el contenido del color del papel es el equivalente
+   practico, y contra el papel es indistinguible — la diferencia solo aparece
+   si por detras pasa algo que no sea papel liso. */
+.ui-btn--primary {
+  --btn-bg: rgb(from var(--ui-accent) r g b / var(--ui-bp-fill-alpha));
+  --btn-bg-hover: rgb(from var(--ui-accent-hover) r g b / var(--ui-bp-fill-alpha));
+  --btn-fg: var(--ui-bp-behind);
+  --btn-border: var(--ui-accent);
+  --btn-border-hover: var(--ui-accent-hover);
+  font-weight: var(--ui-weight-bold);
+  -webkit-text-stroke: var(--ui-bp-ink-stroke) currentColor;
+  paint-order: stroke fill;
+}
+
+/* El icono de un boton relleno, con el mismo cuerpo que la letra. Toma el
+   color por `currentColor`, asi que ya sale del color del papel como el
+   rotulo: lo unico que le falta es grosor. */
+.ui-btn--primary .ui-icon,
+.ui-btn--danger .ui-icon,
+.ui-btn--secondary:hover:not(.is-disabled) .ui-icon {
+  --icon-stroke: var(--ui-bp-ink-stroke-icon);
+}
+
+/* ⛔ Y EL GROSOR SE MIDE EN PIXELES, NO EN UNIDADES DE LA GRILLA.
+   Sin esto, `stroke-width` adentro de un `viewBox` va en unidades de la grilla
+   de 24: con el icono dibujado a 1.05em sobre un cuerpo de 12px, una unidad son
+   0.52px, asi que el engorde que se le pedia llegaba a la mitad y el icono
+   salia mucho mas fino que la letra de al lado. Con `non-scaling-stroke` el
+   grosor se mide contra la pantalla y las dos marcas pesan igual.
+
+   Va en los `path` y no en el `<svg>`: `vector-effect` no se hereda. */
+.ui-btn--primary .ui-icon path,
+.ui-btn--danger .ui-icon path,
+.ui-btn--secondary:hover:not(.is-disabled) .ui-icon path {
+  vector-effect: non-scaling-stroke;
+}
+
+/* Secundario: puro trazo. Al tocarlo el trazo se engrosa. */
+.ui-btn--secondary {
+  --btn-bg: transparent;
+  --btn-bg-hover: var(--ui-accent-subtle);
+  --btn-fg: var(--ui-accent-text);
+  --btn-border: var(--ui-border);
+  --btn-border-hover: var(--ui-accent);
+}
+/* ⛔ EL TRAZO ENGROSA, LA CAJA NO SE MUEVE.
+   Antes esto engrosaba el borde del BOTON y trataba de compensar con margin y
+   padding. No compensaba: el margin agrandaba la caja de margen, así que al
+   pasar el mouse el botón empujaba a todo lo que tenía al lado.
+   Ahora el grosor lo toma la capa del contorno (ver chalk.css), que es
+   absoluta: crece hacia adentro y no ocupa ni un píxel más. */
+.ui-btn--secondary:hover:not(.is-disabled) {
+  --bp-edge-width: var(--ui-bp-bold);
+}
+
+/* Terciario: ni marco, hasta que lo tocás. */
+.ui-btn--ghost {
+  --btn-bg: transparent;
+  --btn-bg-hover: transparent;
+  --btn-fg: var(--ui-text-muted);
+  --btn-border: transparent;
+  --btn-border-hover: var(--ui-line);
+}
+.ui-btn--ghost:hover:not(.is-disabled) { color: var(--ui-accent-text); }
+
+.ui-btn--danger {
+  --btn-bg: rgb(from var(--ui-danger) r g b / var(--ui-bp-fill-alpha));
+  --btn-bg-hover: rgb(from var(--ui-danger-hover) r g b / var(--ui-bp-fill-alpha));
+  /* Mismo caso que el primario: el relleno es un rayado a tinta plena, así que
+     el rótulo se SACA en vez de pintarse —va del color del papel— y con peso
+     para no perderse entre las rayas. */
+  --btn-fg: var(--ui-bp-behind);
+  --btn-border: var(--ui-danger);
+  --btn-border-hover: var(--ui-danger-hover);
+  font-weight: var(--ui-weight-bold);
+  -webkit-text-stroke: var(--ui-bp-ink-stroke) currentColor;
+  paint-order: stroke fill;
+}
+
+/* Deshabilitado: línea de construcción — cortada, como lo que todavía no
+   está definido en un plano. */
+.ui-btn.is-disabled {
+  border-style: dashed;
+}
+
+/* ⛔ EL HOVER DEL SECUNDARIO TAMBIEN PASA POR EL CONTENIDO.
+   En este pack el hover es siempre lo mismo: el trazo se REPASA. Eso ya pasaba
+   en el borde —que se engrosa y sube a tinta plena— pero el rotulo y el icono
+   se quedaban quietos, asi que el boton se encendia por los bordes y por
+   adentro seguia apagado, como dos piezas distintas.
+
+   Repasar el contenido es exactamente lo mismo: sube a tinta plena y gana
+   cuerpo. El cuerpo se lo da un stroke y no un `font-weight` porque `Handlee`
+   trae un solo peso — y va en un stroke sobre el color propio, asi que el
+   icono (que es puro trazo) se engrosa igual que la letra y no se descuelga. */
+.ui-btn--secondary:hover:not(.is-disabled) {
+  --btn-fg: var(--ui-accent-hover);
+  -webkit-text-stroke: var(--ui-bp-ink-stroke) currentColor;
+  paint-order: stroke fill;
+}
+
+/* ---------------------------------------------------------------------------
+   UN SEGUNDO CONTORNO, MAS FINO Y POR DETRAS.
+
+   El hueco del rayado deja la letra del color del fondo, y contra un relleno
+   claro eso no despega lo suficiente. Un anillo fino del MISMO color y la misma
+   intensidad que el borde del boton la separa sin engordarla: es el mismo trazo
+   que rodea la pieza, rodeando tambien lo que lleva adentro.
+
+   Por eso el color sale de --bp-edge y no de --btn-border: --bp-edge es la
+   tinta con la que el pack dibuja el contorno de la pieza, y ya cambia sola al
+   pasar el mouse. Asi el anillo del contenido se aclara JUNTO con los bordes,
+   que es lo que lo hace leer como una sola pieza y no como dos.
+
+   Va en una capa DUPLICADA (`content: attr(data-label)`) y no en el rotulo:
+     · `-webkit-text-stroke` es UNO por elemento — el rotulo ya gasta el suyo en
+       el hueco, que va del color del fondo.
+     · y sobre todo, este contorno SI lleva la textura de trazo, y una mascara
+       alcanza a todo el elemento: puesta en el rotulo ablandaria la letra, que
+       es justo lo que no puede pasar. En su propia capa se textura sola.
+
+   La capa va detras (`z-index: -1`) y no se puede leer ni seleccionar. */
+
+/* El aire va en TODOS los rotulos del pack, no solo en los rellenos: el
+   secundario tambien se engrosa al pasarle el mouse, y su rotulo ademas lleva
+   la textura de trazo — o sea otra mascara recortando contra la misma caja.
+   El margen negativo devuelve el lugar que el padding ocupo, asi que la pieza
+   mide exactamente lo mismo que antes. */
+.ui-btn__label {
+  padding: var(--ui-bp-ink-slack);
+  margin: calc(var(--ui-bp-ink-slack) * -1);
+}
+
+.ui-btn--primary .ui-btn__label,
+.ui-btn--danger .ui-btn__label {
+  position: relative;
+  /* La capa se manda detras con `z-index: -1`, y sin esto ese -1 no se mide
+     contra el rotulo sino contra el primer antepasado que arme contexto de
+     apilamiento — o sea que el anillo terminaria compitiendo con la capa de
+     relleno del boton y el orden dependeria del orden del DOM. Con el contexto
+     propio, "detras" quiere decir detras de la letra y nada mas. */
+  isolation: isolate;
+}
+
+.ui-btn--primary .ui-btn__label::before,
+.ui-btn--danger .ui-btn__label::before {
+  content: attr(data-label);
+  position: absolute;
+  /* `inset: 0` cae sobre la caja de PADDING del rotulo, que es la que ya trae
+     el aire. El mismo padding aca adentro vuelve a poner el texto duplicado
+     exactamente encima del original. */
+  inset: 0;
+  padding: var(--ui-bp-ink-slack);
+  z-index: -1;
+
+  color: var(--bp-edge);
+  -webkit-text-stroke: var(--ui-bp-ink-stroke-ring) var(--bp-edge);
+  paint-order: stroke fill;
+  pointer-events: none;
+
+  -webkit-mask-image: var(--ui-bp-chalk);
+  mask-image: var(--ui-bp-chalk);
+}
+
+/* El icono lleva el MISMO anillo que la letra: del color del borde y asomando
+   lo mismo. Es un trazo de verdad —el halo del Icon— y no cuatro sombras
+   proyectadas: una sombra rodea peor, porque en las esquinas las cuatro
+   direcciones no llegan a juntarse.
+
+   ⛔ EL HALO NO LLEVA TEXTURA, Y NO ES UN OLVIDO.
+   Se intento enmascararlo y SE CORTA. En una pieza de SVG el molde de una
+   mascara es la caja del RELLENO, que no incluye el trazo: como el trazo se
+   dibuja centrado sobre la linea, la mitad de afuera cae fuera del molde y
+   desaparece — queda un contorno con los bordes tajeados en recto, justo sobre
+   la parte que tenia que redondear. `mask-clip: stroke-box` y `no-clip` estan
+   para eso y no alcanzan sobre un `<g>`.
+
+   Y no hay donde darle aire como se le da al texto: el aire es padding, y un
+   grupo de SVG no tiene caja que padear. Un contorno cortado es peor que uno
+   sin trama, asi que se queda liso. La textura del icono vive en el dibujo
+   mismo, que si la lleva —ver chalk.css— salvo adentro de un boton lleno, donde
+   tiene que ser duro porque es el hueco. */
+/* ⛔ Y EL REMATE DEL TRAZO NO PUEDE SER `butt` ACA.
+   Este pack dibuja sus iconos con remate `butt`: la linea termina exactamente
+   donde termina el trazo, a filo. Con un halo eso es fatal — el halo y el
+   dibujo terminan EN EL MISMO PUNTO, asi que en la punta de cada trazo no queda
+   contorno: hay contorno a los costados y de golpe se corta en recto.
+   Se lee igual que si algo lo estuviera recortando, y no habia nada
+   recortandolo: era el remate.
+
+   `square` extiende los dos medio grosor, y como el halo es mas grueso que el
+   dibujo la diferencia queda pareja en la punta y a los costados. Sigue siendo
+   un remate recto, que es lo que el pack pide: no se pierde el caracter. */
+.ui-btn--primary .ui-icon,
+.ui-btn--danger .ui-icon {
+  --icon-cap: square;
+  --icon-halo: var(--bp-edge);
+  --icon-halo-stroke: calc(
+    var(--ui-bp-ink-stroke-icon) + var(--ui-bp-ink-ring) * 2
+  );
+}

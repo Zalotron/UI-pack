@@ -1,0 +1,78 @@
+/* ---------------------------------------------- Button — PIEL del pack GLASS */
+/* Interfaz: --btn-bg / --btn-bg-hover | --btn-gloss | --btn-fg
+             --btn-border / -hover | --btn-shadow                            */
+
+/* El brillo aparte no se usa en este pack: se pintaría ENCIMA del canto
+   degradado y se lo comería, porque la capa de gloss se recorta al borde.
+   Acá la luz ya está adentro del propio degradé de la superficie. */
+.ui-btn {
+  --btn-gloss: none;
+  --btn-border: transparent;
+  --btn-border-hover: transparent;
+}
+
+/* El desenfoque va por variante, NO en `.ui-btn`. Si estuviera en la clase
+   base, el botón `ghost` —que no tiene superficie— igual desenfocaría el
+   fondo: se vería un rectángulo borroso flotando sin caja que lo justifique. */
+.ui-btn--primary,
+.ui-btn--secondary,
+.ui-btn--danger {
+  backdrop-filter: var(--ui-glass-blur-sm);
+  -webkit-backdrop-filter: var(--ui-glass-blur-sm);
+}
+
+/* El hover cambia la VARIABLE, no `background`: si pisara la propiedad se
+   llevaría puesto el recorte de capas que dibuja el borde degradado. */
+.ui-btn:hover:not(.is-disabled) {
+  --btn-bg: var(--btn-bg-hover);
+  border-color: var(--btn-border-hover);
+}
+
+.ui-btn:active:not(.is-disabled) {
+  transform: translateY(var(--ui-press-shift));
+}
+
+/* -- Variantes ------------------------------------------------------------ */
+
+/* Primario: vidrio teñido con la marca. El color va translúcido a propósito
+   — un botón opaco al lado de superficies de vidrio rompe el material. */
+.ui-btn--primary {
+  --btn-bg: var(--ui-glass-accent);
+  --btn-bg-hover: var(--ui-glass-accent-hover);
+  --btn-fg: var(--ui-on-accent);
+  --btn-shadow: var(--ui-glass-inner), var(--ui-glass-glow);
+}
+
+/* Secundario: el mismo cristal que un control. Al pasar el mouse no se aclara,
+   se le enciende el canto. */
+.ui-btn--secondary {
+  --btn-bg: var(--ui-glass-control);
+  --btn-bg-hover: var(--ui-glass-control-on);
+  --btn-fg: var(--ui-text);
+  --btn-shadow: var(--ui-glass-inner), var(--ui-shadow-sm);
+}
+
+/* Terciario: sin vidrio hasta que lo tocás. */
+.ui-btn--ghost {
+  --btn-bg: transparent;
+  --btn-bg-hover: var(--ui-glass-control);
+  --btn-fg: var(--ui-text-muted);
+}
+.ui-btn--ghost:hover:not(.is-disabled) { color: var(--ui-text); }
+
+.ui-btn--danger {
+  --btn-bg:
+    linear-gradient(158deg,
+      rgb(from var(--ui-danger) r g b / 0.95),
+      rgb(from var(--ui-danger) r g b / 0.70)) padding-box,
+    var(--ui-glass-edge) border-box;
+  --btn-bg-hover:
+    linear-gradient(158deg,
+      rgb(from var(--ui-danger-hover) r g b / 1),
+      rgb(from var(--ui-danger-hover) r g b / 0.82)) padding-box,
+    var(--ui-glass-edge) border-box;
+  --btn-fg: var(--ui-on-danger);
+  --btn-shadow:
+    var(--ui-glass-inner),
+    0 6px 22px rgb(from var(--ui-danger) r g b / 0.30);
+}

@@ -1,0 +1,17 @@
+/* ------------------------------------------------ Tabs — PIEL del pack GLASS */
+/* Interfaz: --tabs-fg | --tabs-fg-active | --tabs-bg-hover
+             --tabs-line | --tabs-indicator                                  */
+
+.ui-tabs {
+  --tabs-fg: var(--ui-text-muted);
+  --tabs-fg-active: var(--ui-text);
+  --tabs-bg-hover: rgb(from var(--ui-glass-tint) r g b / var(--ui-glass-film-bottom));
+  /* La línea de abajo es el canto del vidrio visto de perfil. */
+  --tabs-line: rgb(from var(--ui-glass-tint) r g b / var(--ui-glass-inner-hi));
+  --tabs-indicator: var(--ui-accent);
+}
+
+/* La rayita activa no es una raya pintada: es luz. */
+.ui-tabs__indicator {
+  box-shadow: 0 0 12px rgb(from var(--ui-accent) r g b / 0.85);
+}

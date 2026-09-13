@@ -1,0 +1,37 @@
+{
+  "name": "web-ui",
+  "version": "0.1.0",
+  "description": "Libreria de componentes UI reutilizables. Vanilla JS, sin dependencias, sin build.",
+  "type": "module",
+  "license": "MIT",
+  "private": true,
+  "main": "./src/index.js",
+  "module": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./core": "./src/core/index.js",
+    "./config": "./src/config.js",
+    "./styles": "./src/styles/index.css",
+    "./styles/base": "./src/styles/base.css",
+    "./styles/structure": "./src/styles/structure.css",
+    "./packs": "./src/styles/packs/index.js",
+    "./packs/*": "./src/styles/packs/*/pack.css",
+    "./components/*": "./src/components/*/index.js"
+  },
+  "sideEffects": [
+    "*.css"
+  ],
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "dev": "node serve.mjs",
+    "start": "npm run dev"
+  },
+  "keywords": [
+    "ui",
+    "components",
+    "vanilla",
+    "design-system"
+  ]
+}

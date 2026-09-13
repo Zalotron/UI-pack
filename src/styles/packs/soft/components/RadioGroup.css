@@ -1,0 +1,31 @@
+/* ------------------------------------------- RadioGroup — PIEL del pack SOFT */
+/* Interfaz: --radio-bg | --radio-border | --radio-fill | --radio-ring         */
+
+/* Mismo gesto que el Checkbox, porque significan lo mismo: hueco apagado,
+   objeto encendido. */
+.ui-radiogroup {
+  --radio-bg: var(--ui-surface);
+  --radio-border: var(--ui-line);
+  --radio-fill: var(--ui-accent);
+}
+
+.ui-radio__dot {
+  box-shadow: var(--ui-soft-in-sm);
+  transition:
+    border-color var(--ui-duration-fast) var(--ui-ease),
+    box-shadow var(--ui-duration-base) var(--ui-ease);
+}
+
+.ui-radio:hover:not(.is-disabled) {
+  --radio-border: var(--ui-border);
+}
+
+/* :not(.is-disabled) para empatarle la especificidad al hover de arriba. */
+.ui-radio.is-checked:not(.is-disabled) {
+  --radio-border: transparent;
+}
+
+.ui-radio.is-checked:not(.is-disabled) .ui-radio__dot {
+  box-shadow: var(--ui-soft-out-sm);
+  animation: ui-soft-swell var(--ui-duration-slow) var(--ui-ease-out) 1;
+}

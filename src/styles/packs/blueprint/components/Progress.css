@@ -1,0 +1,71 @@
+/* ------------------------------------ Progress — PIEL del pack BLUEPRINT */
+/* Interfaz: --progress-track | --progress-fill | --progress-ring-fill
+             --progress-label-fg | --progress-value-fg
+             --progress-radius | --progress-cap                             */
+
+/* Una COTA, no una barra. El canal es la linea de referencia y lo lleno es el
+   tramo acotado: las puntas van rectas, como el trazo de un instrumento.
+
+   ⛔ EL CANAL VACIO NO SE PINTA. En un plano lo que no esta medido no esta
+   sombreado: queda el papel. Por eso el canal es SOLO CONTORNO y el unico
+   relleno de la pieza es el tramo cargado — que ademas es el que lleva la veta
+   diagonal, asi que la diferencia entre lo lleno y lo vacio no la hace un tono
+   mas claro, la hace que haya o no haya trazo. */
+.ui-progress {
+  --progress-track: transparent;
+  --progress-fill: rgb(from var(--ui-accent) r g b / var(--ui-bp-fill-alpha));
+  --progress-ring-fill: rgb(from var(--ui-accent) r g b / var(--ui-bp-fill-alpha));
+  --progress-radius: 0;
+  --progress-cap: butt;
+  --progress-value-fg: var(--ui-accent-text);
+}
+
+/* El canal lleva el contorno dibujado, como todo en este pack. */
+.ui-progress--linear .ui-progress__track {
+  border: var(--ui-border-width) solid var(--ui-line-soft);
+}
+
+/* ⛔ EL RELLENO NO TERMINA RECTO.
+   Un corte perpendicular delata que la barra la dibujó una máquina. Una mano
+   derecha que pinta con un lápiz deja la punta de arriba más a la derecha que
+   la de abajo, porque la muñeca gira: eso es este recorte.
+
+   La inclinación sale del ALTO de la barra (--ui-bp-hand-slant es una
+   fracción), así que acompaña sola a las tres variantes de tamaño — en una
+   barra de 7px se inclina poco y en una de 16px se inclina más, como pasaría
+   de verdad. El borde de la izquierda se deja recto: ahí el trazo arranca
+   apoyado contra el tope del canal. */
+.ui-progress--linear .ui-progress__fill {
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    calc(100% - var(--progress-h) * var(--ui-bp-hand-slant)) 100%,
+    0 100%
+  );
+}
+
+/* El aro apagado es linea de construccion: punteada, como una cota tentativa.
+   El guion sale del calibre de trazo del pack y no de numeros sueltos, asi que
+   acompana solo si se cambia el grosor del aro.
+
+   El trazo se declara ACA y no sale de --progress-track: el canal de la barra
+   es transparente, y si el aro lo heredara se quedaria sin su linea de
+   construccion. En el aro el contorno ES esa linea punteada. */
+/* ⛔ NINGUN PACK DECLARA `stroke` EN EL ARO.
+   Una regla de CSS le gana al atributo del elemento, y el atributo es el que
+   apunta al degrade. Declarar `stroke` aca tapa el degrade y deja el aro plano
+   — que es exactamente lo que le pasaba a este canal. El color va por los topes. */
+.ui-progress {
+  --progress-ring-track-from: var(--ui-line);
+  --progress-ring-track-to: var(--ui-line);
+}
+
+/* El punteado si va aca: no es un color, es la forma del trazo. */
+.ui-progress__ring-track {
+  stroke-dasharray: var(--ui-bp-bold) calc(var(--ui-bp-bold) * 2);
+}
+
+.ui-progress.is-indeterminate {
+  --progress-fill: var(--ui-accent-soft);
+  --progress-ring-fill: var(--ui-accent-soft);
+}

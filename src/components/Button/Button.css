@@ -1,0 +1,137 @@
+/* ------------------------------------------------------ Button — ESTRUCTURA */
+/* Mecánica del componente. Agnóstico al estilo: se comparte entre packs.
+   La estética (colores de cada variante, hover) vive en:
+     src/styles/packs/<pack>/components/Button.css                           */
+
+.ui-btn {
+  /* Interfaz del componente. La piel del pack pisa estas variables. */
+  --btn-bg: transparent;
+  --btn-bg-hover: transparent;
+  /* Capa de brillo encima del fondo: highlight arriba, sombra abajo. Al ser
+     translucida funciona sobre CUALQUIER color de variante, sin repetir el
+     degrade por cada una. `none` la apaga. */
+  --btn-gloss: none;
+  --btn-fg: var(--ui-text);
+  --btn-border: transparent;
+  --btn-border-hover: var(--btn-border);
+  --btn-shadow: none;
+  --btn-height: var(--ui-control-h-md);
+  --btn-pad: var(--ui-control-pad-md);
+  --btn-font: var(--ui-control-font-md);
+  --btn-gap: var(--ui-control-gap-md);
+  --btn-radius: var(--ui-control-radius-md);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--btn-gap);
+
+  height: var(--btn-height);
+  padding: 0 var(--btn-pad);
+
+  border: var(--ui-border-width) solid var(--btn-border);
+  border-radius: var(--btn-radius);
+  /* Dos capas: el brillo va arriba y el color de fondo abajo. En el shorthand
+     solo la ultima capa puede llevar color. */
+  background: var(--btn-gloss), var(--btn-bg);
+  color: var(--btn-fg);
+  box-shadow: var(--btn-shadow);
+
+  font-family: var(--ui-font-sans);
+  font-size: var(--btn-font);
+  font-weight: var(--ui-weight-medium);
+  line-height: 1;
+  letter-spacing: var(--ui-tracking-tight);
+  white-space: nowrap;
+  text-decoration: none;
+
+  cursor: pointer;
+  user-select: none;
+  transition:
+    background var(--ui-duration-fast) var(--ui-ease),
+    border-color var(--ui-duration-fast) var(--ui-ease),
+    color var(--ui-duration-fast) var(--ui-ease),
+    transform var(--ui-duration-fast) var(--ui-ease);
+}
+
+.ui-btn:focus-visible {
+  outline: var(--ui-focus-width) solid var(--ui-focus-ring);
+  outline-offset: var(--ui-focus-offset);
+}
+
+.ui-btn.is-disabled {
+  opacity: var(--ui-disabled-opacity);
+  cursor: not-allowed;
+}
+
+.ui-btn.is-loading { cursor: progress; }
+
+/* -- Tamaños -------------------------------------------------------------- */
+
+.ui-btn--sm {
+  --btn-height: var(--ui-control-h-sm);
+  --btn-pad: var(--ui-control-pad-sm);
+  --btn-font: var(--ui-control-font-sm);
+  --btn-gap: var(--ui-control-gap-sm);
+  --btn-radius: var(--ui-control-radius-sm);
+}
+
+.ui-btn--md {
+  --btn-height: var(--ui-control-h-md);
+  --btn-pad: var(--ui-control-pad-md);
+  --btn-font: var(--ui-control-font-md);
+  --btn-gap: var(--ui-control-gap-md);
+  --btn-radius: var(--ui-control-radius-md);
+}
+
+.ui-btn--lg {
+  --btn-height: var(--ui-control-h-lg);
+  --btn-pad: var(--ui-control-pad-lg);
+  --btn-font: var(--ui-control-font-lg);
+  --btn-gap: var(--ui-control-gap-lg);
+  --btn-radius: var(--ui-control-radius-lg);
+}
+
+/* -- Modificadores -------------------------------------------------------- */
+
+.ui-btn--block {
+  display: flex;
+  width: 100%;
+}
+
+.ui-btn--icon-only {
+  width: var(--btn-height);
+  padding: 0;
+}
+
+/* -- Partes --------------------------------------------------------------- */
+
+.ui-btn__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  font-size: 1.05em;
+}
+.ui-btn__icon svg {
+  width: 1em;
+  height: 1em;
+}
+
+.ui-btn__label { display: inline-block; }
+
+.ui-btn__loader {
+  width: 1em;
+  height: 1em;
+  flex: none;
+  border: var(--ui-loader-width) solid currentColor;
+  border-right-color: transparent;
+  /* circle, no full: el spinner debe ser redondo aunque ROUNDNESS sea 0 */
+  border-radius: var(--ui-radius-circle);
+  opacity: 0.8;
+  animation: ui-btn-loader-spin var(--ui-duration-loader) linear infinite;
+}
+
+@keyframes ui-btn-loader-spin {
+  to { transform: rotate(360deg); }
+}

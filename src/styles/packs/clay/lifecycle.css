@@ -1,0 +1,170 @@
+/* ===========================================================================
+   PACK "CLAY" — entradas y salidas
+   ---------------------------------------------------------------------------
+   Contrato de `UIComponent`: la mecánica pone `.is-entering` al montar y
+   `.is-leaving` en `leave()`, y espera a que termine lo que corra acá.
+
+   ⚠ ESTE ES EL ARCHIVO MAS IMPORTANTE DEL PACK.
+   En los otros packs el ciclo de vida acompaña a una estética que ya existe
+   en las superficies. Acá es al revés: el movimiento ES la estética. Si esto
+   se apaga, lo que queda es un pack de sombras blandas más — que es justo lo
+   que `soft` ya hace, y mejor.
+
+   La idea: las piezas tienen MASA. Entran cayendo, se pasan de largo y se
+   asientan; y al apretarlas se aplastan en vez de hundirse.
+
+   Todo el rebote sale de --ui-bounce-amount, que es la perilla BOUNCE del
+   pack. En 0 las animaciones siguen corriendo pero sin sobrepaso.
+
+   La salida es MAS CORTA que la entrada: lo que aparece se presenta, lo que se
+   va no debe hacerte esperar.
+   =========================================================================== */
+
+/* -- Caer y asentarse -------------------------------------------------------- */
+/* El sobrepaso va en `scale` y no en la curva: una cubic-bezier con var()
+   adentro es terreno frágil, y acá además el rebote tiene que poder ir a 0
+   desde una perilla. Con `calc()` sobre el scale eso es directo y seguro.
+
+   ⛔ CADA PARADA LLEVA SU PROPIA CURVA, Y ES LO QUE HACE QUE NO PEGUE UN TIRON.
+
+   Una curva de animacion se aplica ENTRE CADA PAR DE KEYFRAMES, no a la
+   animacion entera. Con una sola curva declarada en la regla, esta animacion la
+   corria TRES VECES —de 0 a 55, de 55 a 75 y de 75 a 100— y en cada borde la
+   velocidad saltaba de casi cero a maxima de golpe. Con `--ui-ease-out`, que en
+   este pack es una curva de REBOTE, ademas rebotaba en cada tramo: se frenaba y
+   aceleraba en el medio de la caida, justo antes de acomodarse.
+
+   Las paradas del 55 y el 75 son puntos donde la pieza CAMBIA DE SENTIDO, o sea
+   donde su velocidad es cero. Una curva simetrica dice exactamente eso de los
+   dos lados, asi que los tramos empalman sin costura y el rebote queda donde
+   tiene que estar: en los valores, no en la curva. */
+
+@keyframes ui-cl-drop-in {
+  0% {
+    opacity: 0;
+    scale: calc(1 - 0.22 * var(--ui-bounce-amount));
+    translate: 0 calc(-14px * var(--ui-bounce-amount));
+    animation-timing-function: var(--ui-ease-settle);
+  }
+  /* ⛔ LOS DOS MEDIOS-PERIODOS DEL REBOTE MIDEN LO MISMO.
+     Estaban en 20% y 25%: el rebote se ACELERABA y despues se frenaba, que es
+     al reves de lo que hace cualquier cosa que se amortigua — el periodo se
+     mantiene o se alarga, nunca se acorta.
+
+     Y sobre todo: 20% de 480ms son 96ms, o sea menos de SEIS CUADROS para una
+     ida y vuelta completa. A esa velocidad el ojo no lee un rebote, lee un
+     temblor. Por eso se sentia tosca aunque las curvas ya empalmaran bien.
+
+     Ahora la caida es mas corta y los dos medios-periodos miden 27% cada uno:
+     casi ocho cuadros, que alcanzan para leerse como movimiento. */
+  46% {
+    opacity: 1;
+    scale: calc(1 + 0.05 * var(--ui-bounce-amount));
+    translate: 0 0;
+    animation-timing-function: var(--ui-ease-settle);
+  }
+  73% {
+    /* El rebote corto de vuelta: es lo que le da peso. Mas chico que el
+       sobrepaso —un 35%— porque una oscilacion que se amortigua decae. */
+    scale: calc(1 - 0.018 * var(--ui-bounce-amount));
+    animation-timing-function: var(--ui-ease-settle);
+  }
+  100% {
+    opacity: 1;
+    scale: 1;
+    translate: 0 0;
+  }
+}
+
+@keyframes ui-cl-drop-out {
+  0%   { opacity: 1; scale: 1; }
+  100% { opacity: 0; scale: calc(1 - 0.12 * var(--ui-bounce-amount)); }
+}
+
+/* -- Inflarse ---------------------------------------------------------------- */
+/* Para lo que se despliega: crece desde su borde de arriba, como plastilina
+   que sale del molde. */
+
+/* Misma regla que la caida: la parada del 60 es donde cambia de sentido, asi
+   que los dos tramos llevan la curva simetrica. */
+@keyframes ui-cl-swell-in {
+  0% {
+    opacity: 0;
+    scale: calc(1 - 0.14 * var(--ui-bounce-amount));
+    transform-origin: top center;
+    animation-timing-function: var(--ui-ease-settle);
+  }
+  60% {
+    opacity: 1;
+    scale: calc(1 + 0.04 * var(--ui-bounce-amount));
+    animation-timing-function: var(--ui-ease-settle);
+  }
+  100% { opacity: 1; scale: 1; }
+}
+
+@keyframes ui-cl-swell-out {
+  0%   { opacity: 1; scale: 1; }
+  100% { opacity: 0; scale: calc(1 - 0.08 * var(--ui-bounce-amount)); }
+}
+
+/* ===========================================================================
+   Asignación por componente
+   =========================================================================== */
+
+/* -- Las piezas grandes ---------------------------------------------------- */
+
+.ui-container.is-entering,
+.ui-window.is-entering {
+  animation: ui-cl-drop-in var(--ui-duration-slow) var(--ui-ease-out) both;
+  /* Escalonado: lo reparte UIComponent al montar. Va DESPUES del shorthand,
+     que resetea animation-delay a 0. */
+  animation-delay: var(--ui-enter-delay, 0ms);
+}
+.ui-container.is-leaving,
+.ui-window.is-leaving {
+  animation: ui-cl-drop-out var(--ui-duration-base) var(--ui-ease-in) both;
+}
+
+/* -- Lo que se despliega --------------------------------------------------- */
+
+.ui-select.is-entering,
+.ui-colorpicker.is-entering {
+  animation: ui-cl-swell-in var(--ui-duration-base) var(--ui-ease-out) both;
+  animation-delay: var(--ui-enter-delay, 0ms);
+}
+.ui-select.is-leaving,
+.ui-colorpicker.is-leaving {
+  animation: ui-cl-swell-out var(--ui-duration-fast) var(--ui-ease-in) both;
+}
+
+/* -- Controles y estructura ------------------------------------------------ */
+
+.ui-btn.is-entering,
+.ui-spinner.is-entering,
+.ui-slider.is-entering,
+.ui-toggle.is-entering,
+.ui-checkbox.is-entering,
+.ui-radiogroup.is-entering,
+.ui-textfield.is-entering,
+.ui-tabs.is-entering,
+.ui-scroll.is-entering,
+.ui-progress.is-entering,
+.ui-icon.is-entering,
+.ui-separator.is-entering {
+  animation: ui-cl-drop-in var(--ui-duration-base) var(--ui-ease-out) both;
+  animation-delay: var(--ui-enter-delay, 0ms);
+}
+.ui-btn.is-leaving,
+.ui-spinner.is-leaving,
+.ui-slider.is-leaving,
+.ui-toggle.is-leaving,
+.ui-checkbox.is-leaving,
+.ui-radiogroup.is-leaving,
+.ui-textfield.is-leaving,
+.ui-tabs.is-leaving,
+.ui-scroll.is-leaving,
+.ui-progress.is-leaving,
+.ui-icon.is-leaving,
+.ui-separator.is-leaving {
+  animation: ui-cl-drop-out var(--ui-duration-fast) var(--ui-ease-in) both;
+}

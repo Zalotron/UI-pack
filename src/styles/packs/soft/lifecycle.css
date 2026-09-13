@@ -1,0 +1,155 @@
+/* ===========================================================================
+   PACK "SOFT" — entradas y salidas
+   ---------------------------------------------------------------------------
+   Contrato de `UIComponent`: la mecánica pone `.is-entering` al montar y
+   `.is-leaving` en `leave()`, y espera a que termine lo que corra acá.
+
+   Va en un archivo aparte de motion.css a propósito: ahí está el movimiento de
+   INTERACCION (hundirse al apretar, darse vuelta al marcarse); acá está el
+   ciclo de vida.
+
+   La idea: en este pack nada llega de afuera — todo SALE DE LA LAMINA. Una
+   entrada es el material levantándose desde la superficie; una salida es el
+   material volviendo a fundirse con ella.
+
+   ⚠ COMO SE ESCRIBE ESO, Y COMO NO
+   La manera ingenua es poner la sombra en el keyframe:
+
+       0%   { box-shadow: var(--ui-soft-flat); }
+       100% { box-shadow: var(--ui-soft-out-sm); }   ← MAL
+
+   Se ve bien mientras dura y salta al terminar. Dos motivos:
+
+     · El 100% fija una sombra ELEGIDA ACA, que casi nunca es la que el
+       elemento tiene en reposo. Apenas la mecánica saca `.is-entering`, la
+       sombra vuelve a la suya de un frame para el otro. Y la mayoría de los
+       controles NO llevan relieve en su raíz — el del Checkbox está en __box,
+       el del Toggle en __track/__knob, el del Slider en los pseudo del input,
+       y el TextField y el Spinner van HUNDIDOS, o sea al revés. Lo que se veía
+       era un resplandor alrededor de cada pieza que se apagaba de golpe.
+     · Solo alcanza a la raíz: las piezas de adentro no se enteraban.
+
+   La manera correcta es no nombrar ninguna sombra y animar el CALIBRE:
+   `--ui-soft-relief` va de 0 a 1 y todo el relieve del pack cuelga de él
+   (ver tokens.css). Entonces la animación ESCALA la sombra que cada pieza ya
+   tiene, hereda hacia adentro — así que las piezas internas emergen con su
+   padre — y termina en 1, que es el valor de reposo: no queda nada a lo que
+   saltar. Un campo hundido entra hundiéndose, un botón entra sobresaliendo, y
+   una raíz sin relieve no inventa ninguno.
+
+   La salida es MAS CORTA que la entrada: lo que aparece se presenta, lo que se
+   va no debe hacerte esperar.
+   =========================================================================== */
+
+/* -- Salir de la lámina ---------------------------------------------------- */
+
+/* ⛔ CADA PARADA LLEVA SU CURVA. Una curva se aplica ENTRE CADA PAR de
+   keyframes, no a la animacion entera: con una sola declarada en la regla, esta
+   animacion la corria dos veces y en el borde del 60% la velocidad saltaba de
+   casi cero a maxima. Y `--ui-ease-out` de este pack es una curva de REBOTE, o
+   sea que ademas rebotaba en cada tramo. El 60% es donde la pieza cambia de
+   sentido —ahi su velocidad es cero— asi que la curva tiene que ser simetrica. */
+@keyframes ui-soft-relieve-in {
+  0% {
+    animation-timing-function: var(--ui-ease-settle);
+    opacity: 0;
+    scale: 0.94;
+    --ui-soft-relief: 0;
+  }
+  60% {
+    animation-timing-function: var(--ui-ease-settle);
+    opacity: 1;
+    scale: 1.015;          /* el sobrepaso: se pasa de largo */
+  }
+  100% {
+    opacity: 1;
+    scale: 1;
+    --ui-soft-relief: 1;
+  }
+}
+
+@keyframes ui-soft-relieve-out {
+  0% {
+    opacity: 1;
+    scale: 1;
+    --ui-soft-relief: 1;
+  }
+  100% {
+    opacity: 0;
+    scale: 0.96;
+    --ui-soft-relief: 0;
+  }
+}
+
+/* -- Versión de control ---------------------------------------------------- */
+/* El mismo gesto, más corto de recorrido: una pieza chica que se encoge un 6%
+   se lee como un parpadeo. El relieve hace el mismo camino completo. */
+
+/* Misma regla que la de arriba: la parada del 60% es donde cambia de sentido,
+   asi que los dos tramos llevan la curva simetrica. */
+@keyframes ui-soft-relieve-in-sm {
+  0%   { animation-timing-function: var(--ui-ease-settle); opacity: 0; scale: 0.96; --ui-soft-relief: 0; }
+  60%  { animation-timing-function: var(--ui-ease-settle); opacity: 1; scale: 1.01; }
+  100% { opacity: 1; scale: 1;    --ui-soft-relief: 1; }
+}
+
+@keyframes ui-soft-relieve-out-sm {
+  0%   { opacity: 1; scale: 1;    --ui-soft-relief: 1; }
+  100% { opacity: 0; scale: 0.98; --ui-soft-relief: 0; }
+}
+
+/* ===========================================================================
+   Asignación por componente
+   =========================================================================== */
+
+/* -- Las placas grandes ---------------------------------------------------- */
+
+.ui-container.is-entering,
+.ui-window.is-entering,
+.ui-select.is-entering,
+.ui-colorpicker.is-entering {
+  animation: ui-soft-relieve-in var(--ui-duration-slow) var(--ui-ease-out) both;
+  /* Escalonado: lo reparte UIComponent al montar. Va DESPUES del shorthand,
+     que resetea animation-delay a 0. */
+  animation-delay: var(--ui-enter-delay, 0ms);
+}
+.ui-container.is-leaving,
+.ui-window.is-leaving,
+.ui-select.is-leaving,
+.ui-colorpicker.is-leaving {
+  animation: ui-soft-relieve-out var(--ui-duration-base) var(--ui-ease-in) both;
+}
+
+/* -- Controles y estructura ------------------------------------------------ */
+
+.ui-btn.is-entering,
+.ui-spinner.is-entering,
+.ui-slider.is-entering,
+.ui-toggle.is-entering,
+.ui-checkbox.is-entering,
+.ui-radiogroup.is-entering,
+.ui-textfield.is-entering,
+.ui-tabs.is-entering,
+.ui-scroll.is-entering,
+.ui-progress.is-entering,
+.ui-icon.is-entering,
+.ui-separator.is-entering {
+  animation: ui-soft-relieve-in-sm var(--ui-duration-base) var(--ui-ease-out) both;
+  /* Escalonado: lo reparte UIComponent al montar. Va DESPUES del shorthand,
+     que resetea animation-delay a 0. */
+  animation-delay: var(--ui-enter-delay, 0ms);
+}
+.ui-btn.is-leaving,
+.ui-spinner.is-leaving,
+.ui-slider.is-leaving,
+.ui-toggle.is-leaving,
+.ui-checkbox.is-leaving,
+.ui-radiogroup.is-leaving,
+.ui-textfield.is-leaving,
+.ui-tabs.is-leaving,
+.ui-scroll.is-leaving,
+.ui-progress.is-leaving,
+.ui-icon.is-leaving,
+.ui-separator.is-leaving {
+  animation: ui-soft-relieve-out-sm var(--ui-duration-fast) var(--ui-ease-in) both;
+}

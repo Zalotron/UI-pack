@@ -1,0 +1,35 @@
+/* --------------------------------------------- Spinner — PIEL del pack CYBER */
+/* Interfaz: --spinner-bg | --spinner-fg | --spinner-border | --spinner-ring   */
+
+/* Caja hundida de instrumento: fondo más oscuro que la superficie que la
+   contiene, trazo de neón tenue, y el valor en monoespaciada. */
+.ui-spinner {
+  --spinner-bg: var(--ui-bg-subtle);
+  --spinner-border: var(--ui-border);
+  --spinner-fg: var(--ui-accent-text);
+}
+
+.ui-spinner:hover:not(.is-disabled) {
+  --spinner-border: var(--ui-border-strong);
+}
+
+/* Los estados activos llevan :not(.is-disabled) para empatarle la
+   especificidad al :hover de arriba. Sin eso el hover gana y el control
+   se ve MAS apagado con el mouse encima que sin el. */
+.ui-spinner.is-dragging:not(.is-disabled) {
+  --spinner-border: var(--ui-accent);
+  --spinner-ring: var(--ui-ring-soft);
+}
+
+/* Al entrar en edición la señal se desalinea una vez. Solo la variante de
+   TEXTO: cortarle bandas a la caja mientras estás escribiendo marea. */
+.ui-spinner.is-editing {
+  animation: var(--ui-glitch-anim-text);
+}
+
+/* Editando: el borde se enciende y el cursor toma el neón. */
+.ui-spinner.is-editing:not(.is-disabled) {
+  --spinner-border: var(--ui-accent);
+  --spinner-ring: var(--ui-ring);
+  --spinner-caret: var(--ui-accent);
+}

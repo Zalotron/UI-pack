@@ -1,0 +1,100 @@
+/* ---------------------------------------------- Slider — PIEL del pack GLASS */
+/* Interfaz: --slider-track | --slider-track-border | --slider-fill
+             --slider-thumb | --slider-ring                                   */
+
+/* La pista ES VIDRIO DE VERDAD: desenfoca lo que tiene detrás, como todas las
+   demás superficies del pack.
+
+   Antes no podía: `--slider-track` se usaba ADENTRO del degradé que dibujaba el
+   progreso, así que tenía que ser un color y no un fondo. Eso dejó de ser
+   cierto cuando el canal pasó a ser un elemento propio — ahora es una
+   superficie como cualquier otra, y el canal vacío se veía plano al lado de
+   todo lo demás sin ninguna razón. */
+.ui-slider {
+  /* Transparente: lo pinta la regla de abajo, con las dos capas del cristal. */
+  --slider-track: transparent;
+  --slider-track-border: rgb(from var(--ui-glass-tint) r g b / var(--ui-glass-inner-hi));
+  --slider-thumb: var(--ui-accent);
+  --slider-ring: var(--ui-ring-soft);
+
+  /* Sigue definido aunque el relleno lo pinte el degradé de abajo: si alguien
+     usa el Slider sin esta piel, la mecánica necesita un color válido. */
+  --slider-fill: var(--ui-accent);
+}
+
+/* ⚠ El desenfoque lo vuelve BACKDROP ROOT de lo que tenga adentro. Acá no
+   molesta: lo único que vive dentro del canal es el relleno, que no desenfoca
+   nada — pinta color. */
+.ui-slider__track {
+  background: var(--ui-glass-hollow);
+  backdrop-filter: var(--ui-glass-blur-sm);
+  -webkit-backdrop-filter: var(--ui-glass-blur-sm);
+}
+
+.ui-slider:hover:not(.is-disabled) { --slider-thumb: var(--ui-accent-hover); }
+
+/* Arrastrando: mismo halo pleno que usa el Spinner al editarse. */
+.ui-slider.is-dragging { --slider-ring: var(--ui-ring); }
+
+/* -- El relleno ------------------------------------------------------------ */
+/* Un relleno de un solo tono se ve muerto al lado de superficies que
+   refractan. Acá son dos capas:
+
+     1. el relleno, que recorre un corrimiento de tono (--ui-fill-from/-to),
+        el mismo gesto que hace la malla del fondo;
+     2. un reflejo arriba, sobre TODO el canal — la luz pega en el tubo
+        entero, no solo en la parte llena.
+
+   El degradé ocupa el relleno entero, que mide --slider-progress: se reescala
+   con el valor, así que siempre se ve completo y no un recorte. */
+
+.ui-slider__fill {
+  background:
+    var(--ui-fill-sheen),
+    linear-gradient(to right, var(--ui-fill-from), var(--ui-fill-to));
+}
+
+/* -- El tirador ------------------------------------------------------------ */
+/* Es una PASTILLA de vidrio, no una rayita de color.
+
+   El degradé va EN VERTICAL y no en horizontal: el tirador mide 6px de ancho —
+   ahí no entra ningún corrimiento de tono— pero es alto, así que a lo largo sí
+   se lee. Es el mismo error que tenía anotado al revés: no es que un degradé no
+   se vea, es que no se veía en el eje equivocado.
+
+   El color sigue saliendo de --slider-thumb, que es lo que cambia al pasar el
+   mouse: el degradé lo aclara arriba y lo apaga abajo SIN fijar ningún color
+   propio, así que el hover se sigue notando. */
+.ui-slider__thumb {
+  background:
+    var(--ui-fill-sheen),
+    linear-gradient(
+      180deg,
+      hsl(from var(--slider-thumb) h s calc(l * 1.16)),
+      var(--slider-thumb) 55%,
+      hsl(from var(--slider-thumb) h s calc(l * 0.86))
+    );
+}
+
+/* ⚠ HAY QUE CONTESTAR LOS TRES ESTADOS, NO SOLO EL DE REPOSO.
+   La mecánica marca hover, foco y arrastre con `box-shadow`, y esas reglas
+   tienen más especificidad: REEMPLAZAN la sombra. Si el canto del vidrio se
+   declarara solo en reposo, el tirador lo perdería justo al tocarlo.
+
+   El halo se apaga con ancho CERO y no con un color transparente: así el valor
+   de --slider-ring sigue saliendo de donde ya salía —la raíz del slider— y no
+   hace falta redeclararlo acá, que era lo que dejaba al estado de arrastre
+   pesando menos que el de hover. */
+.ui-slider__thumb {
+  box-shadow:
+    inset 0 var(--ui-border-width) 0 rgb(from var(--ui-glass-tint) r g b / var(--ui-glass-inner-hi)),
+    0 0 0 0 var(--slider-ring);
+}
+
+.ui-slider:hover .ui-slider__thumb,
+.ui-slider__input:focus-visible ~ .ui-slider__thumb,
+.ui-slider.is-dragging .ui-slider__thumb {
+  box-shadow:
+    inset 0 var(--ui-border-width) 0 rgb(from var(--ui-glass-tint) r g b / var(--ui-glass-inner-hi)),
+    0 0 0 var(--ui-ring-width) var(--slider-ring);
+}

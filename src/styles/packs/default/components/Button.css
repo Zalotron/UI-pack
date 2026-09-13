@@ -1,0 +1,72 @@
+/* -------------------------------------------- Button — PIEL del pack DEFAULT */
+/* Solo estética. La mecánica está en src/components/Button/Button.css.
+   Un pack rellena la interfaz --btn-*:
+     --btn-bg / --btn-bg-hover   fondo y fondo al pasar el mouse
+     --btn-gloss                 capa de brillo encima del fondo
+     --btn-fg                    color del texto
+     --btn-border / -hover       borde
+     --btn-shadow                sombra                                      */
+
+/* Brillo arriba, sombra abajo. Es translúcido, así que sirve para cualquier
+   variante sin repetir un degradé por color. Sutil a propósito: da volumen
+   sin que el botón parezca de otra época. */
+.ui-btn {
+  --btn-gloss: linear-gradient(
+    180deg,
+    rgb(from var(--ui-neutral-0) r g b / 0.14) 0%,
+    rgb(from var(--ui-neutral-0) r g b / 0.04) 45%,
+    rgb(from var(--ui-neutral-950) r g b / 0.07) 100%
+  );
+}
+
+/* El hover cambia la VARIABLE, no `background`: si pisara la propiedad se
+   llevaría puesta la capa de brillo. */
+.ui-btn:hover:not(.is-disabled) {
+  --btn-bg: var(--btn-bg-hover);
+  border-color: var(--btn-border-hover);
+}
+
+.ui-btn:active:not(.is-disabled) {
+  transform: translateY(var(--ui-press-shift));
+}
+
+/* -- Variantes ------------------------------------------------------------ */
+
+.ui-btn--primary {
+  --btn-bg: var(--ui-accent);
+  --btn-bg-hover: var(--ui-accent-hover);
+  --btn-fg: var(--ui-on-accent);
+  --btn-border: var(--ui-accent);
+  --btn-border-hover: var(--ui-accent-hover);
+  --btn-shadow: var(--ui-shadow-sm);
+}
+
+/* Secundario: misma silueta y mismo volumen que el primario, pero en
+   superficie neutra. Así conviven en una fila sin competir. */
+.ui-btn--secondary {
+  --btn-bg: var(--ui-surface);
+  --btn-bg-hover: var(--ui-surface-hover);
+  --btn-fg: var(--ui-text);
+  --btn-border: var(--ui-border-strong);
+  --btn-border-hover: var(--ui-accent-soft);
+  --btn-shadow: var(--ui-shadow-sm);
+}
+
+/* Terciario: sin fondo ni borde hasta que lo tocás. */
+.ui-btn--ghost {
+  --btn-bg: transparent;
+  --btn-bg-hover: var(--ui-surface-hover);
+  --btn-fg: var(--ui-text-muted);
+  /* Sin fondo no hay volumen que dar: el brillo solo ensuciaría. */
+  --btn-gloss: none;
+}
+.ui-btn--ghost:hover:not(.is-disabled) { color: var(--ui-text); }
+
+.ui-btn--danger {
+  --btn-bg: var(--ui-danger);
+  --btn-bg-hover: var(--ui-danger-hover);
+  --btn-fg: var(--ui-on-danger);
+  --btn-border: var(--ui-danger);
+  --btn-border-hover: var(--ui-danger-hover);
+  --btn-shadow: var(--ui-shadow-sm);
+}

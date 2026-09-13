@@ -1,0 +1,530 @@
+/* ===========================================================================
+   PACK "NOCTURNE" — tokens
+   ---------------------------------------------------------------------------
+   Un tablero oscuro. Tarjetas apoyadas sobre tarjetas.
+
+   RIGE LA MISMA REGLA DURA: un solo color declarado (--ui-brand). Todo lo demás
+   sale de él con color relativo.
+
+   ⛔ ACA NO HAY UN SOLO CONTORNO. Es LA regla del pack, y todo lo demás sale
+   de ahí. Sin bordes que sostengan la forma, una pieza solo puede existir de
+   dos maneras: siendo MAS CLARA que lo que tiene debajo, y proyectando una
+   sombra ancha. Ese es todo el vocabulario.
+
+   Las cuatro piezas:
+
+     1. CAPAS           Cada nivel de la jerarquía es un escalón de luz sobre
+                        el anterior: fondo < superficie < superficie elevada.
+                        El escalón lo fija la perilla DEPTH. No hay filetes.
+     2. SOMBRA ANCHA    Muy difusa, muy corrida hacia abajo y con `spread`
+                        negativo, para que no se vea el CONTORNO de la sombra
+                        sino solo su peso. Nada de sombras cortas y duras.
+     3. TODO ES TARJETA ROUNDNESS 1.7. Si el borde no dibuja la forma, la
+                        esquina tiene que hacerlo sola.
+     4. EL ACENTO ES    Nunca un color plano: siempre un degradé en diagonal.
+        UN DEGRADE      Es lo único que brilla en toda la interfaz, así que
+                        tiene que tener algo adentro.
+
+   ⚠ ESTE PACK ESTA CALIBRADO PARA EL TEMA OSCURO. Es el único del sistema que
+   nació así: el claro existe y funciona, pero es el derivado. En oscuro el
+   escalón entre capas se lee SUBIENDO la luz; en claro hay que BAJARLA, porque
+   sobre papel blanco una capa más clara no existe. Los dos bloques del final
+   invierten el sentido del escalón por eso, no por gusto.
+
+   Requiere color relativo (Chrome 119+, Safari 16.4+, Firefox 128+).
+   =========================================================================== */
+
+/* Cuanto se asentaron las capas, de 0 a 1, para el ciclo de vida: en 0 la
+   pieza esta pegada al fondo y sin sombra; en 1 esta en su nivel.
+   Hace falta @property: una custom property sin registrar no interpola. */
+@property --ui-nc-settle {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+
+:root {
+  color-scheme: light dark;
+
+  /* ==================================================================== */
+  /*  =============   EL UNICO COLOR DECLARADO   ======================== */
+  /* ==================================================================== */
+  /* Amatista. El violeta del tablero que inspiró el pack, corrido lo
+     suficiente como para no pisarse con el periwinkle de `glass`. */
+  --ui-brand: #9b5ce6;      /* pack settings -> BRAND_COLOR */
+
+  /* Todo es una tarjeta: la esquina hace el trabajo que acá no hace el borde. */
+  --ui-roundness: 1.7;
+
+  --ui-on-brand-light: hsl(from var(--ui-brand) h calc(s * 0.25) 99%);
+  --ui-on-brand-dark:  hsl(from var(--ui-brand) h calc(s * 0.55) 10%);
+  --ui-on-brand: var(--ui-on-brand-light);
+
+  /* ==================================================================== */
+  /*  =========   LAS DOS PERILLAS, CONVERTIDAS EN MEDIDAS   =========== */
+  /* ==================================================================== */
+
+  /* El calibre del asentado, tambien declarado aca: el @property registra el
+     tipo para que interpole, pero el valor de reposo va en :root como
+     cualquier otro token — si no, no hay de donde leerlo sin JS. */
+  --ui-nc-settle: 1;
+
+  /* DEPTH gobierna las dos cosas que separan una capa de la de abajo: cuánta
+     luz sube el escalón y cuánto se aleja la sombra. Van juntas a propósito —
+     si se movieran por separado, la pieza flotaría sin estar más clara, o
+     brillaría sin proyectar, y en los dos casos deja de leerse como capa. */
+  /* ⚠ EL ESCALON ES UN FACTOR, NO UNA SUMA.
+     La tentacion es escribir `calc(l - 4)`, o sea "cuatro puntos de claridad
+     menos". No conviene: adentro de `hsl(from ...)` la claridad es un numero
+     de 0 a 100, pero en cualquier otro lado se la piensa de 0 a 1, y una SUMA
+     obliga a saber en cual de las dos escalas esta parado. Una multiplicacion
+     vale igual en las dos. Ningun otro pack del sistema suma sobre `l`, y es
+     por esto.
+
+     --ui-nc-rise sube la capa (tema oscuro) y --ui-nc-sink la baja (tema
+     claro). Los dos salen de DEPTH: en 0 valen 1, o sea sin escalon — y el
+     pack queda plano, que es justo lo que NO es. */
+  --ui-nc-rise: calc(1 + 0.55 * var(--ui-depth, 1) * var(--ui-nc-settle));
+  --ui-nc-sink: calc(1 - 0.022 * var(--ui-depth, 1) * var(--ui-nc-settle));
+  --ui-nc-drop: calc(14px * var(--ui-depth, 1) * var(--ui-nc-settle));
+
+  /* ==================================================================== */
+  /*  LA SOMBRA                                                          */
+  /*  Ancha, muy difusa y con `spread` NEGATIVO. Ese negativo es lo que    */
+  /*  hace que no se vea el contorno de la sombra sino su peso: sin él     */
+  /*  queda un halo oscuro con forma, que es justo lo que este pack no     */
+  /*  quiere. Y no es negra pura: es el fondo, más hundido todavía.        */
+  /* ==================================================================== */
+  --ui-nc-cast: rgb(from var(--ui-neutral-950) r g b / 0.40);
+
+  --ui-shadow-sm:
+    0 calc(var(--ui-nc-drop) * 0.25) calc(var(--ui-nc-drop) * 0.8)
+      calc(var(--ui-nc-drop) * -0.4) var(--ui-nc-cast);
+  --ui-shadow-md:
+    0 calc(var(--ui-nc-drop) * 0.7) calc(var(--ui-nc-drop) * 2.2)
+      calc(var(--ui-nc-drop) * -0.8) var(--ui-nc-cast);
+  --ui-shadow-lg:
+    0 calc(var(--ui-nc-drop) * 1.8) calc(var(--ui-nc-drop) * 4.5)
+      calc(var(--ui-nc-drop) * -1.2) var(--ui-nc-cast);
+
+  /* ------------------------------------------------------ Tipografía ---- */
+  /* Geométrica y de peso medio: la de un tablero, que se lee de un vistazo y
+     no pide atención. */
+  --ui-font-sans: "Inter", "DM Sans", "Poppins", system-ui, -apple-system,
+                  "Segoe UI", Roboto, sans-serif;
+  --ui-font-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+
+  --ui-text-xs:   0.75rem;
+  --ui-text-sm:   0.8125rem;
+  --ui-text-md:   0.875rem;
+  --ui-text-lg:   1rem;
+  --ui-text-xl:   1.25rem;
+  --ui-text-2xl:  1.75rem;
+  --ui-text-3xl:  2.375rem;
+
+  --ui-weight-regular:  450;
+  --ui-weight-medium:   550;
+  --ui-weight-semibold: 650;
+  --ui-weight-bold:     750;
+
+  --ui-leading-tight:   1.2;
+  --ui-leading-normal:  1.55;
+  --ui-leading-relaxed: 1.7;
+
+  --ui-tracking-tight: -0.015em;
+  --ui-tracking-wide:  0.06em;
+
+  /* -------------------------------------------- Espaciado (escala 4px) -- */
+  --ui-space-0:  0;
+  --ui-space-1:  0.25rem;
+  --ui-space-2:  0.5rem;
+  --ui-space-3:  0.75rem;
+  --ui-space-4:  1rem;
+  --ui-space-5:  1.25rem;
+  --ui-space-6:  1.5rem;
+  --ui-space-8:  2rem;
+  --ui-space-10: 2.5rem;
+  --ui-space-12: 3rem;
+  --ui-space-16: 4rem;
+
+  /* --------------------------------------- Espaciado fluido ------------- */
+  /* Holgado: una tarjeta sin borde necesita aire adentro, o el contenido toca
+     el canto y la forma se pierde. */
+  --ui-pad-block-xs:  clamp(12px, 1.5vw, 16px);
+  --ui-pad-inline-xs: clamp(14px, 1.7vw, 18px);
+  --ui-pad-block-sm:  clamp(18px, 2.2vw, 24px);
+  --ui-pad-inline-sm: clamp(20px, 2.4vw, 26px);
+  --ui-pad-block-md:  clamp(24px, 3vw, 34px);
+  --ui-pad-inline-md: clamp(26px, 3.2vw, 38px);
+  --ui-pad-block-lg:  clamp(34px, 4.2vw, 48px);
+  --ui-pad-inline-lg: clamp(36px, 4.4vw, 52px);
+  --ui-pad-block-xl:  clamp(46px, 5.6vw, 66px);
+  --ui-pad-inline-xl: clamp(48px, 5.8vw, 70px);
+
+  --ui-gap-none: 0;
+  --ui-gap-xs:   var(--ui-space-2);
+  --ui-gap-sm:   clamp(12px, 1.5vw, 16px);
+  --ui-gap-md:   clamp(18px, 2.2vw, 26px);
+  --ui-gap-lg:   clamp(26px, 3.2vw, 38px);
+  --ui-gap-xl:   clamp(36px, 4.4vw, 54px);
+
+  --ui-col-min: 240px;
+
+  /* ------------------------------------------------ Separadores ---------- */
+  --ui-sep-space-none: 0;
+  --ui-sep-space-xs:   var(--ui-space-2);
+  --ui-sep-space-sm:   var(--ui-space-4);
+  --ui-sep-space-md:   clamp(20px, 3vh, 28px);
+  --ui-sep-space-lg:   clamp(30px, 4.5vh, 44px);
+  --ui-sep-space-xl:   clamp(40px, 6vh, 60px);
+
+  --ui-sep-fade: 30%;
+
+  /* ------------------------------------------- Controles ----------------- */
+  --ui-control-h-sm:    34px;
+  --ui-control-h-md:    42px;
+  --ui-control-h-lg:    52px;
+  --ui-control-pad-sm:  var(--ui-space-3);
+  --ui-control-pad-md:  var(--ui-space-5);
+  --ui-control-pad-lg:  var(--ui-space-6);
+  --ui-control-font-sm: var(--ui-text-sm);
+  --ui-control-font-md: var(--ui-text-md);
+  --ui-control-font-lg: var(--ui-text-lg);
+  --ui-control-gap-sm:  var(--ui-space-2);
+  --ui-control-gap-md:  var(--ui-space-3);
+  --ui-control-gap-lg:  var(--ui-space-3);
+  --ui-control-radius-sm: var(--ui-radius-md);
+  --ui-control-radius-md: var(--ui-radius-lg);
+  --ui-control-radius-lg: var(--ui-radius-lg);
+  /* Piso del spinner. NO es su ancho: el ancho lo reserva el propio
+     control segun sus limites. Esto es para que uno de un solo digito
+     siga siendo agarrable. */
+  --ui-spinner-min-w: 3ch;
+  /* Respiro sobre los caracteres reservados: la coma, el signo y el
+     cursor no miden lo que mide un cero, que es lo que mide `ch`. */
+--ui-spinner-slack: 0.75;
+
+  --ui-slider-track-ratio: 0.24;
+  --ui-slider-thumb-ratio: 0.62;
+  --ui-slider-thumb-w: 18px;
+  --ui-slider-value-w: 5ch;
+
+  --ui-select-menu-max-h: 280px;
+  --ui-select-arrow: 7px;
+
+  --ui-toggle-track-ratio: 0.62;
+  --ui-toggle-aspect: 1.8;
+  --ui-toggle-knob-inset: 3px;
+  --ui-check-ratio: 0.54;
+
+  --ui-scroll-size: 10px;
+  --ui-scroll-inset: 3px;
+  --ui-scroll-size-regular: 14px;
+  --ui-scroll-inset-regular: 4px;
+
+  /* Window. ⛔ EL MARCO DE UNA VENTANA ES CUADRADO, SIEMPRE. Este es un pack
+     de tarjetas redondas y aun asi la ventana va recta: no es negociable. */
+  --ui-window-radius: 0;
+  /* El oscurecido detras de una ventana modal. Sale de la marca como
+     todo lo demas: un negro puro no pertenece a ningun pack. */
+  --ui-window-scrim: hsl(from var(--ui-brand) h calc(s * 0.30) 6% / 0.62);
+  --ui-window-bar-h: 44px;
+  --ui-window-control-w: 46px;
+  --ui-window-glyph: 10px;
+
+  --ui-tabs-indicator-h: 3px;
+
+  --ui-swatch-w: 2.6em;
+  --ui-picker-w: 244px;
+  --ui-picker-area-h: 140px;
+  --ui-picker-cursor: 13px;
+
+  /* Progress. La barra va gorda: es una tarjeta mas, no un filete. */
+  --ui-progress-h-sm: 6px;
+  --ui-progress-h-md: 10px;
+  --ui-progress-h-lg: 14px;
+  --ui-progress-ring-sm: 40px;
+  --ui-progress-ring-md: 56px;
+  --ui-progress-ring-lg: 76px;
+  /* Porcentaje del diametro, no pixeles: el viewBox del aro mide 100. */
+  --ui-progress-ring-width: 13;
+
+  /* Iconos de trazo fino y parejo, como los de un tablero. */
+  --ui-icon-sm: 16px;
+  --ui-icon-md: 20px;
+  --ui-icon-lg: 26px;
+  --ui-icon-stroke: 1.6px;
+
+  /* Apretar HUNDE la capa: baja un escalon y su sombra se cierra. */
+  --ui-press-shift: 1px;
+  --ui-hover-lift: -2px;
+  --ui-disabled-opacity: 0.38;
+
+  /* ---------------------------------------------------------- Radios ---- */
+  --ui-radius-xs:   calc(5px  * var(--ui-roundness));
+  --ui-radius-sm:   calc(7px  * var(--ui-roundness));
+  --ui-radius-md:   calc(9px  * var(--ui-roundness));
+  --ui-radius-lg:   calc(12px * var(--ui-roundness));
+  --ui-radius-xl:   calc(16px * var(--ui-roundness));
+  --ui-radius-full: calc(999px * min(var(--ui-roundness), 1));
+  --ui-radius-circle: 50%;
+
+  /* -------------------------------------------------------- Bordes ------ */
+  /* Existe porque la mecanica lo consume para reservar lugar, pero el color de
+     TODO borde en este pack es `transparent`. Ver cualquier piel. */
+  --ui-border-width: 1px;
+
+  /* ------------------------------------------------------ Movimiento ---- */
+  /* Suave y sin apuro: un tablero no se sacude. */
+  --ui-duration-fast: 150ms;
+  --ui-duration-base: 260ms;
+  --ui-duration-slow: 420ms;
+  --ui-duration-loader: 1100ms;
+  --ui-loader-width: 2px;
+
+  --ui-ease:      cubic-bezier(0.32, 0.72, 0.26, 1);
+  --ui-ease-out:  cubic-bezier(0.16, 0.84, 0.28, 1);
+  --ui-ease-in:   cubic-bezier(0.6, 0.02, 0.86, 0.3);
+
+  /* ----------------------------------------------------------- Capas ---- */
+  --ui-z-base:     0;
+  --ui-z-dropdown: 1000;
+  --ui-z-sticky:   1100;
+  --ui-z-overlay:  1200;
+  --ui-z-modal:    1300;
+  --ui-z-toast:    1400;
+  --ui-z-tooltip:  1500;
+
+  /* ==================================================================== */
+  /*  NEUTROS — teñidos del brand, y la perilla TINT gradúa cuánto.       */
+  /*  Multiplica la fracción de saturación de TODOS, así que con un solo  */
+  /*  número se pasa de un tablero gris a uno teñido entero.              */
+  /* ==================================================================== */
+  --ui-neutral-0:    hsl(from var(--ui-brand) h calc(s * 0.10 * var(--ui-tint, 1)) 100%);
+  --ui-neutral-50:   hsl(from var(--ui-brand) h calc(s * 0.14 * var(--ui-tint, 1)) 98%);
+  --ui-neutral-100:  hsl(from var(--ui-brand) h calc(s * 0.16 * var(--ui-tint, 1)) 95%);
+  --ui-neutral-200:  hsl(from var(--ui-brand) h calc(s * 0.18 * var(--ui-tint, 1)) 90%);
+  --ui-neutral-300:  hsl(from var(--ui-brand) h calc(s * 0.20 * var(--ui-tint, 1)) 80%);
+  --ui-neutral-400:  hsl(from var(--ui-brand) h calc(s * 0.20 * var(--ui-tint, 1)) 64%);
+  --ui-neutral-500:  hsl(from var(--ui-brand) h calc(s * 0.22 * var(--ui-tint, 1)) 48%);
+  --ui-neutral-600:  hsl(from var(--ui-brand) h calc(s * 0.24 * var(--ui-tint, 1)) 36%);
+  --ui-neutral-700:  hsl(from var(--ui-brand) h calc(s * 0.26 * var(--ui-tint, 1)) 25%);
+  --ui-neutral-800:  hsl(from var(--ui-brand) h calc(s * 0.30 * var(--ui-tint, 1)) 16%);
+  --ui-neutral-900:  hsl(from var(--ui-brand) h calc(s * 0.34 * var(--ui-tint, 1)) 10%);
+  --ui-neutral-950:  hsl(from var(--ui-brand) h calc(s * 0.42 * var(--ui-tint, 1)) 4%);
+
+  /* ==================================================================== */
+  /*  FAMILIA DE MARCA                                                   */
+  /* ==================================================================== */
+  --ui-brand-base:   var(--ui-brand);
+  --ui-brand-hover:  hsl(from var(--ui-brand) h s calc(l * 1.10));
+  --ui-brand-active: hsl(from var(--ui-brand) h s calc(l * 0.88));
+  --ui-brand-soft:   hsl(from var(--ui-brand) h calc(s * 0.75) 80%);
+  --ui-brand-subtle: hsl(from var(--ui-brand) h calc(s * 0.50) 94%);
+
+  /* ==================================================================== */
+  /*  EL ACENTO NO ES UN COLOR PLANO                                     */
+  /*  Es lo único que brilla en toda la interfaz: si fuera un tono liso,  */
+  /*  al lado de tanta superficie apagada se vería como una mancha. El    */
+  /*  degradé va en diagonal y corre el tono, no solo la claridad.        */
+  /* ==================================================================== */
+  /* Cuanto se despega el aro de progreso de su canal. Un `stroke` no acepta
+     box-shadow, asi que su unico relieve posible es una sombra proyectada — y
+     necesita una MEDIDA propia, porque las sombras del pack son listas y no
+     sirven adentro de un filtro. Sigue a la perilla DEPTH como todo lo demas. */
+  --ui-nc-ring-lift: calc(2px * var(--ui-depth, 1));
+
+  --ui-nc-from: hsl(from var(--ui-brand) calc(h - 14) calc(s * 1.05) calc(l * 1.14));
+  --ui-nc-to:   hsl(from var(--ui-brand) calc(h + 16) s calc(l * 0.84));
+  --ui-nc-fill: linear-gradient(135deg, var(--ui-nc-from), var(--ui-nc-to));
+  /* La misma mezcla, apagada: para lo marcado pero no activo. */
+  --ui-nc-fill-soft: linear-gradient(
+    135deg,
+    rgb(from var(--ui-nc-from) r g b / 0.20),
+    rgb(from var(--ui-nc-to) r g b / 0.20)
+  );
+
+  /* ==================================================================== */
+  /*  ESTADOS — tono fijo, saturación aportada por el brand.             */
+  /* ==================================================================== */
+  --ui-red-100:   hsl(from var(--ui-brand) 6   calc(s * 0.40) 94%);
+  --ui-red-500:   hsl(from var(--ui-brand) 6   calc(s * 0.90) 62%);
+  --ui-red-600:   hsl(from var(--ui-brand) 4   calc(s * 0.90) 50%);
+  --ui-red-700:   hsl(from var(--ui-brand) 2   calc(s * 0.90) 40%);
+
+  --ui-green-100: hsl(from var(--ui-brand) 155 calc(s * 0.35) 93%);
+  --ui-green-500: hsl(from var(--ui-brand) 158 calc(s * 0.70) 48%);
+  --ui-green-600: hsl(from var(--ui-brand) 158 calc(s * 0.70) 36%);
+
+  --ui-amber-100: hsl(from var(--ui-brand) 44  calc(s * 0.45) 93%);
+  --ui-amber-500: hsl(from var(--ui-brand) 40  calc(s * 0.90) 58%);
+  --ui-amber-600: hsl(from var(--ui-brand) 36  calc(s * 0.90) 45%);
+
+  /* ------------------------------------------- Semánticos — tema claro -- */
+  /* ⚠ EN CLARO EL ESCALON VA AL REVES. Sobre papel blanco una capa MAS clara
+     no existe: no hay a dónde subir. Así que acá cada nivel de la jerarquía
+     es un poco MAS OSCURO que el de abajo, y --ui-nc-sink lo baja en vez de subirlo. Es la misma idea de capas, leída al revés. */
+  --ui-bg:             var(--ui-neutral-50);
+  --ui-bg-subtle:      var(--ui-neutral-100);
+  --ui-surface:        var(--ui-neutral-0);
+  --ui-surface-hover:  hsl(from var(--ui-neutral-0) h s calc(l * var(--ui-nc-sink)));
+  --ui-surface-active: hsl(from var(--ui-neutral-50) h s calc(l * var(--ui-nc-sink)));
+
+  /* Sin contornos: los "bordes" existen solo como interfaz de la mecanica y
+     van todos transparentes. Lo único que queda es la línea de un separador,
+     que no es un borde sino una pieza. */
+  --ui-border:         transparent;
+  --ui-border-strong:  transparent;
+  --ui-line:           rgb(from var(--ui-text) r g b / 0.10);
+  --ui-line-soft:      rgb(from var(--ui-text) r g b / 0.05);
+  --ui-scroll-thumb:       rgb(from var(--ui-text) r g b / 0.16);
+  --ui-scroll-thumb-hover: rgb(from var(--ui-text) r g b / 0.30);
+
+  --ui-panel-from:     var(--ui-surface);
+  --ui-panel-to:       var(--ui-surface);
+
+  --ui-text:           hsl(from var(--ui-brand) h calc(s * 0.35 * var(--ui-tint, 1)) 13%);
+  --ui-text-muted:     hsl(from var(--ui-brand) h calc(s * 0.26 * var(--ui-tint, 1)) 34%);
+  --ui-text-subtle:    hsl(from var(--ui-brand) h calc(s * 0.22 * var(--ui-tint, 1)) 46%);
+
+  --ui-accent:         hsl(from var(--ui-brand) h s calc(l * 0.90));
+  --ui-accent-hover:   hsl(from var(--ui-brand) h s calc(l * 0.80));
+  --ui-accent-active:  hsl(from var(--ui-brand) h s calc(l * 0.72));
+  --ui-accent-subtle:  rgb(from var(--ui-accent) r g b / 0.14);
+  --ui-accent-soft:    rgb(from var(--ui-accent) r g b / 0.42);
+  /* Como LETRA el amatista necesita bajar bastante: en su claridad de relleno
+     no llega al contraste sobre una superficie clara. */
+  --ui-accent-text:    hsl(from var(--ui-brand) h s 40%);
+  --ui-on-accent:      var(--ui-on-brand-light);
+
+  --ui-danger:         var(--ui-red-600);
+  --ui-danger-hover:   var(--ui-red-700);
+  --ui-danger-subtle:  var(--ui-red-100);
+  --ui-on-danger:      var(--ui-on-brand-light);
+
+  --ui-success:        var(--ui-green-600);
+  --ui-success-subtle: var(--ui-green-100);
+  --ui-warning:        var(--ui-amber-600);
+  --ui-warning-subtle: var(--ui-amber-100);
+
+  --ui-focus-ring:     var(--ui-accent);
+  --ui-focus-width:    2px;
+  --ui-focus-offset:   3px;
+
+  --ui-selection-bg:   rgb(from var(--ui-accent) r g b / 0.26);
+  --ui-selection-fg:   var(--ui-text);
+
+  --ui-ring-width:     4px;
+  --ui-ring:           rgb(from var(--ui-accent) r g b / 0.22);
+  --ui-ring-soft:      rgb(from var(--ui-accent) r g b / 0.12);
+}
+
+/* ===========================================================================
+   TEMA OSCURO — el que manda
+   ---------------------------------------------------------------------------
+   No es el tema alternativo: es para el que esta calibrado el pack. Aca el
+   escalon entre capas SUBE, que es el sentido natural de la idea — el fondo es
+   el fondo del cajon y cada pieza esta apoyada encima, un poco mas iluminada.
+   =========================================================================== */
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    /* ⚠ ACA EL ESCALON SUBE. Cada capa es MAS CLARA que la de abajo, y el paso
+       sale de --ui-nc-rise, o sea de la perilla DEPTH. Es el sentido natural del
+       pack: el fondo es el fondo del cajon y todo lo demas esta apoyado encima.
+
+       El fondo NO es negro puro. Un negro absoluto no deja lugar para hundir la
+       sombra, y este pack apoya todo sobre sombra: hace falta un piso que
+       todavia tenga a donde bajar. */
+    --ui-bg:            hsl(from var(--ui-neutral-950) h s calc(l * 1.9));
+    --ui-bg-subtle:      var(--ui-neutral-950);
+    --ui-surface:        hsl(from var(--ui-bg) h s calc(l * var(--ui-nc-rise)));
+    --ui-surface-hover:  hsl(from var(--ui-bg) h s calc(l * var(--ui-nc-rise) * var(--ui-nc-rise)));
+    --ui-surface-active: hsl(from var(--ui-neutral-800) h s calc(l * var(--ui-nc-rise)));
+
+    /* La sombra carga mas sobre oscuro: contra un fondo claro se nota sola, pero
+       contra uno oscuro hay que insistir para que la capa despegue. */
+    --ui-nc-cast: rgb(from var(--ui-neutral-950) r g b / 0.70);
+
+    --ui-border:         transparent;
+    --ui-border-strong:  transparent;
+    --ui-line:           rgb(from var(--ui-text) r g b / 0.10);
+    --ui-line-soft:      rgb(from var(--ui-text) r g b / 0.05);
+    --ui-scroll-thumb:       rgb(from var(--ui-text) r g b / 0.14);
+    --ui-scroll-thumb-hover: rgb(from var(--ui-text) r g b / 0.28);
+
+    --ui-panel-from:     var(--ui-surface);
+    --ui-panel-to:       var(--ui-surface);
+
+    --ui-text:           hsl(from var(--ui-brand) h calc(s * 0.16 * var(--ui-tint, 1)) 96%);
+    --ui-text-muted:     hsl(from var(--ui-brand) h calc(s * 0.20 * var(--ui-tint, 1)) 72%);
+    --ui-text-subtle:    hsl(from var(--ui-brand) h calc(s * 0.24 * var(--ui-tint, 1)) 66%);
+
+    --ui-accent:         var(--ui-brand);
+    --ui-accent-hover:   hsl(from var(--ui-brand) h s calc(l * 1.12));
+    --ui-accent-active:  hsl(from var(--ui-brand) h s calc(l * 0.90));
+    --ui-accent-subtle:  rgb(from var(--ui-accent) r g b / 0.20);
+    --ui-accent-soft:    rgb(from var(--ui-accent) r g b / 0.48);
+    --ui-accent-text:    hsl(from var(--ui-brand) h calc(s * 0.95) 76%);
+    --ui-on-accent:      var(--ui-on-brand-light);
+
+    --ui-danger:         var(--ui-red-500);
+    --ui-danger-hover:   hsl(from var(--ui-red-500) h s calc(l * 1.12));
+    --ui-danger-subtle:  rgb(from var(--ui-red-500) r g b / 0.20);
+
+    --ui-success:        var(--ui-green-500);
+    --ui-success-subtle: rgb(from var(--ui-green-500) r g b / 0.20);
+    --ui-warning:        var(--ui-amber-500);
+    --ui-warning-subtle: rgb(from var(--ui-amber-500) r g b / 0.20);
+  }
+}
+
+:root[data-theme="dark"] {
+  /* ⚠ ACA EL ESCALON SUBE. Cada capa es MAS CLARA que la de abajo, y el paso
+     sale de --ui-nc-rise, o sea de la perilla DEPTH. Es el sentido natural del
+     pack: el fondo es el fondo del cajon y todo lo demas esta apoyado encima.
+
+     El fondo NO es negro puro. Un negro absoluto no deja lugar para hundir la
+     sombra, y este pack apoya todo sobre sombra: hace falta un piso que
+     todavia tenga a donde bajar. */
+  --ui-bg:            hsl(from var(--ui-neutral-950) h s calc(l * 1.9));
+  --ui-bg-subtle:      var(--ui-neutral-950);
+  --ui-surface:        hsl(from var(--ui-bg) h s calc(l * var(--ui-nc-rise)));
+  --ui-surface-hover:  hsl(from var(--ui-bg) h s calc(l * var(--ui-nc-rise) * var(--ui-nc-rise)));
+  --ui-surface-active: hsl(from var(--ui-neutral-800) h s calc(l * var(--ui-nc-rise)));
+
+  /* La sombra carga mas sobre oscuro: contra un fondo claro se nota sola, pero
+     contra uno oscuro hay que insistir para que la capa despegue. */
+  --ui-nc-cast: rgb(from var(--ui-neutral-950) r g b / 0.70);
+
+  --ui-border:         transparent;
+  --ui-border-strong:  transparent;
+  --ui-line:           rgb(from var(--ui-text) r g b / 0.10);
+  --ui-line-soft:      rgb(from var(--ui-text) r g b / 0.05);
+  --ui-scroll-thumb:       rgb(from var(--ui-text) r g b / 0.14);
+  --ui-scroll-thumb-hover: rgb(from var(--ui-text) r g b / 0.28);
+
+  --ui-panel-from:     var(--ui-surface);
+  --ui-panel-to:       var(--ui-surface);
+
+  --ui-text:           hsl(from var(--ui-brand) h calc(s * 0.16 * var(--ui-tint, 1)) 96%);
+  --ui-text-muted:     hsl(from var(--ui-brand) h calc(s * 0.20 * var(--ui-tint, 1)) 72%);
+  --ui-text-subtle:    hsl(from var(--ui-brand) h calc(s * 0.24 * var(--ui-tint, 1)) 66%);
+
+  --ui-accent:         var(--ui-brand);
+  --ui-accent-hover:   hsl(from var(--ui-brand) h s calc(l * 1.12));
+  --ui-accent-active:  hsl(from var(--ui-brand) h s calc(l * 0.90));
+  --ui-accent-subtle:  rgb(from var(--ui-accent) r g b / 0.20);
+  --ui-accent-soft:    rgb(from var(--ui-accent) r g b / 0.48);
+  --ui-accent-text:    hsl(from var(--ui-brand) h calc(s * 0.95) 76%);
+  --ui-on-accent:      var(--ui-on-brand-light);
+
+  --ui-danger:         var(--ui-red-500);
+  --ui-danger-hover:   hsl(from var(--ui-red-500) h s calc(l * 1.12));
+  --ui-danger-subtle:  rgb(from var(--ui-red-500) r g b / 0.20);
+
+  --ui-success:        var(--ui-green-500);
+  --ui-success-subtle: rgb(from var(--ui-green-500) r g b / 0.20);
+  --ui-warning:        var(--ui-amber-500);
+  --ui-warning-subtle: rgb(from var(--ui-amber-500) r g b / 0.20);
+}

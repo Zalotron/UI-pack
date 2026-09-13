@@ -1,0 +1,26 @@
+/* ---------------------------------------------- Spinner — PIEL del pack RISO */
+/* Interfaz: --spinner-bg | --spinner-fg | --spinner-border | --spinner-ring   */
+
+/* Misma reserva que el TextField: los dos son lugares donde se escribe, y en
+   este pack eso se lee como "acá la plancha no imprimió". */
+.ui-spinner {
+  --spinner-bg: var(--ui-surface);
+  --spinner-border: var(--ui-border);
+}
+
+.ui-spinner:hover:not(.is-disabled) {
+  --spinner-bg: var(--ui-surface-active);
+}
+
+/* Los estados activos llevan :not(.is-disabled) para empatarle la
+   especificidad al :hover de arriba. Sin eso el hover gana y el control se ve
+   MAS apagado con el mouse encima que sin él. */
+.ui-spinner.is-dragging:not(.is-disabled) {
+  --spinner-border: var(--ui-accent);
+  --spinner-bg: var(--ui-accent-subtle);
+}
+
+.ui-spinner.is-editing:not(.is-disabled) {
+  --spinner-border: var(--ui-accent);
+  --spinner-caret: var(--ui-accent);
+}

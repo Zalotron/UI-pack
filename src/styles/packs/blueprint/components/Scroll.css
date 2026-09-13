@@ -1,0 +1,128 @@
+/* ------------------------------------------ Scroll — PIEL del pack BLUEPRINT */
+/* Interfaz: --scroll-track | --scroll-thumb | --scroll-thumb-hover          */
+
+/* El pulgar es un trazo fino sobre el margen. Un pseudo-elemento nativo no
+   acepta un borde de verdad, así que acá el "trazo" lo dan el ancho y el
+   color, no un outline. */
+.ui-scroll {
+  --scroll-track: transparent;
+  --scroll-thumb: var(--ui-scroll-thumb);
+  --scroll-thumb-hover: var(--ui-scroll-thumb-hover);
+}
+
+/* El pulgar lleva el mismo rayado diagonal que todo lo pintado del pack. No
+   puede llevar la veta de verdad —ver --ui-bp-veta-angle en tokens.css— asi que
+   se dibuja con un degradado repetido.
+
+   ⛔ EL PERIODO ES LARGO (51px) Y LAS BANDAS SON IRREGULARES.
+   Con un periodo corto el ojo encuentra la repeticion enseguida y deja de leer
+   "trazo hecho a mano" para leer "trama impresa" — se notaba sobre todo en la
+   barra vertical, que es angosta y alta, donde el patron rotado 45 grados entra
+   muchas veces. La veta de verdad no repite nunca; esto no puede no repetir,
+   pero puede hacerlo lo bastante lejos como para que no se vea.
+
+   ⛔ EL ANGULO DE UN DEGRADADO APUNTA A TRAVES DE LAS BANDAS, NO A LO LARGO.
+   Las bandas salen PERPENDICULARES a la direccion que uno escribe, asi que
+   poner los 45 grados de la veta da el rayado al reves — cruzado respecto de
+   todo lo demas del pack. De ahi el `+ 90deg`, que lo deja derivado del mismo
+   token en vez de ser otro numero suelto que hay que acordarse de girar.
+
+   ⛔ Y VA EN `*`, NO SOLO EN `.ui-scroll`. `base.css` pinta TODAS las barras de
+   la pagina con `*::-webkit-scrollbar-thumb` — las de cualquier cosa que
+   scrollee, sea o no un Scroll. Apuntando solo al componente, la barra
+   horizontal de una fila de pestañas se quedaba sin rayado y no se entendia por
+   que. Los dos selectores van juntos a proposito: el de `.ui-scroll` es el que
+   le gana al `background` que la mecanica del componente pinta con el atajo.
+
+   ⚠ `background-color: transparent` NO es un olvido: si el color quedara
+   debajo, las bandas claras se le sumarian y no habria modulacion — se veria un
+   pulgar liso con unas rayas apenas mas oscuras. El degradado pinta TODO. */
+*::-webkit-scrollbar-thumb,
+.ui-scroll::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  background-image: repeating-linear-gradient(
+    calc(var(--ui-bp-veta-angle) + 90deg),
+    rgb(from var(--ui-accent) r g b / 0.35) 0px 1.5px,
+    rgb(from var(--ui-accent) r g b / calc(0.35 * var(--ui-bp-veta-floor))) 1.5px 2.5px,
+    rgb(from var(--ui-accent) r g b / 0.35) 2.5px 3px,
+    rgb(from var(--ui-accent) r g b / calc(0.35 * var(--ui-bp-veta-floor))) 3px 5px,
+    rgb(from var(--ui-accent) r g b / 0.35) 5px 6.5px,
+    rgb(from var(--ui-accent) r g b / calc(0.35 * var(--ui-bp-veta-floor))) 6.5px 7px,
+    rgb(from var(--ui-accent) r g b / 0.35) 7px 7.5px,
+    rgb(from var(--ui-accent) r g b / calc(0.35 * var(--ui-bp-veta-floor))) 7.5px 10.5px,
+    rgb(from var(--ui-accent) r g b / 0.35) 10.5px 12px,
+    rgb(from var(--ui-accent) r g b / calc(0.35 * var(--ui-bp-veta-floor))) 12px 12.5px,
+    rgb(from var(--ui-accent) r g b / 0.35) 12.5px 13.5px,
+    rgb(from var(--ui-accent) r g b / calc(0.35 * var(--ui-bp-veta-floor))) 13.5px 16.5px,
+    rgb(from var(--ui-accent) r g b / 0.35) 16.5px 17px,
+    rgb(from var(--ui-accent) r g b / calc(0.35 * var(--ui-bp-veta-floor))) 17px 19px,
+    rgb(from var(--ui-accent) r g b / 0.35) 19px 20.5px,
+    rgb(from var(--ui-accent) r g b / calc(0.35 * var(--ui-bp-veta-floor))) 20.5px 21.5px,
+    rgb(from var(--ui-accent) r g b / 0.35) 21.5px 22px,
+    rgb(from var(--ui-accent) r g b / calc(0.35 * var(--ui-bp-veta-floor))) 22px 25px,
+    rgb(from var(--ui-accent) r g b / 0.35) 25px 26.5px,
+    rgb(from var(--ui-accent) r g b / calc(0.35 * var(--ui-bp-veta-floor))) 26.5px 27.5px,
+    rgb(from var(--ui-accent) r g b / 0.35) 27.5px 29px,
+    rgb(from var(--ui-accent) r g b / calc(0.35 * var(--ui-bp-veta-floor))) 29px 30.5px,
+    rgb(from var(--ui-accent) r g b / 0.35) 30.5px 31px,
+    rgb(from var(--ui-accent) r g b / calc(0.35 * var(--ui-bp-veta-floor))) 31px 33.5px,
+    rgb(from var(--ui-accent) r g b / 0.35) 33.5px 34.5px,
+    rgb(from var(--ui-accent) r g b / calc(0.35 * var(--ui-bp-veta-floor))) 34.5px 36px,
+    rgb(from var(--ui-accent) r g b / 0.35) 36px 36.5px,
+    rgb(from var(--ui-accent) r g b / calc(0.35 * var(--ui-bp-veta-floor))) 36.5px 40px,
+    rgb(from var(--ui-accent) r g b / 0.35) 40px 41.5px,
+    rgb(from var(--ui-accent) r g b / calc(0.35 * var(--ui-bp-veta-floor))) 41.5px 42px,
+    rgb(from var(--ui-accent) r g b / 0.35) 42px 43px,
+    rgb(from var(--ui-accent) r g b / calc(0.35 * var(--ui-bp-veta-floor))) 43px 45px,
+    rgb(from var(--ui-accent) r g b / 0.35) 45px 45.5px,
+    rgb(from var(--ui-accent) r g b / calc(0.35 * var(--ui-bp-veta-floor))) 45.5px 47px,
+    rgb(from var(--ui-accent) r g b / 0.35) 47px 48.5px,
+    rgb(from var(--ui-accent) r g b / calc(0.35 * var(--ui-bp-veta-floor))) 48.5px 51px
+  );
+  background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-thumb:hover,
+.ui-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: transparent;
+  background-image: repeating-linear-gradient(
+    calc(var(--ui-bp-veta-angle) + 90deg),
+    rgb(from var(--ui-accent) r g b / 0.70) 0px 1.5px,
+    rgb(from var(--ui-accent) r g b / calc(0.70 * var(--ui-bp-veta-floor))) 1.5px 2.5px,
+    rgb(from var(--ui-accent) r g b / 0.70) 2.5px 3px,
+    rgb(from var(--ui-accent) r g b / calc(0.70 * var(--ui-bp-veta-floor))) 3px 5px,
+    rgb(from var(--ui-accent) r g b / 0.70) 5px 6.5px,
+    rgb(from var(--ui-accent) r g b / calc(0.70 * var(--ui-bp-veta-floor))) 6.5px 7px,
+    rgb(from var(--ui-accent) r g b / 0.70) 7px 7.5px,
+    rgb(from var(--ui-accent) r g b / calc(0.70 * var(--ui-bp-veta-floor))) 7.5px 10.5px,
+    rgb(from var(--ui-accent) r g b / 0.70) 10.5px 12px,
+    rgb(from var(--ui-accent) r g b / calc(0.70 * var(--ui-bp-veta-floor))) 12px 12.5px,
+    rgb(from var(--ui-accent) r g b / 0.70) 12.5px 13.5px,
+    rgb(from var(--ui-accent) r g b / calc(0.70 * var(--ui-bp-veta-floor))) 13.5px 16.5px,
+    rgb(from var(--ui-accent) r g b / 0.70) 16.5px 17px,
+    rgb(from var(--ui-accent) r g b / calc(0.70 * var(--ui-bp-veta-floor))) 17px 19px,
+    rgb(from var(--ui-accent) r g b / 0.70) 19px 20.5px,
+    rgb(from var(--ui-accent) r g b / calc(0.70 * var(--ui-bp-veta-floor))) 20.5px 21.5px,
+    rgb(from var(--ui-accent) r g b / 0.70) 21.5px 22px,
+    rgb(from var(--ui-accent) r g b / calc(0.70 * var(--ui-bp-veta-floor))) 22px 25px,
+    rgb(from var(--ui-accent) r g b / 0.70) 25px 26.5px,
+    rgb(from var(--ui-accent) r g b / calc(0.70 * var(--ui-bp-veta-floor))) 26.5px 27.5px,
+    rgb(from var(--ui-accent) r g b / 0.70) 27.5px 29px,
+    rgb(from var(--ui-accent) r g b / calc(0.70 * var(--ui-bp-veta-floor))) 29px 30.5px,
+    rgb(from var(--ui-accent) r g b / 0.70) 30.5px 31px,
+    rgb(from var(--ui-accent) r g b / calc(0.70 * var(--ui-bp-veta-floor))) 31px 33.5px,
+    rgb(from var(--ui-accent) r g b / 0.70) 33.5px 34.5px,
+    rgb(from var(--ui-accent) r g b / calc(0.70 * var(--ui-bp-veta-floor))) 34.5px 36px,
+    rgb(from var(--ui-accent) r g b / 0.70) 36px 36.5px,
+    rgb(from var(--ui-accent) r g b / calc(0.70 * var(--ui-bp-veta-floor))) 36.5px 40px,
+    rgb(from var(--ui-accent) r g b / 0.70) 40px 41.5px,
+    rgb(from var(--ui-accent) r g b / calc(0.70 * var(--ui-bp-veta-floor))) 41.5px 42px,
+    rgb(from var(--ui-accent) r g b / 0.70) 42px 43px,
+    rgb(from var(--ui-accent) r g b / calc(0.70 * var(--ui-bp-veta-floor))) 43px 45px,
+    rgb(from var(--ui-accent) r g b / 0.70) 45px 45.5px,
+    rgb(from var(--ui-accent) r g b / calc(0.70 * var(--ui-bp-veta-floor))) 45.5px 47px,
+    rgb(from var(--ui-accent) r g b / 0.70) 47px 48.5px,
+    rgb(from var(--ui-accent) r g b / calc(0.70 * var(--ui-bp-veta-floor))) 48.5px 51px
+  );
+  background-clip: padding-box;
+}

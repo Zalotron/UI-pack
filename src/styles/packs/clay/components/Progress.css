@@ -1,0 +1,71 @@
+/* ----------------------------------------- Progress — PIEL del pack CLAY */
+/* Interfaz: --progress-track | --progress-fill | --progress-ring-fill
+             --progress-label-fg | --progress-value-fg
+             --progress-radius | --progress-cap                             */
+
+/* Un canal EXCAVADO en la lamina y un fideo de plastilina adentro. El canal
+   va hundido y lo lleno sobresale: la misma diferencia que hay entre un campo
+   y un boton en este pack, aplicada a una barra. */
+.ui-progress {
+  --progress-track: var(--ui-bg-subtle);
+  /* El relleno tiene VOLUMEN, no es una franja de color: luz arriba y sombra
+     abajo, como cualquier pieza del pack. Los dos topes van sueltos para el
+     aro, que no acepta un degrade de CSS y lleva el suyo adentro del SVG —
+     asi las dos formas salen del MISMO par de colores y no se pueden despegar. */
+  --progress-fill: var(--ui-clay-noodle);
+  --progress-ring-fill: var(--ui-accent);
+  --progress-ring-from: var(--ui-clay-noodle-hi);
+  --progress-ring-to: var(--ui-clay-noodle-lo);
+
+  /* Y el canal vacio del aro, igual que el de la barra: oscuro arriba, claro
+     abajo. Antes era un tono plano y se notaba al lado de la lineal. */
+  --progress-ring-track-from: var(--ui-clay-groove-hi);
+  --progress-ring-track-to: var(--ui-clay-groove-lo);
+  /* El remate del arco va recto: es una medida, no un adorno. */
+  --progress-cap: butt;
+}
+
+/* ⛔ EL MISMO CANAL QUE EL SLIDER, Y CON EL MISMO TOKEN.
+   Son la misma pieza contando lo mismo: un tramo medido sobre un recorrido.
+   Tenian que verse igual y no se veian — la barra estaba plana al lado de un
+   slider con relieve.
+
+   La causa era donde iba la sombra: estaba puesta EN el canal, asi que se
+   pintaba debajo del relleno y el relleno la tapaba. Ahora va en
+   --progress-track-shadow, que la mecanica dibuja en una capa POR ENCIMA, y es
+   literalmente el mismo `--ui-clay-pressed` que usa el slider. */
+.ui-progress {
+  --progress-track-shadow: var(--ui-clay-pressed);
+}
+
+/* ⛔ EL ARO LLEVA RELIEVE CON `drop-shadow`, PORQUE UN `stroke` NO ACEPTA
+   `box-shadow`. Es la unica forma de darle volumen a un trazo de SVG.
+
+   ⚠ LOS EJES VAN CAMBIADOS, Y NO ES UN ERROR. La mecanica dibuja el aro
+   ROTADO -90 grados para que el cero quede arriba, y un filtro se aplica en el
+   espacio del elemento: la sombra gira con el. Para que en PANTALLA caiga
+   abajo-a-la-derecha hay que pedirla girada al reves — un desplazamiento de
+   pantalla (x, y) se escribe (-y, x). De ahi los signos cruzados.
+
+   El relleno SOBRESALE (oscuro abajo-derecha, claro arriba-izquierda) y el
+   canal vacio se hunde (al reves), que es la misma diferencia que hay entre lo
+   lleno y lo vacio del slider. */
+.ui-progress__ring-fill {
+  stroke-linecap: round;
+  filter:
+    drop-shadow(calc(var(--ui-clay-depth) * -0.35) calc(var(--ui-clay-depth) * 0.35)
+      calc(var(--ui-clay-depth) * 0.5) var(--ui-clay-dark))
+    drop-shadow(calc(var(--ui-clay-depth) * 0.35) calc(var(--ui-clay-depth) * -0.35)
+      calc(var(--ui-clay-depth) * 0.5) var(--ui-clay-light));
+}
+
+/* ⛔ EL ARO VACIO NO LLEVA SOMBRA PROYECTADA.
+   El hueco ya lo dibuja el degrade del canal —oscuro arriba, claro abajo, el
+   mismo que la barra lineal consigue con una sombra hacia adentro— y sumarle
+   ademas una sombra hacia afuera lo contradecia: un surco no proyecta nada.
+   El relieve de lo LLENO si es una sombra, porque eso si sobresale. */
+
+.ui-progress.is-indeterminate {
+  --progress-fill: var(--ui-accent-soft);
+  --progress-ring-fill: var(--ui-accent-soft);
+}

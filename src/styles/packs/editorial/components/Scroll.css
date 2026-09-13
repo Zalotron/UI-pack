@@ -1,0 +1,10 @@
+/* ------------------------------------------ Scroll — PIEL del pack EDITORIAL */
+/* Interfaz: --scroll-track | --scroll-thumb | --scroll-thumb-hover          */
+
+/* La barra más angosta de todos los packs (--ui-scroll-size vale 8px acá): en
+   una página de lectura no tiene que competir con el texto. */
+.ui-scroll {
+  --scroll-track: transparent;
+  --scroll-thumb: var(--ui-scroll-thumb);
+  --scroll-thumb-hover: var(--ui-scroll-thumb-hover);
+}

@@ -1,0 +1,61 @@
+/* ----------------------------------------------- Slider — PIEL del pack SOFT */
+/* Interfaz: --slider-track | --slider-track-border | --slider-fill
+             --slider-thumb | --slider-ring                                   */
+
+/* Canal excavado y una pastilla que corre por adentro. El tirador es ancho
+   (--ui-slider-thumb-w) porque tiene que leerse como objeto: una aguja fina
+   no puede tener relieve. */
+.ui-slider {
+  --slider-track: var(--ui-surface);
+  --slider-track-border: transparent;
+  --slider-fill: var(--ui-accent);
+  --slider-thumb: var(--ui-surface);
+}
+
+.ui-slider:hover:not(.is-disabled) { --slider-thumb: var(--ui-surface-hover); }
+
+/* ⚠ EL MISMO CANAL QUE LA BARRA DE PROGRESO, Y POR LA MISMA RAZON.
+   Las dos piezas son lo mismo: un surco con material corriendo adentro. Tienen
+   que verse igual, y sobre todo tienen que fallar igual de poco — el calibre
+   absoluto del pack (4px de desplazamiento, 9px de difuminado) sobre un canal
+   de 14px entra por arriba y por abajo, se cruza en el medio y apaga el
+   relleno. La pared sale de multiplicar el alto del canal por una fraccion.
+
+   Va en --slider-track-shadow, que la mecanica pinta en una capa POR ENCIMA
+   del relleno: el surco tiene que sombrear lo que corre adentro. Antes esto no
+   se podia —el canal era un pseudo-elemento nativo, sin hijos ni capas
+   posibles— y la pared tenia que ir en el canal mismo. */
+.ui-slider {
+  --wall: calc(var(--slider-track-h) * 0.13);
+  --slider-track-shadow:
+    inset var(--wall) var(--wall) calc(var(--wall) * 1.4) var(--ui-soft-dark),
+    inset calc(var(--wall) * -1) calc(var(--wall) * -1) calc(var(--wall) * 1.4) var(--ui-soft-light);
+}
+
+/* La pastilla, sobresaliendo. */
+.ui-slider__thumb {
+  box-shadow: var(--ui-soft-out-sm);
+}
+
+/* ⚠ HAY QUE REESCRIBIR LOS TRES ESTADOS, NO ALCANZA CON EL DE REPOSO.
+   La mecánica marca el hover, el arrastre y el foco del tirador con un halo:
+
+     .ui-slider:hover .ui-slider__thumb { box-shadow: ... }
+
+   Esa regla tiene más especificidad que la de reposo de acá arriba, así que
+   REEMPLAZA la sombra. Y como en este pack `box-shadow` es el material y no un
+   halo, --slider-ring queda transparente: el resultado era que el tirador se
+   APLANABA justo al pasarle el mouse — al revés de lo que tiene que pasar.
+   La solución es contestar los tres estados con el relieve que corresponde. */
+
+/* Al pasar el mouse se DESPEGA: la luz cae desde más lejos. */
+.ui-slider:hover .ui-slider__thumb,
+.ui-slider__input:focus-visible ~ .ui-slider__thumb {
+  box-shadow: var(--ui-soft-out);
+}
+
+/* Al arrastrar se hunde, como cualquier cosa que se está apretando. Va
+   después del hover para ganarle con el mismo peso de especificidad. */
+.ui-slider.is-dragging .ui-slider__thumb {
+  box-shadow: var(--ui-soft-in-sm);
+}

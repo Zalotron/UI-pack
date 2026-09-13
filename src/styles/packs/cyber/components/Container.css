@@ -1,0 +1,101 @@
+/* ------------------------------------------- Container — PIEL del pack CYBER */
+/* Interfaz: --container-bg | --container-border-color | --container-shadow    */
+
+/* Un panel de consola: relleno oscuro, rayas de monitor y corchetes de mira en
+   dos esquinas. El orden de capas es el de pintado: rayas arriba, color de
+   relleno al fondo (la última capa es la que puede llevar color). */
+
+/* -- Corchetes de esquina -------------------------------------------------- */
+/* Son el BORDE de una capa con el mismo radio, enmascarado para que solo se
+   vea en dos esquinas opuestas.
+
+   Antes se dibujaban con capas de `background` (dos barras rectas por esquina)
+   y tenía un defecto: al subir ROUNDNESS el fondo se recorta a la forma
+   redondeada, así que las barras quedaban cortadas y las esquinas seguían
+   cuadradas por dentro. Siendo un borde, se curva junto con el contenedor.
+
+   Tampoco se usa clip-path: recortaría lo que se despliega fuera de la caja
+   (la lista de un Select, el panel de un ColorPicker).
+
+   La máscara pinta con un token de color por su OPACIDAD, no por su tono: en
+   una máscara manda el alfa. Así no hace falta declarar un color. */
+
+.ui-container--panel,
+.ui-container--outline {
+  position: relative;
+}
+
+.ui-container--panel::before,
+.ui-container--outline::before {
+  content: "";
+  position: absolute;
+  /* El bloque contenedor es la caja de padding; el inset negativo lo lleva
+     justo sobre el borde del contenedor, que es donde va el corchete. */
+  inset: calc(var(--ui-border-width) * -1);
+  border: var(--ui-hud-weight) solid var(--ui-accent);
+  border-radius: inherit;
+  pointer-events: none;
+
+  -webkit-mask:
+    linear-gradient(var(--ui-accent) 0 0) 0 0 /
+      var(--ui-hud-size) var(--ui-hud-size) no-repeat,
+    linear-gradient(var(--ui-accent) 0 0) 100% 100% /
+      var(--ui-hud-size) var(--ui-hud-size) no-repeat;
+  mask:
+    linear-gradient(var(--ui-accent) 0 0) 0 0 /
+      var(--ui-hud-size) var(--ui-hud-size) no-repeat,
+    linear-gradient(var(--ui-accent) 0 0) 100% 100% /
+      var(--ui-hud-size) var(--ui-hud-size) no-repeat;
+}
+
+.ui-container--panel {
+  --container-bg: var(--ui-scanlines), var(--ui-surface);
+  --container-border-color: var(--ui-line);
+  --container-shadow: var(--ui-glow-inset), var(--ui-shadow-md);
+}
+
+/* Sin corchetes: para lo que no es el marco principal. */
+.ui-container--solid {
+  --container-bg: var(--ui-scanlines), var(--ui-surface);
+  --container-border-color: var(--ui-line);
+  --container-shadow: var(--ui-shadow-sm);
+}
+
+/* Solo el trazo: marco de neón sobre el fondo de la página. */
+.ui-container--outline {
+  --container-bg: transparent;
+  --container-border-color: var(--ui-border-strong);
+  --container-shadow: var(--ui-glow-soft);
+}
+
+.ui-container--ghost {
+  --container-bg: transparent;
+  --container-border-color: transparent;
+}
+
+/* `border: false` gana sobre cualquier variante. Se van también los corchetes:
+   son parte del marco, no del relleno. */
+.ui-container--no-border {
+  --container-bg: var(--ui-scanlines), var(--ui-surface);
+  --container-border-color: transparent;
+}
+
+/* -- Elevación ------------------------------------------------------------- */
+/* Se repiten para no perder el halo interior del panel. */
+
+.ui-container--elev-sm { --container-shadow: var(--ui-glow-inset), var(--ui-shadow-sm); }
+.ui-container--elev-md { --container-shadow: var(--ui-glow-inset), var(--ui-shadow-md); }
+.ui-container--elev-lg { --container-shadow: var(--ui-glow-inset), var(--ui-shadow-lg); }
+
+/* -- Reacción al mouse ----------------------------------------------------- */
+/* No se aclara el fondo: se ENCIENDE el marco. */
+
+.ui-container.is-interactive:hover {
+  --container-border-color: var(--ui-accent);
+  --container-shadow: var(--ui-glow), var(--ui-shadow-md);
+  transform: translateY(var(--ui-hover-lift));
+}
+
+.ui-container.is-interactive:active {
+  transform: translateY(0);
+}

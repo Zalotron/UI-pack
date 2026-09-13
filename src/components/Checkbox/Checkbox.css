@@ -1,0 +1,135 @@
+/* ---------------------------------------------------- Checkbox — ESTRUCTURA */
+/* Mecánica. Los colores los pone el pack.
+   La marca se dibuja con dos bordes rotados: sin SVG ni fuente de iconos.    */
+
+.ui-checkbox {
+  --check-h: var(--ui-control-h-md);
+  --check-box: calc(var(--check-h) * var(--ui-check-ratio));
+  --check-font: var(--ui-control-font-md);
+
+  --check-bg: transparent;
+  --check-bg-on: transparent;
+  --check-border: transparent;
+  --check-mark: transparent;
+  --check-ring: transparent;
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ui-space-3);
+  min-height: var(--check-h);
+  cursor: pointer;
+}
+
+.ui-checkbox--label-start { flex-direction: row-reverse; }
+
+/* El input real queda encima pero invisible: se lleva el click y el foco. */
+.ui-checkbox__input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: inherit;
+}
+
+/* -- La caja --------------------------------------------------------------- */
+
+.ui-checkbox__box {
+  position: relative;
+  flex: none;
+  width: var(--check-box);
+  height: var(--check-box);
+  border: var(--ui-border-width) solid var(--check-border);
+  border-radius: var(--ui-control-radius-sm);
+  background: var(--check-bg);
+  box-shadow: 0 0 0 var(--ui-ring-width) var(--check-ring);
+  transition:
+    background var(--ui-duration-fast) var(--ui-ease),
+    border-color var(--ui-duration-fast) var(--ui-ease),
+    box-shadow var(--ui-duration-fast) var(--ui-ease);
+}
+
+.ui-checkbox.is-checked .ui-checkbox__box,
+.ui-checkbox.is-indeterminate .ui-checkbox__box {
+  background: var(--check-bg-on);
+}
+
+/* -- La marca -------------------------------------------------------------- */
+/* Tildada: dos bordes en ángulo, rotados 45°.
+   Intermedia: el mismo elemento aplanado a una raya. */
+
+.ui-checkbox__mark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 30%;
+  height: 58%;
+  margin: -36% 0 0 -15%;
+  border: solid var(--check-mark);
+  border-width: 0 2px 2px 0;
+
+  /* `rotate` y `scale` son propiedades independientes: se combinan sin
+     pisarse. El tilde entra creciendo desde el centro, igual que el punto
+     del radio. Es el mismo lenguaje para "se marcó algo". */
+  rotate: 45deg;
+  scale: 0;
+  opacity: 0;
+
+  /* Esta transicion es la de SALIDA: la del estado base manda cuando el
+     elemento deja el estado marcado.
+     Las dos propiedades comparten duracion a proposito. Antes la opacidad
+     terminaba en 120ms y el scale seguia hasta 200ms, asi que el tilde ya
+     era invisible mientras todavia se encogia: no se veia irse. */
+  transition:
+    scale var(--ui-duration-fast) var(--ui-ease-in),
+    opacity var(--ui-duration-fast) var(--ui-ease-in);
+}
+
+/* Y esta es la de ENTRADA: mas viva, con el rebote del sistema. */
+.ui-checkbox.is-checked .ui-checkbox__mark {
+  scale: 1;
+  opacity: 1;
+  transition:
+    scale var(--ui-duration-base) var(--ui-ease-out),
+    opacity var(--ui-duration-fast) var(--ui-ease);
+}
+
+/* El intermedio es el mismo elemento aplanado a una raya, y crece a lo
+   ancho en vez de aparecer de golpe. */
+.ui-checkbox.is-indeterminate .ui-checkbox__mark {
+  width: 54%;
+  height: 0;
+  margin: 0 0 0 -27%;
+  border-width: 0 0 2px 0;
+  rotate: none;
+  scale: 1;
+  opacity: 1;
+}
+
+/* -- Texto ----------------------------------------------------------------- */
+
+.ui-checkbox__label {
+  font-family: var(--ui-font-sans);
+  font-size: var(--check-font);
+  line-height: 1.2;
+}
+
+/* -- Tamaños --------------------------------------------------------------- */
+
+.ui-checkbox--sm { --check-h: var(--ui-control-h-sm); --check-font: var(--ui-control-font-sm); }
+.ui-checkbox--md { --check-h: var(--ui-control-h-md); --check-font: var(--ui-control-font-md); }
+.ui-checkbox--lg { --check-h: var(--ui-control-h-lg); --check-font: var(--ui-control-font-lg); }
+
+/* -- Estados --------------------------------------------------------------- */
+
+.ui-checkbox.is-disabled {
+  opacity: var(--ui-disabled-opacity);
+  cursor: not-allowed;
+}
+
+.ui-checkbox__input:focus-visible + .ui-checkbox__box {
+  outline: var(--ui-focus-width) solid var(--ui-focus-ring);
+  outline-offset: var(--ui-focus-offset);
+}

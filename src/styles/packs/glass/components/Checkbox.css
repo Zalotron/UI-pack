@@ -1,0 +1,26 @@
+/* -------------------------------------------- Checkbox — PIEL del pack GLASS */
+/* Interfaz: --check-bg | --check-bg-on | --check-border | --check-mark
+             --check-ring                                                     */
+
+.ui-checkbox {
+  --check-bg: var(--ui-glass-control);
+  --check-bg-on: var(--ui-glass-accent);
+  --check-border: transparent;
+  --check-mark: var(--ui-on-accent);
+}
+
+/* Sin backdrop-filter a propósito. La caja mide ~17px y se apoya sobre una
+   superficie que YA está esmerilada: volver a desenfocar eso no se nota, y
+   cada elemento con backdrop-filter cuesta una capa de composición. El vidrio
+   acá lo hacen la película translúcida y el canto degradado. */
+
+.ui-checkbox:hover:not(.is-disabled) {
+  --check-bg: var(--ui-glass-control-on);
+  --check-ring: var(--ui-ring-soft);
+}
+
+/* :not(.is-disabled) para empatarle la especificidad al hover de arriba. */
+.ui-checkbox.is-checked:not(.is-disabled),
+.ui-checkbox.is-indeterminate:not(.is-disabled) {
+  --check-ring: var(--ui-ring-soft);
+}

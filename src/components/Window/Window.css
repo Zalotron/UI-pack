@@ -1,0 +1,234 @@
+/* ------------------------------------------------------ Window — ESTRUCTURA */
+/* Mecánica. Los colores los pone el pack.
+   Los glifos se dibujan con bordes: sin SVG ni fuente de iconos.            */
+
+.ui-window {
+  --window-bar-h: var(--ui-window-bar-h);
+  --window-control-w: var(--ui-window-control-w);
+  /* No deriva de --ui-radius-*: la ventana es cuadrada aunque ROUNDNESS suba. */
+  --window-radius: var(--ui-window-radius);
+
+  --window-bg: transparent;
+  --window-bar-bg: transparent;
+  --window-border: transparent;
+  --window-line: transparent;
+  --window-fg: var(--ui-text);
+  --window-title-fg: var(--ui-text-muted);
+  --window-control-hover: transparent;
+  --window-close-hover: transparent;
+  --window-close-fg: var(--ui-text);
+  --window-shadow: none;
+
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  border: var(--ui-border-width) solid var(--window-border);
+  border-radius: var(--window-radius);
+  background: var(--window-bg);
+  box-shadow: var(--window-shadow);
+  color: var(--window-fg);
+}
+
+/* Maximizada no tiene esquinas ni sombra: va pegada a la pantalla.
+   El radio queda en 0 aunque un pack le haya puesto uno a la ventana. */
+.ui-window.is-maximized {
+  --window-radius: 0;
+  --window-shadow: none;
+  border-width: 0;
+}
+
+/* -- Barra de título ------------------------------------------------------- */
+
+.ui-window__bar {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-space-2);
+  flex: none;
+  height: var(--window-bar-h);
+  padding-inline-start: var(--ui-space-3);
+  border-bottom: var(--ui-border-width) solid var(--window-line);
+  background: var(--window-bar-bg);
+}
+
+/* Zona de arrastre del sistema operativo (Electron con frame:false). */
+.ui-window__bar.is-draggable {
+  -webkit-app-region: drag;
+  app-region: drag;
+}
+
+.ui-window__icon {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  font-size: 1.05em;
+  line-height: 1;
+}
+.ui-window__icon svg { width: 1em; height: 1em; }
+
+.ui-window__title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--window-title-fg);
+  font-family: var(--ui-font-sans);
+  font-size: var(--ui-text-sm);
+  letter-spacing: var(--ui-tracking-tight);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* -- Controles ------------------------------------------------------------- */
+/* Sin esto los botones no se podrían clickear: la barra entera es zona de
+   arrastre y el sistema se queda con el evento. */
+
+.ui-window__controls {
+  display: flex;
+  flex: none;
+  align-self: stretch;
+  -webkit-app-region: no-drag;
+  app-region: no-drag;
+}
+
+.ui-window__control {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--window-control-w);
+  align-self: stretch;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  transition:
+    background var(--ui-duration-fast) var(--ui-ease),
+    color var(--ui-duration-fast) var(--ui-ease);
+}
+
+.ui-window__control:hover { background: var(--window-control-hover); }
+
+.ui-window__control--close:hover {
+  background: var(--window-close-hover);
+  color: var(--window-close-fg);
+}
+
+.ui-window__control:focus-visible {
+  outline: var(--ui-focus-width) solid var(--ui-focus-ring);
+  outline-offset: calc(var(--ui-focus-width) * -1);
+}
+
+/* -- Glifos ---------------------------------------------------------------- */
+/* Todos salen del mismo <span>, cambiando bordes.                            */
+
+.ui-window__glyph {
+  position: relative;
+  display: block;
+  width: var(--ui-window-glyph);
+  height: var(--ui-window-glyph);
+}
+
+/* Minimizar: una raya al medio. */
+.ui-window__control--minimize .ui-window__glyph {
+  height: 0;
+  border-bottom: var(--ui-border-width) solid currentColor;
+}
+
+/* Maximizar: un cuadrado. */
+.ui-window__control--maximize .ui-window__glyph {
+  border: var(--ui-border-width) solid currentColor;
+  border-radius: 1px;
+}
+
+/* Restaurar: dos cuadrados corridos. */
+.ui-window__control--maximize.is-restore .ui-window__glyph {
+  width: calc(var(--ui-window-glyph) * 0.78);
+  height: calc(var(--ui-window-glyph) * 0.78);
+  translate: calc(var(--ui-window-glyph) * -0.11) calc(var(--ui-window-glyph) * 0.11);
+}
+.ui-window__control--maximize.is-restore .ui-window__glyph::after {
+  content: "";
+  position: absolute;
+  inset: calc(var(--ui-window-glyph) * -0.26) calc(var(--ui-window-glyph) * -0.26) auto auto;
+  width: 100%;
+  height: 100%;
+  border: var(--ui-border-width) solid currentColor;
+  border-radius: 1px;
+  /* El de atrás se corta donde pasa el de adelante. */
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 74% 100%, 74% 26%, 0 26%);
+}
+
+/* Cerrar: dos rayas cruzadas. */
+.ui-window__control--close .ui-window__glyph::before,
+.ui-window__control--close .ui-window__glyph::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 0;
+  border-bottom: var(--ui-border-width) solid currentColor;
+}
+.ui-window__control--close .ui-window__glyph::before { rotate: 45deg; }
+.ui-window__control--close .ui-window__glyph::after { rotate: -45deg; }
+
+/* -- Cuerpo ---------------------------------------------------------------- */
+
+/* El overflow y el aspecto de la barra los aporta .ui-scroll, que el JS le
+   agrega al nodo. Aca solo el reparto del alto. */
+.ui-window__body {
+  flex: 1;
+  min-height: 0;
+}
+
+/* -- Modal ----------------------------------------------------------------- */
+/* ⛔ ES UN <dialog>, ABIERTO CON `showModal()`.
+   Un modal hecho a mano es una pelea contra el z-index que nunca se gana del
+   todo. Un <dialog> abierto asi va a la CAPA SUPERIOR del navegador, que esta
+   afuera del orden de apilamiento de la pagina: no hay nada que pueda quedarle
+   por encima. Y trae gratis el oscurecido, el centrado, el foco atrapado
+   adentro y el cierre con Escape. */
+
+.ui-window--modal {
+  /* El navegador le pone padding y margen propios al <dialog>. */
+  padding: 0;
+  margin: auto;
+
+  /* Topes contra la ventana del navegador, para que nunca se salga de la
+     pantalla. La medida DE VERDAD la pone quien lo usa, con `width` y
+     `height`; esto es la red de seguridad. */
+  max-width: 96vw;
+  max-height: 92vh;
+}
+
+/* ⚠ UN <dialog> CERRADO SE ESCONDE CON UNA REGLA DEL NAVEGADOR, y el
+   `display: flex` de `.ui-window` —que es de autor— le gana. Sin esto, un modal
+   cerrado se ve igual que uno abierto. */
+.ui-window--modal:not([open]) { display: none; }
+
+/* El oscurecido de atras. El color lo pone el pack. */
+.ui-window--modal::backdrop {
+  background: var(--ui-window-scrim);
+}
+
+/* El oscurecido tampoco aparece de golpe: viene de la nada, como todo.
+   Va en la MECANICA y no en el pack porque no es estetica — es el gesto de
+   abrir un modal, y es el mismo en todos. El color si es del pack. */
+.ui-window--modal::backdrop {
+  animation: ui-window-scrim-in var(--ui-duration-base) var(--ui-ease) both;
+}
+
+.ui-window--modal.is-leaving::backdrop {
+  animation: ui-window-scrim-out var(--ui-duration-fast) var(--ui-ease) both;
+}
+
+@keyframes ui-window-scrim-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes ui-window-scrim-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}

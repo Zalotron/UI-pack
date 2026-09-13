@@ -1,0 +1,24 @@
+/* --------------------------------------- TextField — PIEL del pack NOCTURNE */
+/* Interfaz: --field-bg | --field-fg | --field-border | --field-ring
+             --field-placeholder                                              */
+
+/* Un campo es un HUECO: baja un escalón en vez de subirlo. Es la manera del
+   pack de decir "acá se escribe" sin dibujar una caja — no hay borde que
+   dibujar. */
+.ui-textfield {
+  --field-bg: var(--ui-bg-subtle);
+  --field-border: transparent;
+  --field-placeholder: var(--ui-text-subtle);
+}
+
+.ui-textfield:hover:not(.is-disabled) {
+  --field-bg: var(--ui-bg);
+}
+
+/* :not(.is-disabled) para empatarle la especificidad al hover de arriba.
+   Al enfocarse el hueco se aclara y aparece el halo: es lo único que marca el
+   foco, porque acá no hay borde que encender. */
+.ui-textfield:focus-within:not(.is-disabled) {
+  --field-bg: var(--ui-bg);
+  --field-ring: var(--ui-ring);
+}

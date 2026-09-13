@@ -1,0 +1,18 @@
+/* -------------------------------------------- RadioGroup — PIEL del pack _template */
+/* Interfaz: --radio-bg | --radio-border | --radio-fill | --radio-ring         */
+
+.ui-radiogroup {
+  --radio-bg: var(--ui-surface);
+  --radio-border: var(--ui-border-strong);
+  --radio-fill: var(--ui-accent);
+}
+
+.ui-radio:hover:not(.is-disabled) {
+  --radio-border: var(--ui-accent-soft);
+  --radio-ring: var(--ui-ring-soft);
+}
+
+/* :not(.is-disabled) para empatarle la especificidad al hover de arriba. */
+.ui-radio.is-checked:not(.is-disabled) {
+  --radio-border: var(--ui-accent);
+}

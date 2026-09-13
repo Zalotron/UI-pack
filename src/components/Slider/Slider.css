@@ -1,0 +1,227 @@
+/* ------------------------------------------------------ Slider — ESTRUCTURA */
+/* Mecánica. Los colores los pone el pack.
+   El relleno de la pista sale de --slider-progress, que escribe el JS.       */
+
+.ui-slider {
+  --slider-h: var(--ui-control-h-md);
+  /* Proporcionales a la altura: una barra fina al lado de una caja alta
+     queda descompensada. */
+  --slider-track-h: calc(var(--slider-h) * var(--ui-slider-track-ratio));
+  --slider-thumb-h: calc(var(--slider-h) * var(--ui-slider-thumb-ratio));
+  --slider-thumb-w: var(--ui-slider-thumb-w);
+  --slider-thumb-radius: var(--ui-control-radius-sm);
+  --slider-progress: 0%;
+
+  --slider-track: transparent;
+  --slider-fill: transparent;
+  --slider-thumb: transparent;
+  --slider-ring: transparent;
+  /* Marco de la pista: la ata visualmente a las cajas que tiene al lado. */
+  --slider-track-border: transparent;
+  --slider-track-border-width: var(--ui-border-width);
+  --slider-track-radius: var(--ui-radius-full);
+  /* Sombreado del canal, POR ENCIMA del relleno. Un canal excavado tiene que
+     sombrear lo que corre adentro; si la sombra quedara debajo, el relleno la
+     taparia y el surco se veria plano justo donde esta lleno.
+     Apagada con `0 0 0 0` y no con `none`: va en una lista de box-shadow. */
+  --slider-track-shadow: 0 0 0 0 transparent;
+
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ui-space-3);
+  width: 100%;
+  height: var(--slider-h);
+}
+
+/* -- La pista ------------------------------------------------------------- */
+
+/* El carril: ancla de la pista, que va posicionada debajo del <input>. */
+.ui-slider__rail {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+
+.ui-slider__input {
+  position: relative;  /* sobre la pista */
+  flex: 1;
+  min-width: 0;
+  height: var(--slider-thumb-h); /* área de agarre cómoda, no la pista visible */
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.ui-slider__input:focus { outline: none; }
+.ui-slider__input:focus-visible {
+  outline: var(--ui-focus-width) solid var(--ui-focus-ring);
+  outline-offset: var(--ui-focus-offset);
+}
+
+/* La pista se dibuja fina y centrada dentro de esa área de agarre.
+   WebKit y Firefox no se pueden agrupar: si uno no entiende el selector,
+   descarta la regla entera. */
+
+.ui-slider__input::-webkit-slider-runnable-track {
+  height: var(--slider-track-h);
+  background: transparent;
+}
+
+.ui-slider__input::-moz-range-track {
+  height: var(--slider-track-h);
+  background: transparent;
+}
+
+/* La pista visible: un elemento propio, debajo del <input>.
+   `pointer-events: none` para que el arrastre siga siendo del <input>. */
+
+.ui-slider__track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: var(--slider-track-h);
+  border-radius: var(--slider-track-radius);
+  background: var(--slider-track);
+  /* El relleno sigue la forma del canal: sin esto, una pista redondeada
+     llena al 30% mostraria un relleno con las esquinas derechas cuadradas. */
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.ui-slider__fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--slider-progress);
+  background: var(--slider-fill);
+}
+
+/* El marco y el sombreado, en una capa APARTE y encima del relleno.
+   Encima porque el canal enmarca todo el recorrido, no solo la parte vacia; y
+   aparte porque asi un estado puede ENGROSAR EL TRAZO sin tocar la caja: el
+   grosor sale de --slider-track-border-width y no de un `border`, que moveria
+   todo lo que el slider tiene al lado. */
+.ui-slider__track::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow:
+    inset 0 0 0 var(--slider-track-border-width) var(--slider-track-border),
+    var(--slider-track-shadow);
+  pointer-events: none;
+}
+
+/* -- El tirador ----------------------------------------------------------- */
+/* ⛔ EL TIRADOR VISIBLE ES UN ELEMENTO, NO EL PSEUDO NATIVO.
+   Un `::-webkit-slider-thumb` no acepta mascara —ponersela lo hace DESAPARECER
+   en Chrome, esta probado y roto— no puede llevar nada adentro y queda atado a
+   la caja del control. El pseudo nativo se queda de AREA DE AGARRE: invisible,
+   del alto comodo para el dedo, con el cursor y toda la semantica de rango. Lo
+   que se ve es `.ui-slider__thumb`, que ademas puede sobresalir del canal.
+
+   WebKit y Firefox se declaran por separado: si un motor no entiende el
+   pseudo-elemento del otro, descarta la regla entera. */
+
+.ui-slider__input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: var(--slider-thumb-w);
+  height: var(--slider-thumb-h);
+  margin-top: calc((var(--slider-track-h) - var(--slider-thumb-h)) / 2);
+  border: 0;
+  background: transparent;
+  cursor: grab;
+}
+
+.ui-slider__input::-moz-range-thumb {
+  width: var(--slider-thumb-w);
+  height: var(--slider-thumb-h);
+  border: 0;
+  background: transparent;
+  cursor: grab;
+}
+
+.ui-slider__input:active::-webkit-slider-thumb { cursor: grabbing; }
+.ui-slider__input:active::-moz-range-thumb { cursor: grabbing; }
+
+/* El tirador que se ve. Barra vertical, no círculo: sigue el redondeo global,
+   así con ROUNDNESS 0 queda recto como el resto del sistema.
+
+   `left` NO es --slider-progress: el centro del tirador no recorre de 0 a 100%
+   del canal, recorre de w/2 a (ancho - w/2), que es donde lo pone el control
+   nativo. Por eso se multiplica una longitud por --slider-ratio, que viene sin
+   unidad justamente para poder multiplicarla. */
+.ui-slider__thumb {
+  position: absolute;
+  top: 50%;
+  left: calc(
+    var(--slider-thumb-w) / 2 +
+    (100% - var(--slider-thumb-w)) * var(--slider-ratio)
+  );
+  translate: -50% -50%;
+
+  width: var(--slider-thumb-w);
+  height: var(--slider-thumb-h);
+  border-radius: var(--slider-thumb-radius);
+  background: var(--slider-thumb);
+  box-shadow: 0 0 0 0 var(--slider-ring);
+
+  /* El agarre es del <input>, que esta debajo. */
+  pointer-events: none;
+
+  transition:
+    box-shadow var(--ui-duration-fast) var(--ui-ease),
+    background var(--ui-duration-fast) var(--ui-ease);
+}
+
+/* Halo al pasar el mouse, al tomarlo o al enfocarlo: el mismo lenguaje que el
+   Spinner. El foco se lee del <input>, que es el hermano de ANTES. */
+.ui-slider:hover .ui-slider__thumb,
+.ui-slider.is-dragging .ui-slider__thumb,
+.ui-slider__input:focus-visible ~ .ui-slider__thumb {
+  box-shadow: 0 0 0 var(--ui-ring-width) var(--slider-ring);
+}
+
+/* -- El valor -------------------------------------------------------------- */
+
+.ui-slider__value {
+  flex: none;
+  min-width: var(--ui-slider-value-w);
+  color: var(--ui-text-muted);
+  font-family: var(--ui-font-mono);
+  font-size: var(--ui-text-xs);
+  font-variant-numeric: tabular-nums;
+  text-align: end;
+}
+
+/* Cuando el valor es editable, es un Spinner: que no se estire.
+   El ancho NO se declara aca — se lo reserva el Spinner solo, a partir de los
+   mismos limites que tiene el slider, asi un slider de 0 a 1 no ocupa lo que
+   uno de 0 a 1000. Lo unico propio es el padding, mas compacto que el de un
+   spinner suelto porque va pegado a la pista. */
+.ui-slider__spinner {
+  --spinner-pad: var(--ui-space-2);
+  flex: none;
+}
+
+/* -- Tamaños --------------------------------------------------------------- */
+
+.ui-slider--sm { --slider-h: var(--ui-control-h-sm); }
+.ui-slider--md { --slider-h: var(--ui-control-h-md); }
+.ui-slider--lg { --slider-h: var(--ui-control-h-lg); }
+
+/* -- Estados --------------------------------------------------------------- */
+
+.ui-slider.is-disabled {
+  opacity: var(--ui-disabled-opacity);
+  cursor: not-allowed;
+}
+.ui-slider.is-disabled .ui-slider__input { cursor: not-allowed; }

@@ -1,0 +1,12 @@
+/* -------------------------------------- Progress — PIEL del pack PLANTILLA */
+/* Interfaz: --progress-track | --progress-fill | --progress-ring-fill
+             --progress-label-fg | --progress-value-fg
+             --progress-radius | --progress-cap                             */
+
+.ui-progress {
+  --progress-track: var(--ui-bg-subtle);
+  --progress-fill: var(--ui-accent);
+  --progress-ring-fill: var(--ui-accent);
+  /* El remate del arco va recto: es una medida, no un adorno. */
+  --progress-cap: butt;
+}

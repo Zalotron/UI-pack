@@ -1,0 +1,49 @@
+/* ----------------------------------------------- Slider — PIEL del pack RISO */
+/* Interfaz: --slider-track | --slider-track-border | --slider-fill
+             --slider-thumb | --slider-ring                                   */
+
+/* Un canal de papel con contorno, la parte llena impresa en tinta, y una
+   PLAQUETA RECTANGULAR de tirador. Nada de bolitas: una pieza recortada. */
+.ui-slider {
+  --slider-track: var(--ui-surface);
+  --slider-track-border: var(--ui-border);
+  --slider-fill: var(--ui-accent);
+  --slider-thumb: var(--ui-surface);
+}
+
+/* El tirador es una pieza impresa aparte, con contorno y su plancha corrida.
+
+   ⚠ WEBKIT Y FIREFOX NO SE PUEDEN AGRUPAR: si un motor no entiende el
+   pseudo-elemento del otro, descarta la regla entera. Va todo dos veces.
+
+   Y hay que contestar TODOS los estados del tirador que pinta la mecánica:
+   sus reglas tienen más especificidad y REEMPLAZAN la box-shadow, así que si
+   acá no se repite, la corrida desaparece justo al pasar el mouse. */
+.ui-slider__thumb {
+  border: var(--ui-border-width) solid var(--ui-border);
+  box-shadow: var(--ui-misprint);
+}
+
+.ui-slider:hover:not(.is-disabled) .ui-slider__thumb {
+  box-shadow: var(--ui-misprint-lg);
+}
+
+/* Arrastrando, la plancha se apoya: las dos tintas coinciden. */
+.ui-slider.is-dragging .ui-slider__thumb {
+  box-shadow: none;
+}
+
+.ui-slider__input:focus-visible ~ .ui-slider__thumb {
+  box-shadow: var(--ui-misprint), 0 0 0 var(--ui-focus-width) var(--ui-focus-ring);
+}
+
+/* ⛔ EL RELLENO DEL SLIDER LLEVA LA TRAMA, COMO EL DE LA BARRA.
+   Es la misma tinta imprimiendo la misma pieza: tenerla tramada en una y lisa
+   en la otra las hacia ver de sistemas distintos. Dos grillas corridas media
+   celda — la diagonal a 45 grados. Con longhands a proposito, ver tokens.css. */
+.ui-slider__fill {
+  background-image: var(--ui-riso-dot), var(--ui-riso-dot);
+  background-position: 0 0, var(--ui-halftone-half);
+  background-size: var(--ui-halftone-size), var(--ui-halftone-size);
+  background-blend-mode: multiply;
+}

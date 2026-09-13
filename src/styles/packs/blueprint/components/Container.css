@@ -1,0 +1,94 @@
+/* --------------------------------------- Container — PIEL del pack BLUEPRINT */
+/* Interfaz: --container-bg | --container-border-color | --container-shadow    */
+
+/* Un contenedor es una HOJA de papel cuadriculado con su marco, no una caja
+   con fondo. El relleno de color no existe en este pack: lo que delimita algo
+   es su trazo.
+
+   El cuadriculado va acá y no en la página porque un contenedor ES la hoja. La
+   ambientación del fondo de la página la pone el catálogo — una librería no
+   tiene por qué dibujarle una grilla a quien la importe.
+
+   ⚠ POR QUE EL MARCO SE DIBUJA EN UN ::before Y NO EN EL BORDE DEL ELEMENTO
+   El marco lleva la textura de tiza, y la textura es una máscara. Una máscara
+   RECORTA todo lo que se sale de la caja del elemento — o sea que enmascarar
+   el contenedor se comería cualquier desplegable abierto adentro.
+   La solución es que el marco viva en una capa propia, que no contiene nada.
+
+   El borde real del elemento se conserva (mismo grosor, mismo lugar) pero va
+   transparente: sigue ocupando su lugar en el layout, así que no cambia ni una
+   medida. Lo que se ve lo pinta la capa. */
+
+.ui-container {
+  position: relative;
+}
+
+.ui-container::before {
+  content: "";
+  position: absolute;
+  /* El bloque contenedor es la caja de padding; el inset negativo lleva la
+     capa justo a la caja de BORDE, que es donde va el marco. */
+  inset: calc(var(--ui-border-width) * -1);
+  pointer-events: none;
+
+  border: var(--ui-border-width) solid var(--bp-frame, transparent);
+  background: var(--bp-marks, none);
+}
+
+/* -- Variantes de superficie ---------------------------------------------- */
+/* --container-border-color queda en transparent en todas: el marco lo dibuja
+   la capa de arriba, con --bp-frame. */
+
+.ui-container--panel {
+  --container-bg: var(--ui-bp-grid);
+  --container-border-color: transparent;
+  --bp-frame: var(--ui-border);
+  --bp-marks: var(--ui-bp-corners);
+}
+
+/* Sin marcas de registro: no es la lámina principal. */
+.ui-container--solid {
+  --container-bg: var(--ui-bp-grid);
+  --container-border-color: transparent;
+  --bp-frame: var(--ui-line);
+  --bp-marks: none;
+}
+
+/* Solo el marco, sin papel: una zona señalada sobre el plano. */
+.ui-container--outline {
+  --container-bg: transparent;
+  --container-border-color: transparent;
+  --bp-frame: var(--ui-border-strong);
+  --bp-marks: var(--ui-bp-corners);
+}
+
+.ui-container--ghost {
+  --container-bg: transparent;
+  --container-border-color: transparent;
+  --bp-frame: transparent;
+  --bp-marks: none;
+}
+
+/* `border: false` se lleva el marco y las marcas, pero deja el papel. */
+.ui-container--no-border {
+  --bp-frame: transparent;
+  --bp-marks: none;
+}
+
+/* -- Elevación ------------------------------------------------------------- */
+/* En un plano nada flota: lo que "sube" se destaca con un trazo más fuerte,
+   que es como se hace en un dibujo técnico de verdad. */
+
+.ui-container--elev-sm { --bp-frame: var(--ui-line); }
+.ui-container--elev-md { --bp-frame: var(--ui-border); }
+.ui-container--elev-lg { --bp-frame: var(--ui-border-strong); }
+
+/* -- Reacción al mouse ----------------------------------------------------- */
+
+.ui-container.is-interactive:hover {
+  --bp-frame: var(--ui-accent);
+}
+
+.ui-container.is-interactive:active {
+  --container-bg: var(--ui-accent-subtle), var(--ui-bp-grid);
+}

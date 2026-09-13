@@ -1,0 +1,32 @@
+/* ===========================================================================
+   PACK "BLUEPRINT" — el trazado
+   ---------------------------------------------------------------------------
+   Los keyframes del pack. Los VALORES viven en tokens.css.
+
+   La idea: acá nada APARECE — todo se DIBUJA. Un plotter no funde ni desliza
+   elementos: avanza a velocidad pareja y va dejando tinta. Por eso las curvas
+   del pack son casi lineales y las entradas son un barrido, no un fundido.
+   =========================================================================== */
+
+/* NOTA: acá había un barrido horizontal (`ui-bp-draw`) que usaba el ciclo de
+   vida. Se reemplazó por el barrido DIAGONAL de lifecycle.css —el trazo se
+   pinta, no se descubre de costado— y quedó sin uso, así que se fue.
+   Lo que sigue son las animaciones de INTERACCION del pack. */
+
+/* -- Bajar el cabezal ------------------------------------------------------- */
+/* Para lo que se despliega hacia abajo: se dibuja de arriba hacia abajo. */
+
+@keyframes ui-bp-drop {
+  from { clip-path: inset(0 0 100% 0); }
+  to   { clip-path: inset(0); }
+}
+
+/* -- Marcar ----------------------------------------------------------------- */
+/* Para las marcas chicas que se confirman (el tilde, el punto del radio): el
+   trazo entra de un lado. La mecánica ya las anima con `scale`; acá se suma el
+   barrido, que es lo que la hace parecer dibujada en vez de inflada. */
+
+@keyframes ui-bp-stroke {
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0); }
+}

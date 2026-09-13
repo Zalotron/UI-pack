@@ -1,0 +1,23 @@
+/* ------------------------------------------ Toggle — PIEL del pack BLUEPRINT */
+/* Interfaz: --toggle-track | --toggle-track-on | --toggle-knob-bg
+             --toggle-border | --toggle-ring                                  */
+
+/* Un interruptor dibujado: el carril es un rectángulo de trazo y el tirador
+   una pieza maciza que corre adentro. Apagado el tirador va en gris de
+   construcción; al encenderse pasa a tinta. */
+.ui-toggle {
+  --toggle-track: transparent;
+  --toggle-track-on: var(--ui-accent-subtle);
+  --toggle-border: var(--ui-line);
+  --toggle-knob-bg: var(--ui-text-subtle);
+}
+
+.ui-toggle:hover:not(.is-disabled) {
+  --toggle-border: var(--ui-border);
+}
+
+/* :not(.is-disabled) para empatarle la especificidad al hover de arriba. */
+.ui-toggle.is-checked:not(.is-disabled) {
+  --toggle-border: var(--ui-accent);
+  --toggle-knob-bg: var(--ui-accent);
+}

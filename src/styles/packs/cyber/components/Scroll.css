@@ -1,0 +1,11 @@
+/* ---------------------------------------------- Scroll — PIEL del pack CYBER */
+/* Interfaz: --scroll-track | --scroll-thumb | --scroll-thumb-hover          */
+
+/* El pulgar es una barra de neón tenue que se enciende al tocarla. Un
+   pseudo-elemento nativo no acepta halos, así que el "brillo" acá se consigue
+   subiendo el alfa del propio color. */
+.ui-scroll {
+  --scroll-track: transparent;
+  --scroll-thumb: var(--ui-scroll-thumb);
+  --scroll-thumb-hover: var(--ui-scroll-thumb-hover);
+}

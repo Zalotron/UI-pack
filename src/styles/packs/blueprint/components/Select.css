@@ -1,0 +1,38 @@
+/* ------------------------------------------ Select — PIEL del pack BLUEPRINT */
+/* Interfaz: --select-bg | --select-border | --select-menu-bg
+             --select-menu-border | --select-menu-shadow
+             --select-option-hover / -selected                                */
+
+.ui-select {
+  --select-bg: transparent;
+  --select-border: var(--ui-line);
+
+  /* La lista SI lleva papel: flota sobre el plano y hay que poder leerla. Sin
+     fondo propio, el cuadriculado de abajo se mezclaría con los rótulos. */
+  --select-menu-bg: var(--ui-surface);
+  /* La lista pinta papel: lo que caiga adentro se recorta contra eso. */
+  --ui-bp-behind: var(--ui-surface);
+  --select-menu-border: var(--ui-accent);
+  --select-menu-shadow: none;
+  --select-option-hover: var(--ui-accent-subtle);
+  --select-option-selected: transparent;
+}
+
+.ui-select:hover:not(.is-disabled) { --select-border: var(--ui-border); }
+
+/* Los estados activos llevan :not(.is-disabled) para empatarle la
+   especificidad al :hover de arriba. */
+.ui-select.is-open:not(.is-disabled) { --select-border: var(--ui-accent); }
+
+/* La lista se DIBUJA de arriba hacia abajo, como si bajara el cabezal. Se
+   dispara sola cada vez que se abre porque mientras está cerrada el elemento
+   está en `display: none`. */
+.ui-select__list {
+  animation: ui-bp-drop var(--ui-duration-base) var(--ui-ease) 1;
+}
+
+/* La opción elegida se marca con una cota al costado, no con un relleno. */
+.ui-select__option.is-selected {
+  color: var(--ui-accent-text);
+  box-shadow: inset var(--ui-bp-bold) 0 0 var(--ui-accent);
+}

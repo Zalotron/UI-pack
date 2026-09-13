@@ -1,0 +1,64 @@
+/* ------------------------------------- ColorPicker — PIEL del pack BLUEPRINT */
+/* Interfaz: --cp-bg | --cp-border | --cp-ring | --cp-value-fg
+             --cp-panel-bg | --cp-panel-border | --cp-panel-shadow           */
+
+.ui-colorpicker {
+  --cp-bg: transparent;
+  --cp-border: var(--ui-line);
+  --cp-value-fg: var(--ui-text-muted);
+
+  /* El panel lleva papel, igual que la lista del Select: adentro hay que
+     elegir un color, no mirar la grilla. */
+  --cp-panel-bg: var(--ui-surface);
+  --ui-bp-behind: var(--ui-surface);
+  --cp-panel-border: var(--ui-accent);
+  --cp-panel-shadow: none;
+}
+
+.ui-colorpicker:hover:not(.is-disabled) {
+  --cp-border: var(--ui-border);
+  --cp-value-fg: var(--ui-text);
+}
+
+/* :not(.is-disabled) para empatarle la especificidad al hover de arriba. */
+.ui-colorpicker.is-open:not(.is-disabled) {
+  --cp-border: var(--ui-accent);
+  --cp-value-fg: var(--ui-text);
+}
+
+.ui-colorpicker__panel {
+  animation: ui-bp-drop var(--ui-duration-base) var(--ui-ease) 1;
+}
+
+/* El valor va espaciado: es una anotación, como en un plano. */
+.ui-colorpicker__value {
+  letter-spacing: var(--ui-tracking-wide);
+}
+
+/* La rueda de matices: es el dominio del componente, no una decisión de
+   estilo. Un selector de color tiene que mostrar todo el espectro, y eso no
+   cambia de un pack a otro.
+
+   Va en una capa adentro del canal y no en el canal mismo: el canal ya dibuja
+   su contorno en `::after`, y una máscara puesta arriba se lo comería dos
+   veces. Acá el arcoíris lleva la veta de relleno —la misma diagonal que el
+   resto de lo pintado— y el contorno queda intacto. */
+.ui-colorpicker__hue .ui-slider__track::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to right,
+    hsl(0 100% 50%), hsl(60 100% 50%), hsl(120 100% 50%),
+    hsl(180 100% 50%), hsl(240 100% 50%), hsl(300 100% 50%), hsl(360 100% 50%)
+  );
+
+  -webkit-mask-image: var(--ui-bp-chalk-fill);
+  mask-image: var(--ui-bp-chalk-fill);
+}
+
+/* Sobre la rueda el cursor va neutro: si tomara el acento se perdería. */
+.ui-colorpicker__hue {
+  --slider-thumb: var(--ui-neutral-0);
+}

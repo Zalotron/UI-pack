@@ -1,0 +1,32 @@
+/* ------------------------------------------------ Tabs — PIEL del pack CYBER */
+/* Interfaz: --tabs-fg | --tabs-fg-active | --tabs-bg-hover
+             --tabs-line | --tabs-indicator                                  */
+
+.ui-tabs {
+  --tabs-fg: var(--ui-text-subtle);
+  --tabs-fg-active: var(--ui-accent-text);
+  --tabs-bg-hover: var(--ui-accent-subtle);
+  --tabs-line: var(--ui-line);
+  --tabs-indicator: var(--ui-accent);
+}
+
+/* Rótulos de consola. */
+.ui-tabs__tab {
+  text-transform: uppercase;
+  letter-spacing: var(--ui-tracking-wide);
+  font-weight: var(--ui-weight-semibold);
+}
+
+/* Al volverse activa, la pestaña engancha señal. El glitch va acá y no en
+   la rayita porque la rayita es un elemento que nunca cambia de estado: una
+   animación declarada ahí correría una sola vez, al cargar. La pestaña sí
+   gana `.is-active`, así que dispara cada vez que cambiás de pestaña. */
+.ui-tabs__tab.is-active {
+  animation: var(--ui-glitch-anim-text);
+}
+
+/* La rayita activa no es una raya pintada: es un tubo encendido. */
+.ui-tabs__indicator {
+  box-shadow: 0 0 var(--ui-glow-reach) var(--ui-accent),
+              0 0 calc(var(--ui-glow-reach) * 2) rgb(from var(--ui-accent) r g b / 0.5);
+}

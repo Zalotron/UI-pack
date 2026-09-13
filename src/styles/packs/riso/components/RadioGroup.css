@@ -1,0 +1,37 @@
+/* ------------------------------------------- RadioGroup — PIEL del pack RISO */
+/* Interfaz: --radio-bg | --radio-border | --radio-fill | --radio-ring         */
+
+/* Mismo gesto que el Checkbox, porque significan lo mismo: papel apagado,
+   tinta encendida. */
+.ui-radiogroup {
+  --radio-bg: transparent;
+  --radio-border: var(--ui-border);
+  --radio-fill: var(--ui-accent);
+}
+
+.ui-radio.is-checked .ui-radio__dot::after {
+  /* LA TRAMA. Dos grillas corridas media celda: la diagonal a 45 grados.
+     Con longhands a proposito — ver tokens.css. */
+  background-image: var(--ui-riso-dot), var(--ui-riso-dot);
+  background-position: 0 0, var(--ui-halftone-half);
+  background-size: var(--ui-halftone-size), var(--ui-halftone-size);
+  background-blend-mode: multiply;
+}
+
+.ui-radio__dot {
+  box-shadow: var(--ui-misprint);
+  transition: box-shadow var(--ui-duration-fast) var(--ui-ease);
+}
+
+.ui-radio:hover:not(.is-disabled) {
+  --radio-bg: var(--ui-accent-subtle);
+}
+
+/* :not(.is-disabled) para empatarle la especificidad al hover de arriba. */
+.ui-radio.is-checked:not(.is-disabled) {
+  --radio-border: var(--ui-border);
+}
+
+.ui-radio.is-disabled .ui-radio__dot {
+  box-shadow: none;
+}

@@ -1,0 +1,32 @@
+/* --------------------------------------------- Spinner — PIEL del pack GLASS */
+/* Interfaz: --spinner-bg | --spinner-fg | --spinner-border | --spinner-ring   */
+
+/* Los controles chicos llevan el cristal liviano: película tenue y el mismo
+   canto degradado que las superficies grandes, para que se lean del mismo
+   material. El borde real va transparente — lo dibuja el canto. */
+.ui-spinner {
+  --spinner-bg: var(--ui-glass-control);
+  --spinner-border: transparent;
+
+  backdrop-filter: var(--ui-glass-blur-sm);
+  -webkit-backdrop-filter: var(--ui-glass-blur-sm);
+}
+
+.ui-spinner:hover:not(.is-disabled) {
+  --spinner-bg: var(--ui-glass-control-on);
+}
+
+/* Los estados activos llevan :not(.is-disabled) para empatarle la
+   especificidad al :hover de arriba. Sin eso el hover gana y el control
+   se ve MAS apagado con el mouse encima que sin el. */
+.ui-spinner.is-dragging:not(.is-disabled) {
+  --spinner-bg: var(--ui-glass-control-on);
+  --spinner-ring: var(--ui-ring-soft);
+}
+
+/* Editando: canto encendido, halo pleno y cursor del color de la marca. */
+.ui-spinner.is-editing:not(.is-disabled) {
+  --spinner-bg: var(--ui-glass-control-on);
+  --spinner-ring: var(--ui-ring);
+  --spinner-caret: var(--ui-accent);
+}

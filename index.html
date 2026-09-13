@@ -1,0 +1,38 @@
+<!doctype html>
+<!-- data-theme fijo para que no haya destello antes de que corra el JS. -->
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Web UI</title>
+
+  <!-- Estructura compartida por todos los packs. -->
+  <link rel="stylesheet" href="./src/styles/base.css">
+  <link rel="stylesheet" href="./src/styles/structure.css">
+  <!-- El CSS del pack lo inyecta src/config.js segun STYLE_PACK. -->
+
+  <!-- ⚠ LA UNICA FUENTE EXTERNA DEL PROYECTO, Y SE CARGA ACA A PROPOSITO.
+       La regla es "cero dependencias": `src/` tiene que poder copiarse a
+       cualquier proyecto sin arrastrar nada, y un `@import` a un dominio ajeno
+       adentro de un pack seria justamente arrastrar algo.
+
+       Por eso la pide el VISOR y no la libreria. El pack `blueprint` nombra la
+       familia en su stack —con humanistas del sistema detras— asi que si quien
+       importa la libreria no la carga, cae al fallback y no se rompe nada:
+       pierde la letra manuscrita, no el pack.
+
+       Es el mismo reparto que ya usa la ambientacion de fondo: lo que es del
+       catalogo vive en el catalogo. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Handlee&display=swap">
+
+  <!-- Solo tipografía del catálogo: no es parte de la librería. -->
+  <link rel="stylesheet" href="./catalog/catalog.css">
+</head>
+<body>
+  <div id="app"></div>
+  <script type="module" src="./catalog/catalog.js"></script>
+</body>
+</html>

@@ -1,0 +1,98 @@
+/* ------------------------------------------ Slider — PIEL del pack BLUEPRINT */
+/* Interfaz: --slider-track | --slider-track-border | --slider-fill
+             --slider-thumb | --slider-ring                                   */
+
+/* Una CAJA que se va pintando, igual que la barra de progreso — no una linea
+   con una aguja encima. Es la misma pieza contando lo mismo: un tramo medido
+   sobre un recorrido, asi que se dibuja igual.
+
+   El canal vacio no se pinta (queda el papel) y lo unico que tiene color es el
+   tramo recorrido. --ui-slider-track-ratio pasa de 0.12 a 0.42 para que sea
+   una caja y no un filete. */
+.ui-slider {
+  --slider-track: transparent;
+  --slider-track-radius: 0;
+  --slider-track-border: var(--ui-line-soft);
+  --slider-fill: rgb(from var(--ui-accent) r g b / var(--ui-bp-fill-alpha));
+  --slider-thumb: var(--ui-accent);
+  --slider-ring: transparent;
+
+  /* La raya se apaga en las dos puntas en vez de cortar a filo: un trazo suelto
+     no empieza ni termina de golpe. El degrade va sobre el eje propio del
+     tirador, asi que la rotacion se lo lleva puesto y las puntas apagadas
+     quedan donde el lapiz levanta. */
+  --bp-thumb-ink: linear-gradient(
+    180deg,
+    rgb(from var(--slider-thumb) r g b / 0) 0%,
+    var(--slider-thumb) 32%,
+    var(--slider-thumb) 68%,
+    rgb(from var(--slider-thumb) r g b / 0) 100%
+  );
+}
+
+/* El cursor es un trazo: no lleva halo ni relieve. Aun así hay que contestar
+   los TRES estados que la mecánica pinta con box-shadow — si no, su regla
+   gana por especificidad y deja un halo de 2px alrededor de la marca, que en
+   este pack no significa nada. */
+.ui-slider__thumb,
+.ui-slider:hover .ui-slider__thumb,
+.ui-slider__input:focus-visible ~ .ui-slider__thumb,
+.ui-slider.is-dragging .ui-slider__thumb {
+  box-shadow: none;
+}
+
+/* ⛔ EL HOVER NO PINTA EL CANAL VACIO.
+   Pintarlo era un bug con forma de estado: al pasar el mouse aparecia relleno
+   un tramo que no esta recorrido, o sea que el control MENTIA sobre su valor
+   mientras lo mirabas. Lo vacio es papel, siempre. Lo que el hover marca es el
+   TRAZO, que se engrosa sin tocar la caja. */
+.ui-slider:hover:not(.is-disabled) {
+  --slider-track-border: var(--ui-border);
+  --slider-track-border-width: var(--ui-bp-bold);
+}
+
+.ui-slider__fill {
+  /* Cuanto recede el corte de arriba a abajo. Es UNA medida y se usa dos veces
+     —para correr el relleno y para recortarlo— asi que se nombra una sola. */
+  --bp-cut: calc(var(--slider-track-h) * var(--ui-bp-hand-slant));
+
+  /* ⛔ EL CORRIMIENTO ES FIJO, NO PROPORCIONAL AL VALOR.
+     El corte recede siempre lo mismo, asi que su punto medio queda SIEMPRE
+     media inclinacion detras del borde del relleno — no "mas detras cuanto mas
+     lleno". Cuando esto era proporcional, la marca y la pintura viajaban a
+     velocidades distintas: arrancaban separadas y solo se juntaban al final.
+
+     El `min()` es para el arranque: mientras el relleno mida menos que media
+     inclinacion no hay con que alinearlo —es mas corto que el corte mismo— y
+     se corre solo lo que mide, asi en 0 el canal queda limpio en vez de
+     mostrar una cuna de pintura. */
+  width: calc(
+    var(--slider-progress) + min(var(--slider-progress), var(--bp-cut) / 2)
+  );
+
+  /* ⛔ EL RELLENO NO TERMINA RECTO — igual que la barra de progreso, y es la
+     misma regla: una mano derecha que pinta deja la punta de arriba mas a la
+     derecha que la de abajo, porque la muneca gira. La inclinacion sale del
+     ALTO del canal, asi que acompana sola a los tres tamanos. */
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    calc(100% - var(--bp-cut)) 100%,
+    0 100%
+  );
+}
+
+/* El cursor es UN TRAZO, no una pastilla: una raya inclinada que se apaga en
+   las dos puntas, como la deja el lapiz al levantar la mano. La inclinacion es
+   la misma que la del relleno y la de la veta — 45 grados es el angulo natural
+   de una mano derecha, y todo el pack raya en esa direccion. */
+.ui-slider__thumb {
+  background: var(--bp-thumb-ink);
+  border-radius: 0;
+  rotate: var(--ui-bp-hand-angle);
+}
+
+/* El valor al costado es una lectura de instrumento. */
+.ui-slider__value {
+  letter-spacing: var(--ui-tracking-wide);
+}

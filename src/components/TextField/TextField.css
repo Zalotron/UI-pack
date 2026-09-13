@@ -1,0 +1,83 @@
+/* --------------------------------------------------- TextField — ESTRUCTURA */
+/* Mecánica. Los colores los pone el pack.                                    */
+
+.ui-textfield {
+  --field-h: var(--ui-control-h-md);
+  --field-pad: var(--ui-control-pad-md);
+  --field-font: var(--ui-control-font-md);
+  --field-radius: var(--ui-control-radius-md);
+
+  --field-bg: transparent;
+  --field-fg: var(--ui-text);
+  --field-border: transparent;
+  --field-ring: transparent;
+  --field-placeholder: var(--ui-text-subtle);
+
+  box-sizing: border-box;
+  display: flex;
+  width: 100%;
+
+  border: var(--ui-border-width) solid var(--field-border);
+  border-radius: var(--field-radius);
+  background: var(--field-bg);
+  box-shadow: 0 0 0 var(--ui-ring-width) var(--field-ring);
+
+  transition:
+    border-color var(--ui-duration-fast) var(--ui-ease),
+    box-shadow var(--ui-duration-fast) var(--ui-ease),
+    background var(--ui-duration-fast) var(--ui-ease);
+}
+
+.ui-textfield__input {
+  box-sizing: border-box;
+  flex: 1;
+  min-width: 0;
+  height: var(--field-h);
+  padding: 0 var(--field-pad);
+
+  margin: 0;
+  border: 0;
+  background: none;
+  color: var(--field-fg);
+
+  font-family: var(--ui-font-sans);
+  font-size: var(--field-font);
+  line-height: 1.4;
+}
+
+.ui-textfield__input::placeholder { color: var(--field-placeholder); }
+.ui-textfield__input:focus { outline: none; }
+
+/* -- Multilínea ------------------------------------------------------------ */
+
+.ui-textfield--multiline .ui-textfield__input {
+  height: auto;
+  padding: var(--ui-space-2) var(--field-pad);
+  resize: vertical;
+}
+
+/* -- Tamaños --------------------------------------------------------------- */
+
+.ui-textfield--sm {
+  --field-h: var(--ui-control-h-sm);
+  --field-pad: var(--ui-control-pad-sm);
+  --field-font: var(--ui-control-font-sm);
+  --field-radius: var(--ui-control-radius-sm);
+}
+.ui-textfield--md {
+  --field-h: var(--ui-control-h-md);
+  --field-pad: var(--ui-control-pad-md);
+  --field-font: var(--ui-control-font-md);
+  --field-radius: var(--ui-control-radius-md);
+}
+.ui-textfield--lg {
+  --field-h: var(--ui-control-h-lg);
+  --field-pad: var(--ui-control-pad-lg);
+  --field-font: var(--ui-control-font-lg);
+  --field-radius: var(--ui-control-radius-lg);
+}
+
+/* -- Estados --------------------------------------------------------------- */
+
+.ui-textfield.is-disabled { opacity: var(--ui-disabled-opacity); }
+.ui-textfield.is-disabled .ui-textfield__input { cursor: not-allowed; }
