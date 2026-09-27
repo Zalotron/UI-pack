@@ -243,6 +243,23 @@ export class Spinner extends UIComponent {
     }, { passive: false });
 
     // --- teclado -----------------------------------------------------------
+
+    /* ⛔ LLEGAR CON EL TABULADOR ES LLEGAR A ESCRIBIR. El campo nace `readonly`
+       —lo que hace que arrastrarlo no seleccione texto— y solo un click limpio
+       lo abria: con el tabulador quedaba enfocado, con el numero seleccionado y
+       sordo. Uno tipea y no pasa nada, sin un solo indicio de por que: la unica
+       salida era ir a clickearlo, que es justo lo que el tabulador viene a
+       evitar cuando se cargan dos campos seguidos —la X y la Y de un vector—.
+
+       ⚠ EL PUNTERO NO ENTRA POR ACA. El `pointerdown` del arrastre hace
+       `preventDefault()`, asi que apretar el campo NO le da el foco: el unico
+       foco que llega sin editar es el del teclado. Y el que `_startEditing`
+       pide para si mismo no vuelve a entrar, porque ya marco `_editing`. */
+    this.listen(input, 'focus', () => {
+      if (this._editing) return;
+      this._startEditing();
+    });
+
     this.listen(input, 'keydown', (event) => {
       if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
         event.preventDefault();
@@ -251,15 +268,39 @@ export class Spinner extends UIComponent {
         return;
       }
       if (!this._editing) return;
+
+      /* ⛔ ENTER NO CONFIRMA: ES UN ATAJO. Lo que aplica el valor es SALIR del
+         campo —el tabulador, un click afuera—, asi que el flujo de carga es
+         numero, TAB, numero, sin tocar nada mas. Enter solo adelanta eso.
+
+         ⚠ Y DESPUES DEL ATAJO EL FOCO SIGUE ACA. Si saliera de edicion, el
+         campo volveria a `readonly` con el cursor adentro: uno tipea y no pasa
+         nada, que es el mismo agujero que tapa el `focus` de mas arriba, nada
+         mas que alcanzado por otro lado. Por eso vuelve a abrir, con el numero
+         seleccionado — igual que al llegar.
+
+         Escape es lo mismo al reves: descarta lo tipeado y reabre con el valor
+         guardado. Descartar no es irse. */
+      const seguirEditando = () => {
+        if (document.activeElement === input) this._startEditing();
+      };
+
       if (event.key === 'Enter') {
         event.preventDefault();
         this._stopEditing(true);
+        seguirEditando();
       } else if (event.key === 'Escape') {
         event.preventDefault();
         this._stopEditing(false);
+        seguirEditando();
       }
     });
 
+    /* ⛔ ESTE ES EL CAMINO QUE APLICA EL VALOR, no el Enter. Salir del campo
+       —por el tabulador o clickeando en cualquier otro lado— lo confirma, que
+       es lo que permite cargar una fila de campos de un tiron. Un spinner que
+       pide una tecla para cada valor obliga a alternar entre el numero y el
+       Enter, y a la tercera vez uno se olvida y pierde lo que escribio. */
     this.listen(input, 'blur', () => {
       if (this._editing) this._stopEditing(true);
     });
