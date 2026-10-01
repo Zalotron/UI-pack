@@ -219,6 +219,11 @@
   --ui-tile-w:     92px;
   --ui-tile-w-lg: 116px;
 
+  /* Cuanto se corre una ficha por cada nivel del arbol.
+     ⚠ TIENE QUE SER EL MISMO numero que recibe `sortableTree`: con dos, la raya
+     que dice donde va a caer promete un nivel y la fila aparece en otro. */
+  --ui-tile-indent: 14px;
+
   /* Cuanto se despega lo que se esta arrastrando. Lo usan la ficha y el motor
      de reordenamiento; ver base.css. */
   --ui-drag-opacity: 0.5;

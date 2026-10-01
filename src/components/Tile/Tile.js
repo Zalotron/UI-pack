@@ -53,6 +53,21 @@ export class Tile extends UIComponent {
     /** 'sm' | 'md' | 'lg' */
     size: 'md',
 
+    /**
+     * A que nivel cuelga, en un arbol. 0 es la raiz.
+     *
+     * ⛔ ES UNA OPCION Y NO UN MARGEN PUESTO A MANO porque la sangria TIENE QUE
+     * COINCIDIR con la que usa `sortableTree` para dibujar la raya que dice
+     * donde va a caer una fila. Con dos numeros sueltos —uno en el margen y
+     * otro en el motor— la raya promete un nivel y la fila aparece en otro, y
+     * el sintoma no se parece a la causa.
+     *
+     * Los dos salen del mismo lado: aca de `--ui-tile-indent` y alla del
+     * `indent` que recibe el motor. Si alguna vez hay que cambiarla, se cambian
+     * las dos.
+     */
+    depth: 0,
+
     /** Marca la ficha como elegida. */
     selected: false,
     disabled: false,
@@ -151,6 +166,15 @@ export class Tile extends UIComponent {
       'aria-disabled': o.disabled ? 'true' : undefined,
       dataset: o.dataset || undefined,
     }, parts);
+
+    /* La sangria va en linea porque es un dato de ESTA ficha —en que nivel
+       cuelga—, no una forma de pintarla: dos fichas del mismo pack pueden estar
+       a profundidades distintas. El atributo marca que la regla aplica; sin el,
+       una ficha suelta pagaria un `calc()` por nada. */
+    if (Number(o.depth) > 0) {
+      node.dataset.depth = String(o.depth);
+      node.style.setProperty('--tile-depth', String(o.depth));
+    }
 
     if (!o.disabled) {
       this.listen(node, 'click', (event) => this._activate(event));

@@ -1,36 +1,30 @@
-import { Container } from '../../src/index.js';
+import { Container, Tile } from '../../src/index.js';
 
-/* ⛔ UNA FILA NO ES UNA CAJA: es `variant: "list"`, el ghost que responde al
-   mouse. Con filas que son paneles, cada una trae su borde y su superficie —
-   veinte objetos de una escena se ven como veinte cajas apiladas, el ojo cuenta
-   bordes en vez de leer nombres, y el aire entre ellas hace que una lista de
-   veinte no entre en la pantalla.
+/* ⛔ UNA FILA CON NOMBRE ES UN `Tile`, NO UN CONTENEDOR. Se ve igual que un
+   `Container` con `variant: "list"` —las dos cosas son un ghost que responde al
+   mouse— pero una ficha SABE cuál de sus partes es el nombre, y eso es lo único
+   que permite renombrarla en el lugar. El contenedor lleva contenido cualquiera:
+   no tiene cómo saber qué reemplazar por un campo.
 
-   ⚠ Y ES BAJA. El relleno sale de la escala de ESPACIO y no de la de relleno de
-   contenedor: la más chica de esa escala arranca en 10px por lado, que es el
-   aire de una caja con contenido adentro, no el de un renglón de una lista.
-   Una lista se mide en cuántas filas ves de una vez.
-
-   Lo único propio de cada fila es su identidad; el `draggable` se lo pone el
-   contenedor de afuera. */
-const fila = (item, sangria = 0) =>
-  new Container({
-    variant: 'list', align: 'start', fullWidth: true, padding: 'none',
-    paddingBlock: 'var(--ui-space-1)',
-    paddingInline: 'var(--ui-space-2)',
-    content: item.label,
+   El `variant: "list"` sigue siendo el correcto para una fila que NO es un
+   nombre —dos controles, una ficha y su tacho al lado—. */
+const fila = (item, nivel = 0) =>
+  new Tile({
+    label: item.label,
+    layout: 'row',
+    size: 'sm',
+    depth: nivel,
+    editableLabel: true,
     dataset: { sortId: item.id },
-    ...(sangria ? { marginInline: `${sangria}px 0` } : {}),
   });
 
 /* ⛔ LA LISTA VIVE ADENTRO DE UNA CAJA, Y LA CAJA ES LA QUE SE VE. Las filas no
-   se dibujan —ese es el punto del variant— así que sin un contorno alrededor no
-   hay nada que diga dónde empieza y dónde termina la lista: cuatro nombres
-   sueltos sobre el fondo de la página no se leen como una lista, se leen como
-   cuatro textos.
+   se dibujan —ese es el punto— así que sin un contorno alrededor no hay nada que
+   diga dónde empieza y dónde termina: cuatro nombres sueltos sobre el fondo se
+   leen como cuatro textos, no como una lista.
 
-   Sin relleno: una fila de lista va de borde a borde, que es lo que hace que el
-   resaltado se lea como "este renglón" y no como "esta pastilla". */
+   Sin relleno: una fila va de borde a borde, que es lo que hace que el resaltado
+   se lea como "este renglón" y no como "esta pastilla". */
 const caja = (lista) =>
   new Container({
     variant: 'solid', padding: 'none', layout: 'stack', gap: 'none',
@@ -57,9 +51,12 @@ export default {
       /* Reordenar es una CAPACIDAD del contenedor, no otro componente: la misma
          pila con una opción más. El eje sale del `layout`.
 
+         Las filas además se renombran: doble click en el nombre, o la tecla de
+         renombrar con la fila enfocada. Ver src/keys.js.
+
          Los dos van al lado: son el mismo gesto con una pregunta de diferencia,
          y apilados se leen como dos cosas distintas. */
-      title: 'Reordenable · plano y árbol',
+      title: 'Reordenable y renombrable · plano y árbol',
       render: () => {
         // -- Plano: la única pregunta es EN QUÉ LUGAR ------------------------
         let items = [
@@ -98,7 +95,7 @@ export default {
           for (const i of nodos) if (dentro.has(i.parent)) dentro.add(i.id);
           return nodos.filter((i) => dentro.has(i.id));
         };
-        const filasArbol = () => nodos.map((i) => fila(i, nivel(i.id) * 14));
+        const filasArbol = () => nodos.map((i) => fila(i, nivel(i.id)));
 
         const arbol = new Container({
           layout: 'stack', gap: 'none', variant: 'ghost', padding: 'none',

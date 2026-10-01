@@ -38,6 +38,9 @@ export default {
               layout: 'stack',
               draggable: true,
               dragValue: c.id,
+              /* El panel de contenido se renombra: lo que hay adentro es del
+                 proyecto, y el nombre es del archivo y no de su clase. */
+              editableLabel: true,
               onActivate: () => {
                 // Elegir no re-renderiza: se mueve la marca y nada más.
                 if (elegida) fichas.get(elegida).setSelected(false);
@@ -55,18 +58,18 @@ export default {
     {
       /* La misma ficha en fila: ahí es el renglón de una lista.
 
-         Y RENOMBRABLE: doble click sobre el NOMBRE, o la tecla de renombrar con
-         la fila enfocada —F2 de fábrica; cuál es lo decide src/keys.js—. Es un
-         interruptor por ficha porque no siempre corresponde: estos archivos se
-         renombran, el bloqueado no. */
-      title: 'En fila, renombrable',
+         Acá el renombrado va APAGADO a propósito: es un interruptor, no una
+         propiedad del componente. Una ficha de catálogo de cosas que se traen al
+         lienzo no se renombra —el nombre es de la clase, no de la ficha—. Para
+         verlo prendido, la grilla de arriba y las dos listas del Container. */
+      title: 'En fila',
       render: () =>
         new Container({
           variant: 'solid', layout: 'stack', gap: 'none', padding: 'none',
           fullWidth: true, items: 'stretch',
           content: [
-            new Tile({ label: 'escena.json', description: '2,4 kB', icon: 'file', editableLabel: true }),
-            new Tile({ label: 'material.css', description: '8,1 kB', icon: 'file', editableLabel: true, selected: true }),
+            new Tile({ label: 'escena.json', description: '2,4 kB', icon: 'file' }),
+            new Tile({ label: 'material.css', description: '8,1 kB', icon: 'file', selected: true }),
             new Tile({ label: 'Bloqueado', description: 'Sin permisos', icon: 'lock', disabled: true }),
           ],
         }),

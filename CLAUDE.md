@@ -175,6 +175,12 @@ como parámetro de contenedor"*.
   ⛔ Y **el doble click es en el NOMBRE, no en la pieza**: en un explorador el
   doble click sobre la fila ABRE y el del nombre RENOMBRA.
 
+  ⚠ **Una fila CON NOMBRE es un `Tile`, no un `Container`.** Se ven igual —las dos
+  son un ghost que responde al mouse— pero una ficha SABE cuál de sus partes es
+  el nombre, y eso es lo único que permite renombrarla en el lugar. El
+  `variant: list` del contenedor es para una fila que NO es un nombre: dos
+  controles, una ficha y su tacho al lado.
+
 - **⛔ UNA CAPACIDAD NO ES UN COMPONENTE.** Si algo que una pieza puede HACER
   no cambia lo que esa pieza ES, va como parámetro suyo y no como una clase
   nueva que la envuelva. Reordenar arrastrando es el caso: una fila de

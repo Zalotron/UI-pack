@@ -165,6 +165,14 @@
   align-items: center;
 }
 
+/* -- Sangria de arbol ------------------------------------------------------ */
+/* ⚠ EL MISMO NUMERO QUE USA `sortableTree` para la raya del destino. Con dos,
+   la raya promete un nivel y la fila aparece en otro. Ver core/reorder.js. */
+
+.ui-tile[data-depth] {
+  margin-inline-start: calc(var(--tile-depth, 0) * var(--ui-tile-indent));
+}
+
 /* -- Arrastre -------------------------------------------------------------- */
 
 .ui-tile--draggable {
