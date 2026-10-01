@@ -47,6 +47,17 @@ export class Icon extends UIComponent {
     return Object.keys(ICONS);
   }
 
+  /**
+   * Si ese nombre existe en el set.
+   *
+   * Lo pide quien acepta "un icono" que puede venir como NOMBRE o como nodo ya
+   * armado —el Segmented—: sin preguntar, un nombre mal escrito se inserta como
+   * texto y aparece la palabra cruda adentro del boton.
+   */
+  static has(name) {
+    return Object.prototype.hasOwnProperty.call(ICONS, name);
+  }
+
   /** Suma un icono al set, para todas las instancias. */
   static add(name, paths) {
     ICONS[name] = Array.isArray(paths) ? paths : [paths];

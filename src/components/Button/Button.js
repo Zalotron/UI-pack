@@ -1,5 +1,6 @@
 import { UIComponent } from '../../core/UIComponent.js';
 import { el, cx } from '../../core/dom.js';
+import { Icon } from '../Icon/index.js';
 
 /**
  * Button
@@ -14,8 +15,20 @@ export class Button extends UIComponent {
   static componentName = 'button';
 
   static defaults = {
-    /** Texto del boton. */
-    label: 'Button',
+    /**
+     * Texto del boton. Sin texto no se dibuja ninguno.
+     *
+     * ⛔ NO TIENE DEFAULT, Y NO PUEDE TENERLO. Decia 'Button', y eso rompia el
+     * caso mas comun que hay despues del boton con texto: el boton de SOLO
+     * ICONO. `new Button({ icon: 'save' })` salia con un disquete y la palabra
+     * "Button" al lado — y peor: como `label` tenia valor, el componente entendia
+     * que NO era solo icono y ni siquiera le daba la caja cuadrada.
+     *
+     * Un valor de fabrica que es texto visible no es un default: es contenido
+     * inventado. Lo que un componente puede dar por sentado es una medida o un
+     * color, no una palabra que el usuario va a leer en la pantalla.
+     */
+    label: null,
     /** 'primary' | 'secondary' | 'ghost' | 'danger' */
     variant: 'primary',
     /** 'sm' | 'md' | 'lg' */
@@ -84,6 +97,14 @@ export class Button extends UIComponent {
     const o = this.options;
     const isLink = Boolean(o.href);
     const iconOnly = Boolean(o.icon) && !o.label;
+
+    /* ⚠ SIN ROTULO Y SIN NOMBRE ACCESIBLE, EL BOTON NO EXISTE PARA QUIEN NO VE
+       EL DIBUJO: un lector de pantalla anuncia "boton" y nada mas. Antes el
+       default 'Button' lo tapaba —mal, pero lo tapaba—; sin el, el agujero
+       queda a la vista, asi que hay que avisarlo donde se puede arreglar. */
+    if (iconOnly && !o.ariaLabel) {
+      console.warn('Button: solo icono y sin ariaLabel. Para un lector de pantalla es un boton sin nombre.');
+    }
     const inactive = o.disabled || o.loading;
 
     const node = el(isLink ? 'a' : 'button', {
@@ -155,6 +176,21 @@ export class Button extends UIComponent {
       return wrap;
     }
     const value = String(icon).trim();
+
+    /* ⛔ UN NOMBRE DEL SET ES UN ICONO, NO UNA PALABRA. `icon: 'save'` dibujaba
+       la palabra "save" adentro del boton: la cadena se tomaba siempre como
+       texto literal. Y es el caso mas comun que hay, ademas de ser como lo
+       aceptan `Tabs` y `Segmented` — tres componentes que reciben "un icono" y
+       cada uno entendiendo otra cosa es la clase de inconsistencia que uno
+       descubre de a una, en el lugar de uso.
+
+       Se pregunta ANTES de caer a texto, asi que un emoji o una palabra suelta
+       siguen andando: ninguno es un nombre del set. */
+    if (Icon.has(value)) {
+      const dibujo = this.adopt(new Icon({ name: value, size: 'sm' }));
+      return this._renderIcon(dibujo.element);
+    }
+
     const key = value.startsWith('<') ? 'html' : 'text';
     return el('span', { class: 'ui-btn__icon', 'aria-hidden': 'true', [key]: value });
   }
