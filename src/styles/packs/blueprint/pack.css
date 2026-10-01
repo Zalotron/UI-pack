@@ -30,7 +30,9 @@
 @import url("./components/RadioGroup.css");
 @import url("./components/TextField.css");
 @import url("./components/Window.css");
+@import url("./components/Segmented.css");
 @import url("./components/Tabs.css");
+@import url("./components/Tile.css");
 @import url("./components/Scroll.css");
 @import url("./components/Button.css");
 @import url("./components/Progress.css");

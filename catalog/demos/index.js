@@ -7,6 +7,8 @@ import container from './Container.demo.js';
 import controls from './Controls.demo.js';
 import windowDemo from './Window.demo.js';
 import tabs from './Tabs.demo.js';
+import segmented from './Segmented.demo.js';
+import tile from './Tile.demo.js';
 import progress from './Progress.demo.js';
 import icon from './Icon.demo.js';
 
@@ -18,6 +20,8 @@ export const demos = [
   controls,
   progress,
   icon,
+  segmented,
+  tile,
   tabs,
   windowDemo,
 ];

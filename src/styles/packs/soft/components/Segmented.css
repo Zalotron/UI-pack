@@ -1,0 +1,62 @@
+/* --------------------------------------------- Segmented — PIEL del pack SOFT */
+/* Interfaz: --segmented-bg | --segmented-border | --segmented-divider
+             --segmented-item-bg-hover | --segmented-item-fg
+             --segmented-active-bg | --segmented-active-fg
+             --segmented-active-border | --segmented-active-shadow           */
+
+/* ⛔ ESTE CONTROL ES EL CASO IDEAL DEL PACK, y por eso no lleva ni una línea de
+   color: un HUECO con una pieza LEVANTADA adentro. La caja se hunde en la
+   lámina y la opción elegida emerge de ella. No hace falta nada más —ni borde,
+   ni divisiones, ni relleno distinto— porque el relieve ya dice las dos cosas
+   que hay que decir: dónde termina el grupo y cuál está elegida.
+
+   Es la misma gramática que usan el Toggle y las pestañas de este pack: lo
+   elegido es lo que SOBRESALE. */
+
+.ui-segmented {
+  --segmented-bg: var(--ui-bg);
+  --segmented-border: transparent;
+  --segmented-pad: var(--ui-space-1);
+
+  --segmented-item-fg: var(--ui-text-muted);
+  --segmented-item-bg-hover: transparent;
+
+  --segmented-active-bg: var(--ui-bg);
+  --segmented-active-fg: var(--ui-accent-text);
+  --segmented-active-border: transparent;
+  --segmented-active-shadow: var(--ui-soft-out-sm);
+
+  /* Nunca: una línea dibujada encima de un relieve es otro lenguaje. */
+  --segmented-divider: transparent;
+}
+
+/* ⛔ EL HUECO SE DECLARA EN LA CAJA Y NO EN UNA VARIANTE, porque el hueco es el
+   grupo. Va con `box-shadow` directo —y no por la interfaz— porque la interfaz
+   del componente tiene UNA sombra para el activo, y acá hacen falta las dos:
+   la de adentro para la caja y la de afuera para la pieza. */
+.ui-segmented--boxed {
+  box-shadow: var(--ui-soft-in-sm);
+}
+
+/* ⛔ Y CSS NO INTERPOLA ENTRE UNA SOMBRA `inset` Y UNA QUE NO LO ES: si la
+   lista cambia de forma, SALTA. Por eso la pieza en reposo declara la misma
+   sombra apagada con `0 0 0`, y al activarse solo cambian los números. */
+.ui-segmented__item {
+  box-shadow: 0 0 0 0 transparent, 0 0 0 0 transparent;
+}
+
+/* Al pasar por encima de una que no está elegida, apenas se insinúa el hueco:
+   es lo que hace la fila de pestañas de este pack. */
+.ui-segmented__item:hover:not(.is-disabled):not(.is-active) {
+  box-shadow: var(--ui-soft-in-sm);
+}
+
+.ui-segmented--compact {
+  --segmented-pad: var(--ui-space-1);
+}
+
+/* Sin caja no hay hueco del que salir: la pieza elegida se levanta sobre lo
+   que haya debajo, que es lo único que queda para decirlo. */
+.ui-segmented--bare {
+  box-shadow: none;
+}

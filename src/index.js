@@ -55,6 +55,8 @@ export { Checkbox } from './components/Checkbox/index.js';
 export { RadioGroup } from './components/RadioGroup/index.js';
 export { TextField } from './components/TextField/index.js';
 export { Window } from './components/Window/index.js';
+export { Segmented } from './components/Segmented/index.js';
+export { Tile } from './components/Tile/index.js';
 export { Tabs } from './components/Tabs/index.js';
 export { Scroll } from './components/Scroll/index.js';
 export { Button } from './components/Button/index.js';

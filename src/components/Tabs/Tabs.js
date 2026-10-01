@@ -1,5 +1,7 @@
 import { UIComponent } from '../../core/UIComponent.js';
 import { el, cx, append } from '../../core/dom.js';
+import { sortable } from '../../core/reorder.js';
+import { Icon } from '../Icon/index.js';
 
 /**
  * Tabs — pestañas.
@@ -19,19 +21,21 @@ import { el, cx, append } from '../../core/dom.js';
 
 const SIZES = ['sm', 'md', 'lg'];
 
-/** Acepta { id, label, content, disabled }. `id` cae al indice si falta. */
+/** Acepta { id, label, icon, content, disabled, closable }. `id` cae al indice. */
 const normalize = (tab, index) => ({
   id: tab.id ?? String(index),
   label: tab.label ?? String(tab.id ?? index),
+  icon: tab.icon ?? null,
   content: tab.content ?? null,
   disabled: !!tab.disabled,
+  closable: !!tab.closable,
 });
 
 export class Tabs extends UIComponent {
   static componentName = 'tabs';
 
   static defaults = {
-    /** [{ id, label, content, disabled? }] */
+    /** [{ id, label, icon?, content, disabled?, closable? }] */
     tabs: [],
     /** Pestaña activa. null = la primera que no este deshabilitada. */
     value: null,
@@ -40,6 +44,61 @@ export class Tabs extends UIComponent {
     size: 'md',
     /** Estira las pestañas para ocupar todo el ancho. */
     stretch: false,
+
+    /**
+     * Se pidio cerrar una pestaña: `(id) => ...`.
+     *
+     * ⛔ CERRAR NO ES ELEGIR. La cruz vive ADENTRO del boton de la pestaña —es
+     * donde uno la busca— pero apretarla no tiene que cambiar de pestaña:
+     * cerrar la tercera estando en la primera dejaria al usuario parado en un
+     * lugar al que no pidio ir. Por eso el gesto se corta ahi y no sube.
+     *
+     * Quien lo recibe decide: sacar la pestaña de la lista, preguntar antes, o
+     * negarse. Este componente no saca nada por su cuenta.
+     */
+    onClose: null,
+
+    /**
+     * Las pestañas se pueden arrastrar para cambiarlas de orden.
+     *
+     * ⛔ ES UNA CAPACIDAD, NO UN COMPONENTE APARTE. Una fila de pestañas que se
+     * reordena sigue siendo una fila de pestañas: no hay nada que envolver ni
+     * ningun "TabsReordenables" que mantener en paralelo. El gesto lo pone
+     * `core/reorder.js`, que es el mismo motor que usa una lista vertical.
+     *
+     * Quien las tiene decide si tiene sentido: un editor va a querer recordar
+     * el orden, y una lista armada al vuelo capaz que no.
+     */
+    reorderable: false,
+
+    /**
+     * Se solto una pestaña en otro lugar: `(ids) => ...` con el orden nuevo.
+     *
+     * ⛔ ESTE COMPONENTE NO REORDENA NADA. Igual que con `onClose`: avisa el
+     * orden que se pidio y quien recibe decide. Reordenandolas por su cuenta,
+     * lo que se ve y lo que el dueño tiene guardado dejan de coincidir al
+     * primer re-render.
+     */
+    onReorder: null,
+
+    /**
+     * La fila de pestañas se dibuja AFUERA del componente.
+     *
+     * El componente queda con los paneles nada mas, y la fila se monta donde
+     * quiera quien lo usa: `tabs.listElement`. Es para una ventana cuya BARRA
+     * DE TITULO son las pestañas, donde el titulo y el icono no dicen nada que
+     * las pestañas no digan mejor.
+     *
+     * ⛔ LA FILA SIGUE SIENDO DE ESTE COMPONENTE. Se mueve de lugar, no se
+     * entrega: las escuchas, el teclado, la rayita y el reordenamiento siguen
+     * siendo suyos. Una copia dibujada por afuera seria una segunda verdad
+     * sobre cual esta activa.
+     *
+     * ⛔ Y EL NODO QUE SE ENTREGA ES ESTABLE. Adentro se reemplaza la fila en
+     * cada dibujado; si lo que se entregara fuera la fila misma, quien la monto
+     * se quedaria con la vieja —desenganchada— al primer cambio de pestañas.
+     */
+    detachedList: false,
 
     onChange: null,
     ariaLabel: null,
@@ -58,9 +117,29 @@ export class Tabs extends UIComponent {
     return this.options.tabs.map(normalize);
   }
 
+  /**
+   * Donde se monta la fila de pestañas cuando vive afuera. Ver `detachedList`.
+   *
+   * Lleva las clases del componente porque las variables de la piel —el alto,
+   * la tipografia, los colores— se declaran en la raiz: sin ellas, la fila
+   * mudada se dibuja con los valores de fabrica del navegador.
+   */
+  get listElement() {
+    this.listHost ??= el('div', {
+      class: cx(
+        'ui-tabs',
+        'ui-tabs--detached-list',
+        SIZES.includes(this.options.size) && `ui-tabs--${this.options.size}`,
+      ),
+    });
+    return this.listHost;
+  }
+
   render() {
     const o = this.options;
     const items = this.items;
+    this._releaseReorder?.();
+    this._releaseReorder = null;
     this.buttons = [];
     this.panels = [];
 
@@ -76,9 +155,39 @@ export class Tabs extends UIComponent {
         // navega con las flechas. Es el patron de tablist.
         tabindex: tab.id === this.value ? '0' : '-1',
         disabled: tab.disabled,
+        draggable: o.reorderable && !tab.disabled ? 'true' : undefined,
+        /* La identidad que lee el motor de reordenamiento. Es el mismo atributo
+           para una fila de pestañas que para una lista vertical: el motor no
+           sabe —ni tiene por que saber— que esta moviendo. */
+        'data-sort-id': tab.id,
         dataset: { index: String(index) },
-        text: tab.label,
-      });
+      }, [
+        tab.icon && Icon.has(tab.icon)
+          ? this.adopt(new Icon({ name: tab.icon, size: 'sm' })).element
+          : null,
+        el('span', { class: 'ui-tabs__label', text: tab.label }),
+      ]);
+
+      if (tab.closable) {
+        const cruz = el('span', {
+          class: 'ui-tabs__close',
+          /* ⛔ NO ES UN <button>: estaria ADENTRO del boton de la pestaña, y un
+             boton adentro de otro no es marcado valido ni navegable. El
+             tabulador llega a la pestaña y el teclado la cierra con Supr; ver
+             el `keydown` de `_bind`. */
+          role: 'none',
+          'aria-hidden': 'true',
+          text: '×',
+        });
+        this.listen(cruz, 'pointerdown', (event) => {
+          // Antes del click: asi no se elige la pestaña que se esta cerrando.
+          event.stopPropagation();
+          event.preventDefault();
+          this.options.onClose?.(tab.id, this);
+        });
+        button.append(cruz);
+      }
+
       this.buttons.push(button);
       return button;
     });
@@ -92,10 +201,10 @@ export class Tabs extends UIComponent {
        en que se sale del contenido le agranda el ancho scrolleable al
        contenedor. La barra horizontal aparecia y desaparecia de golpe.
 
-       El carril recorta en el eje X, asi que lo que la marca se pase no llega
-       al scroller — pero sigue viendose, porque `overflow-clip-margin` le deja
-       pintar afuera. Es la unica combinacion que separa las dos cosas: que se
-       vea el rebote y que no cuente como contenido. */
+       El carril recorta en los dos ejes, asi que lo que la marca se pase no
+       llega al scroller — pero sigue viendose, porque `overflow-clip-margin` le
+       deja pintar afuera. Es la unica combinacion que separa las dos cosas: que
+       se vea el rebote y que no cuente como contenido. */
     /* ⚠ `role: none` NO es decorativo: un `tablist` tiene que tener las
        pestañas como hijas DIRECTAS en el arbol de accesibilidad. Un div en el
        medio las volveria nietas y el lector de pantalla dejaria de anunciar
@@ -112,6 +221,10 @@ export class Tabs extends UIComponent {
       'aria-label': o.ariaLabel || undefined,
     }, [rail]);
     this.list = list;
+
+    /* La fila se va a vivir afuera: se la pone adentro del nodo estable que
+       quien usa el componente monto una sola vez. Ver `detachedList`. */
+    if (o.detachedList) this.listElement.replaceChildren(list);
 
     const panels = items.map((tab, index) => {
       const panel = el('div', {
@@ -131,12 +244,20 @@ export class Tabs extends UIComponent {
         'ui-tabs',
         SIZES.includes(o.size) && `ui-tabs--${o.size}`,
         o.stretch && 'ui-tabs--stretch',
+        /* La raiz se queda SIN su fila: lo dice, porque hay aire que solo tiene
+           sentido cuando la fila esta justo arriba. Va aparte del modificador
+           de la fila mudada: son dos nodos distintos y cada uno necesita lo
+           suyo. */
+        o.detachedList && 'ui-tabs--detached',
         o.className,
       ),
       dataset: o.dataset || undefined,
-    }, [list, el('div', { class: 'ui-tabs__panels' }, panels)]);
+    }, o.detachedList
+      ? [el('div', { class: 'ui-tabs__panels' }, panels)]
+      : [list, el('div', { class: 'ui-tabs__panels' }, panels)]);
 
     this._bind(list);
+    if (o.reorderable) this._bindReorder(rail, list);
     this._watchSize();
     return node;
   }
@@ -174,6 +295,10 @@ export class Tabs extends UIComponent {
 
   onDestroy() {
     this._unwatchSize();
+    this._releaseReorder?.();
+    this._releaseReorder = null;
+    this.listHost?.remove();
+    this.listHost = null;
   }
 
   _track(content) {
@@ -184,6 +309,31 @@ export class Tabs extends UIComponent {
         : item);
   }
 
+  /**
+   * Enganchar el motor de reordenamiento al carril.
+   *
+   * ⛔ LA CUENTA NO ES DE ACA. Reordenar una fila horizontal es exactamente la
+   * misma geometria que reordenar una columna, girada: vive en `core/reorder.js`
+   * y entra por `axis`. Tenerla escrita aca otra vez —que es como empezo en el
+   * proyecto donde nacio esto— garantiza que un dia se arregle de un lado y del
+   * otro no, sin que nadie se entere porque las dos "andan".
+   *
+   * ⚠ LA RAYITA SE APAGA MIENTRAS SE ARRASTRA. Vive en el carril pero no es una
+   * pestaña, asi que el motor no la mueve: quedaria marcando el lugar donde la
+   * activa YA NO esta. Y mientras uno reordena, cual esta activa no es la
+   * pregunta.
+   */
+  _bindReorder(rail, list) {
+    this._releaseReorder = sortable({
+      list: rail,
+      axis: 'x',
+      onReorder: (ids) => this.options.onReorder?.(ids, this),
+    });
+    this.listen(rail, 'dragstart', () => list.classList.add('is-reordering'));
+    this.listen(rail, 'dragend', () => list.classList.remove('is-reordering'));
+    this.listen(rail, 'drop', () => list.classList.remove('is-reordering'));
+  }
+
   _bind(list) {
     this.listen(list, 'click', (event) => {
       const button = event.target.closest('.ui-tabs__tab');
@@ -192,6 +342,19 @@ export class Tabs extends UIComponent {
 
     // Recorrido con flechas dentro de la lista: el patron de tablist.
     this.listen(list, 'keydown', (event) => {
+      /* ⛔ LA CRUZ NO SE PUEDE TABULAR —vive adentro del boton de la pestaña, y
+         un boton adentro de otro no es navegable—, asi que cerrar con el
+         teclado tiene que estar en algun lado: es Supr sobre la pestaña, como
+         en cualquier lista. */
+      if (event.key === 'Delete') {
+        const actual = this.items.find((tab) => tab.id === this.value);
+        if (actual?.closable) {
+          event.preventDefault();
+          this.options.onClose?.(actual.id, this);
+        }
+        return;
+      }
+
       const moves = { ArrowRight: 1, ArrowLeft: -1, Home: 'first', End: 'last' };
       const move = moves[event.key];
       if (move === undefined) return;

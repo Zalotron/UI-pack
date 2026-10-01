@@ -232,3 +232,33 @@
   from { opacity: 1; }
   to   { opacity: 0; }
 }
+
+/* -- El hueco de la barra -------------------------------------------------- */
+/* ⛔ NO ARRASTRA LA VENTANA. Lo que vive acá son controles —una fila de
+   pestañas, típicamente— y un control que además mueve la ventana al apretarlo
+   no es un control. Es el mismo motivo por el que los botones de la derecha lo
+   declaran, y hay que decirlo: la barra entera pide `app-region: drag` y el
+   sistema operativo resuelve esa región por geometría, antes que la página. */
+
+.ui-window__leading {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  -webkit-app-region: no-drag;
+  app-region: no-drag;
+}
+
+/* ⛔ OCUPANDO LA BARRA, SE VA EL RELLENO Y EL CENTRADO.
+   El relleno de la izquierda y el aire vertical son de una barra CON título:
+   sobre algo que llena la barra de punta a punta dejan dos franjas muertas que
+   se leen como un error de dibujo. Acá el contenido ES el título. */
+
+.ui-window__bar--filled {
+  padding-inline-start: 0;
+  align-items: stretch;
+}
+
+.ui-window__bar--filled .ui-window__leading {
+  flex: 1;
+  align-items: stretch;
+}

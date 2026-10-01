@@ -1,4 +1,4 @@
-import { Container, Window, Button, config } from '../../src/index.js';
+import { Container, Window, Button, Tabs, config } from '../../src/index.js';
 import { packs } from '../../src/styles/packs/index.js';
 
 export default {
@@ -28,6 +28,46 @@ export default {
             ],
           }),
         }),
+    },
+    {
+      /* ⛔ LA BARRA DE TITULO SON LAS PESTAÑAS. La fila se dibuja AFUERA del
+         componente —`detachedList`— y se monta en el hueco de la barra; adentro
+         de la ventana quedan solo los paneles. El titulo y el icono no se
+         dibujan: cual archivo se esta mirando lo dicen las pestañas mejor que
+         cualquier rotulo.
+
+         La fila sigue siendo del Tabs: las escuchas, el teclado, la rayita y el
+         reordenamiento son suyos. Lo unico que cambia es donde se monta. */
+      title: 'La barra de título son las pestañas',
+      render: () => {
+        let hojas = [
+          { id: 'a', label: 'escena.json', icon: 'file', closable: true },
+          { id: 'b', label: 'material.css', icon: 'file', closable: true },
+          { id: 'c', label: 'notas.md', icon: 'file', closable: true },
+        ];
+        const cuerpo = (h) => new Container({
+          variant: 'ghost', align: 'start', fullWidth: true, content: h.label,
+        });
+        const refrescar = () =>
+          pestanas.update({ tabs: hojas.map((h) => ({ ...h, content: cuerpo(h) })) });
+
+        const pestanas = new Tabs({
+          tabs: hojas.map((h) => ({ ...h, content: cuerpo(h) })),
+          detachedList: true,
+          reorderable: true,
+          size: 'sm',
+          onReorder: (ids) => { hojas = ids.map((id) => hojas.find((h) => h.id === id)); refrescar(); },
+          onClose: (id) => { hojas = hojas.filter((h) => h.id !== id); refrescar(); },
+        });
+
+        return new Window({
+          leading: pestanas.listElement,
+          leadingFill: true,
+          controls: ['close'],
+          height: '180px',
+          content: pestanas,
+        });
+      },
     },
   ],
 };

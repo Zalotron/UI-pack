@@ -1,0 +1,91 @@
+/* ------------------------------------------- Segmented — PIEL del pack GRUNGE */
+/* Interfaz: --segmented-bg | --segmented-border | --segmented-divider
+             --segmented-item-bg-hover | --segmented-item-fg
+             --segmented-active-bg | --segmented-active-fg
+             --segmented-active-border | --segmented-active-shadow           */
+
+/* Una chapa gastada con cuatro casillas estampadas, y la puesta cubierta por
+   la LACA — la misma lámina que marca la opción elegida de un Select, la tira
+   de la pestaña activa y el relleno de una barra: en este pack la laca siempre
+   significa lo mismo.
+
+   ⛔ EL FONDO NO SE PINTA EN EL ELEMENTO: SE PINTA EN UNA LÁMINA. Pintado en el
+   elemento queda un rectángulo perfecto, que es lo único que este pack no puede
+   tener. La lámina va en `::before` con el canto comido por la máscara, y debajo
+   del contenido con z-index negativo.
+
+   ⚠ POR ESO LA LACA NO ENTRA POR `--segmented-active-bg`: esa variable la pinta
+   la mecánica en la caja del elemento. Acá queda transparente y pinta la capa. */
+
+.ui-segmented {
+  --segmented-bg: var(--ui-bg-subtle);
+  --segmented-border: var(--ui-border);
+  --segmented-pad: 0px;
+
+  --segmented-item-fg: var(--ui-text-subtle);
+  --segmented-item-bg-hover: transparent;
+
+  --segmented-active-bg: transparent;
+  --segmented-active-fg: var(--ui-accent-text);
+  --segmented-active-border: transparent;
+  --segmented-active-shadow: none;
+
+  --segmented-divider: var(--ui-line);
+}
+
+/* Rótulos de etiqueta: versalitas muy separadas, como las pestañas. */
+.ui-segmented__item {
+  position: relative;
+  isolation: isolate;
+
+  font-weight: var(--ui-weight-semibold);
+  font-size: var(--ui-text-xs);
+  letter-spacing: var(--ui-tracking-wide);
+  text-transform: uppercase;
+}
+
+.ui-segmented__item.is-active {
+  font-weight: var(--ui-weight-bold);
+}
+
+/* LA LÁMINA. Apagada en reposo, chapa al pasar el mouse, laca cuando está
+   puesta — tres estados de la misma capa, así nada salta de forma. */
+.ui-segmented__item::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+
+  background-color: var(--ui-surface-hover);
+  opacity: 0;
+
+  /* EL CANTO COMIDO. Con longhands a propósito — ver tokens.css. */
+  -webkit-mask-image: var(--ui-gr-tear-image);
+          mask-image: var(--ui-gr-tear-image);
+  -webkit-mask-position: var(--ui-gr-tear-position);
+          mask-position: var(--ui-gr-tear-position);
+  -webkit-mask-size: var(--ui-gr-tear-size);
+          mask-size: var(--ui-gr-tear-size);
+  -webkit-mask-repeat: var(--ui-gr-tear-repeat);
+          mask-repeat: var(--ui-gr-tear-repeat);
+
+  transition: opacity var(--ui-duration-fast) var(--ui-ease);
+}
+
+.ui-segmented__item:hover:not(.is-disabled):not(.is-active)::before {
+  opacity: 1;
+}
+
+.ui-segmented__item.is-active::before {
+  background-color: transparent;
+  background-image: var(--ui-gr-foil);
+  opacity: 1;
+}
+
+.ui-segmented--bare {
+  --segmented-bg: transparent;
+  --segmented-border: transparent;
+  --segmented-divider: transparent;
+}

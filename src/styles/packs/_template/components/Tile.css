@@ -1,0 +1,27 @@
+/* ------------------------------------------------- Tile — PIEL del pack _TEMPLATE */
+/* Interfaz: --tile-bg | --tile-bg-hover | --tile-bg-selected | --tile-fg
+             --tile-fg-muted | --tile-fg-selected | --tile-border
+             --tile-border-selected | --tile-shadow | --tile-radius        */
+
+/* ⛔ UNA FICHA NO SE DIBUJA EN REPOSO. Un panel de cincuenta fichas con caja
+   propia son cincuenta bordes compitiendo con lo unico que importa del panel,
+   que es el dibujo de cada cosa. Lo que se dibuja es la que estas mirando y la
+   que elegiste.
+
+   ⛔ Y EL RESALTADO ES TINTA RELATIVA, NO UNA SUPERFICIE. Un panel de contenido
+   puede vivir sobre la pagina, adentro de un panel o adentro de una caja: un
+   token de superficie acierta en uno de los tres y en los otros queda del color
+   de lo que tiene debajo. Una capa translucida se suma a lo que haya. Es el
+   mismo recurso que usa la fila de lista del Container. */
+
+.ui-tile {
+  --tile-bg: transparent;
+  --tile-border: transparent;
+  --tile-fg: var(--ui-text);
+  --tile-fg-muted: var(--ui-text-subtle);
+
+  --tile-bg-hover: rgb(from var(--ui-text) r g b / 0.08);
+  --tile-bg-selected: rgb(from var(--ui-accent) r g b / 0.28);
+  --tile-fg-selected: var(--ui-text);
+  --tile-border-selected: transparent;
+}

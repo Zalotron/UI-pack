@@ -1,0 +1,46 @@
+/* ---------------------------------------- Segmented — PIEL del pack BLUEPRINT */
+/* Interfaz: --segmented-bg | --segmented-border | --segmented-divider
+             --segmented-item-bg-hover | --segmented-item-fg
+             --segmented-active-bg | --segmented-active-fg
+             --segmented-active-border | --segmented-active-shadow           */
+
+/* Una casilla de rótulo de un plano: marco dibujado, divisiones trazadas y el
+   valor elegido anotado en el color de la tinta de cota.
+
+   ⛔ NO SE RELLENA NADA. En un plano lo que distingue una cosa no es que esté
+   pintada: es que está TRAZADA distinto. Un bloque de color macizo adentro de
+   un dibujo de líneas se lee como una mancha, no como una elección. La activa
+   lleva la tinta del acento y el peso de la letra; lo demás es el mismo papel.
+
+   Por eso tampoco hay sombra: en un plano nada se levanta. */
+
+.ui-segmented {
+  --segmented-bg: transparent;
+  --segmented-border: var(--ui-line-soft);
+  --segmented-pad: 0px;
+
+  --segmented-item-fg: var(--ui-text-subtle);
+  --segmented-item-bg-hover: transparent;
+
+  --segmented-active-bg: var(--ui-accent-subtle);
+  --segmented-active-fg: var(--ui-accent-text);
+  --segmented-active-border: transparent;
+  --segmented-active-shadow: none;
+
+  --segmented-divider: var(--ui-line-soft);
+}
+
+/* Versalitas espaciadas, como los rótulos de las pestañas y de las cotas. */
+.ui-segmented__item {
+  text-transform: uppercase;
+  letter-spacing: var(--ui-tracking-wide);
+  font-weight: var(--ui-weight-medium);
+}
+
+.ui-segmented__item:hover:not(.is-disabled):not(.is-active) {
+  color: var(--ui-text-muted);
+}
+
+.ui-segmented--bare {
+  --segmented-divider: transparent;
+}

@@ -32,12 +32,64 @@
   --container-border-color: transparent;
 }
 
+/* ⛔ LA FILA DE UNA LISTA: UN GHOST QUE RESPONDE AL MOUSE.
+   No se dibuja la fila, se dibuja la que estas mirando. Con cajas de verdad,
+   veinte objetos de una escena se ven como veinte paneles apilados: el ojo
+   cuenta bordes en vez de leer nombres.
+
+   Por eso no tiene `.is-interactive`: una fila de lista es apuntable SIEMPRE
+   —para eso es una lista— y pedir ademas `interactive` le sumaria el gesto de
+   una tarjeta clickeable (el levante y la sombra), que sobre una fila de
+   veinte se lee como que la lista entera tiembla. */
+.ui-container--list {
+  --container-bg: transparent;
+  --container-border-color: transparent;
+}
+
+/* ⛔ EL RESALTADO ES TINTA RELATIVA, NO UNA SUPERFICIE. Era --ui-surface-hover,
+   y eso da por sentado que abajo esta el fondo de la pagina. Metida adentro de
+   una caja `solid` —que ya es --ui-surface— la fila prendida quedaba a cuatro
+   puntos de claridad de su propio fondo: el resaltado existia y no se veia.
+
+   Una capa de tinta translucida se suma a LO QUE HAYA DEBAJO, asi que la misma
+   fila se lee igual sobre la pagina, sobre un panel o adentro de una caja. Es el
+   mismo recurso que --ui-line, por el mismo motivo. */
+.ui-container--list:hover {
+  --container-bg: rgb(from var(--ui-text) r g b / 0.08);
+}
+
+/* Elegida: se queda prendida, y con el acento. Es mas fuerte que el hover
+   porque el hover es "donde esta el mouse" —que dura lo que el mouse— y esto es
+   "en que estoy parado", que dura hasta que uno cambie de idea.
+
+   Sin borde: devolverle el contorno a una fila que justamente no lo tiene la
+   vuelve a convertir en una caja, que es de lo que se la saco. */
+.ui-container--list.is-selected,
+.ui-container--list.is-selected:hover {
+  --container-bg: rgb(from var(--ui-accent) r g b / 0.28);
+  color: var(--ui-text);
+}
+
 /* `border: false` gana sobre cualquier variante. */
 .ui-container--no-border {
   --container-border-color: transparent;
 }
 
 /* -- Reacción al mouse ----------------------------------------------------- */
+
+/* ⚠ EL LEVANTE DECLARA SU PROPIA TRANSICION, y tiene que hacerlo.
+   La estructura saco `transform` de la transicion de todos los contenedores
+   —ver Container.css: movia a destiempo a cualquiera que moviera un contenedor
+   por JS—, asi que el unico que la quiere la pide. Y la pide acotada a
+   `.is-interactive`, que es de quien es el gesto: una fila de una lista que se
+   esta reordenando no tiene por que arrastrar la curva de una tarjeta. */
+.ui-container.is-interactive {
+  transition:
+    border-color var(--ui-duration-base) var(--ui-ease),
+    background var(--ui-duration-base) var(--ui-ease),
+    box-shadow var(--ui-duration-base) var(--ui-ease),
+    transform var(--ui-duration-base) var(--ui-ease);
+}
 
 .ui-container.is-interactive:hover {
   --container-border-color: var(--ui-accent-soft);

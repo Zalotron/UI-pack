@@ -1,0 +1,52 @@
+/* -------------------------------------------- Segmented — PIEL del pack CYBER */
+/* Interfaz: --segmented-bg | --segmented-border | --segmented-divider
+             --segmented-item-bg-hover | --segmented-item-fg
+             --segmented-active-bg | --segmented-active-fg
+             --segmented-active-border | --segmented-active-shadow           */
+
+/* El selector de modo de una consola: rótulos en versalitas dentro de un marco
+   duro, y el activo ENCENDIDO.
+
+   ⛔ LAS PIEZAS VAN PEGADAS Y CON DIVISIÓN, siempre: acá el relleno alrededor
+   convertiría el marco en una bandeja con botones sueltos, y lo que este pack
+   dibuja son paneles de instrumento, donde todo entra junto en el mismo chasis.
+
+   El activo lleva el acento en la LETRA y un halo detrás, no un relleno sólido:
+   un bloque saturado en medio de una barra pesa más que el dato que está
+   dando, y en este pack el acento ya es puro brillo. */
+
+.ui-segmented {
+  --segmented-bg: var(--ui-bg-subtle);
+  --segmented-border: var(--ui-border);
+  --segmented-pad: 0px;
+
+  --segmented-item-fg: var(--ui-text-subtle);
+  --segmented-item-bg-hover: var(--ui-accent-subtle);
+
+  --segmented-active-bg: var(--ui-accent-subtle);
+  --segmented-active-fg: var(--ui-accent-text);
+  --segmented-active-border: transparent;
+  --segmented-active-shadow: inset 0 0 var(--ui-glow-reach) rgb(from var(--ui-accent) r g b / 0.35);
+
+  --segmented-divider: var(--ui-border);
+}
+
+/* Rótulos de consola, como los de las pestañas. */
+.ui-segmented__item {
+  text-transform: uppercase;
+  letter-spacing: var(--ui-tracking-wide);
+  font-weight: var(--ui-weight-semibold);
+}
+
+/* ⛔ EL GLITCH VA EN LA PIEZA Y NO EN LA CAJA. La caja nunca cambia de estado:
+   una animación declarada ahí correría una sola vez, al cargar. La pieza sí
+   gana `.is-active`, así que engancha señal cada vez que cambiás de modo —el
+   mismo recurso que usa la pestaña de este pack. */
+.ui-segmented__item.is-active {
+  animation: var(--ui-glitch-anim-text);
+}
+
+.ui-segmented--bare {
+  --segmented-divider: transparent;
+  --segmented-active-shadow: none;
+}

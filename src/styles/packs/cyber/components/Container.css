@@ -99,3 +99,35 @@
 .ui-container.is-interactive:active {
   transform: translateY(0);
 }
+
+/* -- La fila de una lista --------------------------------------------------- */
+/* ⛔ UN GHOST QUE RESPONDE AL MOUSE. No se dibuja la fila: se dibuja la que
+   estas mirando. Con filas que son cajas, veinte objetos se ven como veinte
+   paneles apilados y el ojo cuenta bordes en vez de leer nombres.
+
+   ⛔ EL RESALTADO ES TINTA RELATIVA, NO UNA SUPERFICIE. Una fila de lista vive
+   sobre la pagina, adentro de un panel o adentro de una caja solida, y un token
+   de superficie solo acierta en uno de los tres: en los otros queda a dos puntos
+   de claridad de su propio fondo y el resaltado existe sin verse. Una capa
+   translucida se suma a LO QUE HAYA DEBAJO. Es el mismo recurso que --ui-line.
+
+   Lo elegido ademas ENCIENDE: en este pack el acento es brillo, no pintura.
+
+   Sin borde en ningun estado: devolverle el contorno a una fila que justamente
+   no lo tiene la vuelve a convertir en la caja de la que se la saco. */
+.ui-container--list {
+  --container-bg: transparent;
+  --container-border-color: transparent;
+}
+
+.ui-container--list:hover {
+  --container-bg: rgb(from var(--ui-text) r g b / 0.08);
+}
+
+/* Elegida: se queda prendida. Es mas fuerte que el hover porque el hover dura
+   lo que el mouse y esto dura hasta que uno cambie de idea. */
+.ui-container--list.is-selected,
+.ui-container--list.is-selected:hover {
+  --container-bg: rgb(from var(--ui-accent) r g b / 0.30);
+  color: var(--ui-text);
+}

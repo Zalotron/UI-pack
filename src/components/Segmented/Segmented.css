@@ -1,0 +1,178 @@
+/* --------------------------------------------------- Segmented — ESTRUCTURA */
+/* Mecánica del componente. Agnóstico al estilo: se comparte entre packs.
+   La estética (caja, divisiones, color del activo) vive en:
+     src/styles/packs/<pack>/components/Segmented.css                        */
+
+.ui-segmented {
+  /* Interfaz del componente. La piel del pack pisa estas variables. */
+  --segmented-bg: transparent;
+  --segmented-border: transparent;
+  --segmented-radius: var(--ui-control-radius-md);
+  --segmented-pad: 0px;
+
+  --segmented-item-bg: transparent;
+  --segmented-item-bg-hover: transparent;
+  --segmented-item-fg: var(--ui-text-muted);
+  --segmented-item-radius: var(--ui-control-radius-sm);
+
+  --segmented-active-bg: transparent;
+  --segmented-active-fg: var(--ui-text);
+  --segmented-active-border: transparent;
+  --segmented-active-shadow: none;
+
+  /* La división entre piezas. Es sombra interior y no un borde: ver abajo. */
+  --segmented-divider: transparent;
+
+  --segmented-h: var(--ui-control-h-md);
+  --segmented-pad-item: var(--ui-control-pad-md);
+  --segmented-font: var(--ui-control-font-md);
+  --segmented-gap: 0px;
+
+  display: inline-flex;
+  align-items: stretch;
+  gap: var(--segmented-gap);
+
+  padding: var(--segmented-pad);
+  border: var(--ui-border-width) solid var(--segmented-border);
+  border-radius: var(--segmented-radius);
+  background: var(--segmented-bg);
+
+  /* ⛔ MIDE LO QUE MIDEN SUS PIEZAS. Estirado al ancho del panel, un grupo de
+     dos opciones deja dos botones enormes para decir una sola cosa. Quien lo
+     quiera repartido lo pide con `fullWidth`. */
+  width: fit-content;
+  max-width: 100%;
+}
+
+/* -- Las piezas ------------------------------------------------------------ */
+
+.ui-segmented__item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ui-control-gap-md);
+  flex: none;
+
+  min-width: var(--segmented-h);
+  height: var(--segmented-h);
+  padding: 0 var(--segmented-pad-item);
+
+  border: var(--ui-border-width) solid transparent;
+  border-radius: var(--segmented-item-radius);
+  background: var(--segmented-item-bg);
+  color: var(--segmented-item-fg);
+
+  font-family: var(--ui-font-sans);
+  font-size: var(--segmented-font);
+  font-weight: var(--ui-weight-medium);
+  line-height: 1;
+  white-space: nowrap;
+
+  cursor: var(--ui-cursor-pointer, pointer);
+  transition:
+    color var(--ui-duration-fast) var(--ui-ease),
+    background var(--ui-duration-fast) var(--ui-ease),
+    border-color var(--ui-duration-fast) var(--ui-ease),
+    box-shadow var(--ui-duration-fast) var(--ui-ease);
+}
+
+.ui-segmented__item:hover:not(.is-disabled):not(.is-active) {
+  background: var(--segmented-item-bg-hover);
+  color: var(--segmented-active-fg);
+}
+
+.ui-segmented__item.is-active {
+  background: var(--segmented-active-bg);
+  border-color: var(--segmented-active-border);
+  color: var(--segmented-active-fg);
+  box-shadow: var(--segmented-active-shadow);
+}
+
+.ui-segmented__item.is-disabled {
+  opacity: var(--ui-disabled-opacity);
+  cursor: var(--ui-cursor-disabled, not-allowed);
+}
+
+.ui-segmented__item:focus-visible {
+  outline: var(--ui-focus-width) solid var(--ui-focus-ring);
+  outline-offset: calc(var(--ui-focus-width) * -1);
+  /* Por encima de sus vecinas: con las piezas pegadas, el anillo de la de al
+     lado le pasa por arriba a la mitad del de esta. */
+  z-index: 1;
+}
+
+.ui-segmented__icon {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  line-height: 0;
+}
+
+.ui-segmented__item--icon-only {
+  padding: 0;
+  /* Cuadrada: un icono no tiene lado largo, y con el relleno de una palabra
+     queda una pieza mucho mas ancha que alta al lado de las que si la tienen. */
+  width: var(--segmented-h);
+}
+
+/* -- Las divisiones -------------------------------------------------------- */
+/* ⛔ SON SOMBRA INTERIOR, SIN HUECO. Un hueco es un margen y despega las
+   piezas: el grupo deja de leerse como una sola cosa. Y un borde de un solo
+   lado le come lugar al contenido y corre el dibujo medio píxel del centro —se
+   ve en el icono, que deja de estar centrado en su propia pieza—.
+
+   No se dibuja en la primera porque quedaría una línea suelta pegada al marco. */
+
+.ui-segmented--boxed .ui-segmented__item + .ui-segmented__item {
+  box-shadow: inset var(--ui-border-width) 0 0 0 var(--segmented-divider);
+}
+
+/* La activa no lleva división de ningún lado: su fondo es el que la separa, y
+   una línea encima de él se lee como un borde a medio dibujar. */
+.ui-segmented--boxed .ui-segmented__item.is-active,
+.ui-segmented--boxed .ui-segmented__item.is-active + .ui-segmented__item {
+  box-shadow: var(--segmented-active-shadow);
+}
+
+/* -- Repartido ------------------------------------------------------------- */
+
+.ui-segmented--full {
+  display: flex;
+  width: 100%;
+}
+
+.ui-segmented--full .ui-segmented__item {
+  flex: 1;
+  min-width: 0;
+}
+
+/* -- Sin caja -------------------------------------------------------------- */
+/* Para cuando el grupo ya vive adentro de una barra: un recuadro adentro de
+   otro hace que las piezas se lean como de otra familia que los botones de al
+   lado, aunque midan lo mismo. */
+
+.ui-segmented--bare {
+  padding: 0;
+  border-color: transparent;
+  background: none;
+}
+
+/* -- Tamaños --------------------------------------------------------------- */
+
+.ui-segmented--sm {
+  --segmented-h: var(--ui-control-h-sm);
+  --segmented-pad-item: var(--ui-control-pad-sm);
+  --segmented-font: var(--ui-control-font-sm);
+  --segmented-item-radius: var(--ui-control-radius-sm);
+}
+.ui-segmented--md {
+  --segmented-h: var(--ui-control-h-md);
+  --segmented-pad-item: var(--ui-control-pad-md);
+  --segmented-font: var(--ui-control-font-md);
+}
+.ui-segmented--lg {
+  --segmented-h: var(--ui-control-h-lg);
+  --segmented-pad-item: var(--ui-control-pad-lg);
+  --segmented-font: var(--ui-control-font-lg);
+  --segmented-item-radius: var(--ui-control-radius-md);
+}

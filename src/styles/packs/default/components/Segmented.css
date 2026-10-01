@@ -1,0 +1,62 @@
+/* -------------------------------------------- Segmented — PIEL del pack default */
+/* Interfaz: --segmented-bg | --segmented-border | --segmented-divider
+             --segmented-item-bg-hover | --segmented-item-fg
+             --segmented-active-bg | --segmented-active-fg
+             --segmented-active-border | --segmented-active-shadow           */
+
+/* Un surco con una ficha adentro. La caja se hunde —toma el fondo apagado, no
+   el de superficie— y la opción activa se apoya ENCIMA, con el color de
+   superficie y una sombra corta. Es el mismo gesto que el `Toggle`: lo elegido
+   es lo que sobresale.
+
+   ⛔ EL ACENTO VA EN LA LETRA, NO EN EL RELLENO. Pintando la pieza activa del
+   color de marca, un grupo de cuatro modos mete un bloque saturado en medio de
+   una barra de controles grises y se lleva la mirada aunque no haya pasado
+   nada. Lo que hay que leer es CUÁL está elegida, y para eso alcanza con que
+   esté levantada. */
+
+.ui-segmented {
+  --segmented-bg: var(--ui-bg-subtle);
+  --segmented-border: var(--ui-border);
+  --segmented-pad: var(--ui-space-1);
+
+  --segmented-item-fg: var(--ui-text-muted);
+  --segmented-item-bg-hover: var(--ui-surface-hover);
+
+  --segmented-active-bg: var(--ui-surface);
+  --segmented-active-fg: var(--ui-accent-text);
+  --segmented-active-border: var(--ui-border);
+  --segmented-active-shadow: var(--ui-shadow-sm);
+
+  /* Sin división: con el relleno de la caja, las piezas ya están separadas por
+     aire. La línea es para los packs que pegan las piezas al borde. */
+  --segmented-divider: transparent;
+}
+
+.ui-segmented.is-disabled {
+  --segmented-active-fg: var(--ui-text-muted);
+}
+
+/* -- Pegado ---------------------------------------------------------------- */
+/* Sin aire, la caja deja de ser un surco con fichas y pasa a ser una sola
+   pieza dividida: ahí la línea sí hace falta, y el relleno estorba. */
+
+.ui-segmented--compact {
+  --segmented-pad: 0px;
+  --segmented-divider: var(--ui-line);
+  --segmented-active-border: transparent;
+  --segmented-active-shadow: none;
+  --segmented-active-bg: var(--ui-surface-active);
+}
+
+/* -- Sin caja -------------------------------------------------------------- */
+/* Ya vive adentro de una barra: lo único que queda es marcar el activo. Sin
+   superficie propia la ficha no se puede "levantar", así que acá el estado lo
+   lleva el fondo apagado y la letra. */
+
+.ui-segmented--bare {
+  --segmented-divider: transparent;
+  --segmented-active-bg: var(--ui-surface-active);
+  --segmented-active-border: transparent;
+  --segmented-active-shadow: none;
+}

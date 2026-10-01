@@ -114,12 +114,13 @@ como parámetro de contenedor"*.
   en el pack**, porque el problema lo creó esa estética.
 - **Al agregar un componente hay que crear su piel en TODOS los packs**
   (hoy `default`, `glass`, `cyber`, `soft`, `blueprint`, `editorial`, `clay`,
-  `riso`, `nocturne`, `grunge`, `minimal` y `_template`).
+  `riso`, `nocturne`, `grunge`, `minimal` y `_template`). Hoy son **18**: los dieciséis de
+  siempre más `Segmented` y `Tile`.
 - **⛔ TODO COMPONENTE ENTRA Y SALE ANIMADO.** `UIComponent` pone
   `.is-entering` al montar y `.is-leaving` en `leave()`, y **espera** a que
   terminen las animaciones antes de sacar el nodo. La mecánica decide CUANDO;
   el pack decide QUE SE VE, en `packs/<pack>/lifecycle.css`.
-  - Cada pack define las dos para **los 16 componentes**. Hay guard.
+  - Cada pack define las dos para **los 18 componentes**. Hay guard.
   - **La salida es más corta que la entrada.** Lo que aparece se presenta; lo
     que se va no debe hacerte esperar. Hay guard.
   - La coreografía es del mismo material que el pack: el vidrio se condensa,
@@ -129,6 +130,28 @@ como parámetro de contenedor"*.
     `leave()` es la versión con despedida, y devuelve una promesa.
   - Si un pack no define nada no se rompe: la espera resuelve enseguida. Por
     eso hace falta el guard — la falta no se nota hasta que alguien la mira.
+- **⛔ UNA CAPACIDAD NO ES UN COMPONENTE.** Si algo que una pieza puede HACER
+  no cambia lo que esa pieza ES, va como parámetro suyo y no como una clase
+  nueva que la envuelva. Reordenar arrastrando es el caso: una fila de
+  pestañas que se reordena sigue siendo una fila de pestañas, y una lista
+  también. El motor vive en `src/core/reorder.js` y lo consumen `Tabs` y
+  `Container` con `reorderable: true`.
+
+  ```
+  ❌ MAL                              ✅ BIEN
+  new ListaOrdenable({ items })       new Container({ reorderable: true })
+  ```
+
+  Envuelto en otra caja, esa caja trae su propio layout a pelear con el que la
+  lista ya tenía. Y duplicado por componente —que es como empezó: una copia
+  horizontal en `Tabs` y otra vertical en `core/`— se arregla un borde de un
+  lado y el otro se queda con el error, sin que nadie se entere porque las dos
+  "andan". El eje entra como parámetro: es la misma geometría girada.
+
+  Lo mismo con el valor de fábrica de un contenido: **un default que es texto
+  visible no es un default, es contenido inventado**. `Button` tenía
+  `label: Button` y eso rompía el botón de solo icono.
+
 - **⛔ UN SOLO COLOR DECLARADO POR PACK: `--ui-brand`.** Todos los demás son
   transformaciones suyas con color relativo:
   ```css
@@ -207,7 +230,7 @@ como parámetro de contenedor"*.
 1. `cp -r src/styles/packs/_template src/styles/packs/<nombre>`
 2. `pack.js`: id, label y sus `settings`
 3. `tokens.css`: los valores de la estética
-4. `lifecycle.css`: **entrada y salida de los 16 componentes** (obligatorio,
+4. `lifecycle.css`: **entrada y salida de los 18 componentes** (obligatorio,
    con guard). La salida más corta que la entrada.
 5. Ajustar la piel de los componentes que lo necesiten
 6. Registrarlo en `src/styles/packs/index.js`

@@ -1,0 +1,46 @@
+/* -------------------------------------------- Segmented — PIEL del pack GLASS */
+/* Interfaz: --segmented-bg | --segmented-border | --segmented-divider
+             --segmented-item-bg-hover | --segmented-item-fg
+             --segmented-active-bg | --segmented-active-fg
+             --segmented-active-border | --segmented-active-shadow           */
+
+/* Una lámina delgada con una pastilla de vidrio MÁS DENSO adentro.
+
+   ⛔ LO ELEGIDO ES LO MÁS OPACO, no lo más brillante. En un material
+   translúcido todo deja pasar lo de atrás; lo que distingue a una pieza es
+   cuánto TAPA. La activa lleva el film denso —el mismo que usa un panel sobre
+   el fondo— así que se lee como una capa más cerca del ojo.
+
+   Sin desenfoque propio: el grupo vive dentro de algo que ya desenfoca, y
+   anidar `backdrop-filter` lo vuelve BACKDROP ROOT — la capa de adentro solo
+   alcanzaría lo pintado en la de afuera y se vería plana. */
+
+.ui-segmented {
+  --segmented-bg: var(--ui-glass-film-light);
+  --segmented-border: rgb(from var(--ui-glass-tint) r g b / var(--ui-glass-inner-hi));
+  --segmented-pad: var(--ui-space-1);
+
+  --segmented-item-fg: var(--ui-text-muted);
+  --segmented-item-bg-hover: rgb(from var(--ui-glass-tint) r g b / var(--ui-glass-film-bottom));
+
+  --segmented-active-bg: var(--ui-glass-film-dense);
+  --segmented-active-fg: var(--ui-text);
+  --segmented-active-border: rgb(from var(--ui-glass-tint) r g b / var(--ui-glass-edge-hi));
+  --segmented-active-shadow: var(--ui-shadow-sm);
+
+  --segmented-divider: transparent;
+}
+
+/* Pegado, la caja es una sola pieza: ahí la división sí hace falta —es el canto
+   del vidrio visto de perfil— y el relleno estorba. */
+.ui-segmented--compact {
+  --segmented-pad: 0px;
+  --segmented-divider: rgb(from var(--ui-glass-tint) r g b / var(--ui-glass-inner-hi));
+  --segmented-active-shadow: none;
+}
+
+.ui-segmented--bare {
+  --segmented-divider: transparent;
+  --segmented-active-border: transparent;
+  --segmented-active-shadow: none;
+}

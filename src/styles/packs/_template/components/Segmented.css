@@ -1,0 +1,47 @@
+/* --------------------------------------- Segmented — PIEL del pack _template */
+/* Interfaz: --segmented-bg | --segmented-border | --segmented-divider
+             --segmented-item-bg-hover | --segmented-item-fg
+             --segmented-active-bg | --segmented-active-fg
+             --segmented-active-border | --segmented-active-shadow           */
+
+/* Un grupo donde SIEMPRE hay exactamente uno puesto. Lo único que este control
+   tiene que resolver es cómo se ve el elegido, y cada pack lo contesta con su
+   material: el neumórfico lo LEVANTA de un hueco, el de vidrio lo hace más
+   OPACO, el de risografía lo IMPRIME macizo, el de plano lo anota en tinta de
+   cota. Lo que sigue es lo mínimo que funciona. */
+
+.ui-segmented {
+  --segmented-bg: var(--ui-bg-subtle);
+  --segmented-border: var(--ui-border);
+  --segmented-pad: var(--ui-space-1);
+
+  --segmented-item-fg: var(--ui-text-muted);
+  --segmented-item-bg-hover: var(--ui-surface-hover);
+
+  --segmented-active-bg: var(--ui-surface);
+  --segmented-active-fg: var(--ui-text);
+  --segmented-active-border: var(--ui-border);
+  --segmented-active-shadow: var(--ui-shadow-sm);
+
+  --segmented-divider: transparent;
+}
+
+/* Pegadas, la caja pasa a ser UNA pieza dividida: ahí la línea hace falta y el
+   relleno estorba. */
+.ui-segmented--compact {
+  --segmented-pad: 0px;
+  --segmented-divider: var(--ui-line);
+  --segmented-active-border: transparent;
+  --segmented-active-shadow: none;
+  --segmented-active-bg: var(--ui-surface-active);
+}
+
+/* Ya vive adentro de una barra: solo queda marcar el puesto. */
+.ui-segmented--bare {
+  --segmented-bg: transparent;
+  --segmented-border: transparent;
+  --segmented-divider: transparent;
+  --segmented-active-border: transparent;
+  --segmented-active-shadow: none;
+  --segmented-active-bg: var(--ui-surface-active);
+}

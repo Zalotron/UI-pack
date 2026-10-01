@@ -31,11 +31,21 @@
   font-size: var(--ui-text-md);
   line-height: var(--ui-leading-normal);
 
+  /* ⛔ LA TRANSICION ES DE LA PIEL: borde, fondo y sombra. MOVER NO ESTA, Y SE
+     SACO A PROPOSITO.
+
+     Tener `transform` siempre animado era una trampa: cualquiera que mueva un
+     contenedor por JS —un visor que sigue al puntero, una fila que se arrastra
+     para reordenar— peleaba contra una animacion de 130 ms que no pidio, y el
+     sintoma no se parece a la causa (la cosa va ATRAS del cursor, a destiempo,
+     y al frenar pega un tiron para alcanzarlo).
+
+     Mover se anima OPTANDO: `[data-ui-animating]`, que pone y saca el motor de
+     reordenamiento. Ver base.css. */
   transition:
     border-color var(--ui-duration-base) var(--ui-ease),
     background var(--ui-duration-base) var(--ui-ease),
-    box-shadow var(--ui-duration-base) var(--ui-ease),
-    transform var(--ui-duration-base) var(--ui-ease);
+    box-shadow var(--ui-duration-base) var(--ui-ease);
 }
 
 /* Cuando el contenedor es un <a>, no debe heredar look de link. */
@@ -65,6 +75,37 @@ a.ui-container {
    costado y el contenido al lado, sin que se apilen. */
 .ui-container--layout-row.ui-container--nowrap {
   flex-wrap: nowrap;
+}
+
+/* ⛔ EL PANEL DE CONTENIDO: UNA FILA QUE DEJA RENGLONES.
+   Es `row` con tres cosas resueltas de fabrica, y existe porque sin ellas hay
+   que escribirlas a mano CADA VEZ —y olvidarse de una no rompe nada, solo hace
+   que el panel se vea mal sin que se sepa por que—:
+
+     arranca desde la IZQUIERDA. Con el centrado por defecto, dos fichas quedan
+     flotando en el medio de una franja vacia y no se lee como una grilla: se
+     lee como dos cosas sueltas.
+
+     las fichas NO SE ESTIRAN para llenar el renglon. Estiradas, el ultimo
+     renglon —que casi nunca esta completo— tiene piezas mas anchas que los de
+     arriba, y la grilla deja de tener columnas.
+
+     cada una mide su ALTO, no el de la mas alta del renglon. Con `stretch`,
+     una ficha con descripcion estira a todas las de su fila.
+
+   ⚠ NO ES `grid`. Una grilla de verdad reparte el ancho sobrante entre las
+   columnas: las fichas cambian de tamano al cambiar el ancho del panel. Un
+   panel de contenido hace lo contrario —la ficha mide SIEMPRE lo mismo y lo
+   que cambia es cuantas entran—, que es lo que deja comparar dos cosas que uno
+   vio en momentos distintos. */
+.ui-container--layout-wrap {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  align-content: flex-start;
+  gap: var(--container-gap);
 }
 
 .ui-container--layout-grid {

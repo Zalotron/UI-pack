@@ -1,0 +1,57 @@
+/* ---------------------------------------- Segmented — PIEL del pack EDITORIAL */
+/* Interfaz: --segmented-bg | --segmented-border | --segmented-divider
+             --segmented-item-bg-hover | --segmented-item-fg
+             --segmented-active-bg | --segmented-active-fg
+             --segmented-active-border | --segmented-active-shadow           */
+
+/* Las opciones de un pie de página de revista: versalitas chicas separadas por
+   filetes finos, y la elegida en la tinta del texto.
+
+   ⛔ ACÁ NO HAY CAJA, Y NO ES UN OLVIDO. Este pack compone con tipografía y
+   filetes: un recuadro con fondo alrededor de tres palabras es una pieza de
+   interfaz, no de una página impresa. Lo que agrupa las opciones es que están
+   juntas y separadas por un filete; lo que marca la elegida es el PESO y la
+   tinta, que es exactamente como una revista marca la sección en la que estás.
+
+   El filete arriba y abajo lo pone el grupo entero, no cada pieza: así se lee
+   como una franja de índice y no como tres botones. */
+
+.ui-segmented {
+  --segmented-bg: transparent;
+  --segmented-border: transparent;
+  --segmented-pad: 0px;
+
+  --segmented-item-fg: var(--ui-text-subtle);
+  --segmented-item-bg-hover: transparent;
+
+  --segmented-active-bg: transparent;
+  --segmented-active-fg: var(--ui-text);
+  --segmented-active-border: transparent;
+  --segmented-active-shadow: none;
+
+  --segmented-divider: var(--ui-line);
+
+  border-block: var(--ui-border-width) solid var(--ui-line);
+}
+
+.ui-segmented__item {
+  text-transform: uppercase;
+  letter-spacing: var(--ui-tracking-wide);
+  font-size: var(--ui-text-xs);
+}
+
+/* El peso es la mitad de la señal: en una página, lo que está en negrita es
+   donde estás parado. */
+.ui-segmented__item.is-active {
+  font-weight: var(--ui-weight-semibold);
+}
+
+.ui-segmented__item:hover:not(.is-disabled):not(.is-active) {
+  color: var(--ui-text-muted);
+}
+
+/* Sin caja no hay franja: se va el filete de arriba y abajo también. */
+.ui-segmented--bare {
+  --segmented-divider: transparent;
+  border-block: 0;
+}

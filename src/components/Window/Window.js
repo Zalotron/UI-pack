@@ -28,6 +28,30 @@ export class Window extends UIComponent {
     title: '',
     /** Marca a la izquierda del titulo: string, Node o UIComponent. */
     icon: null,
+
+    /**
+     * Algo propio al ARRANQUE de la barra de titulo, donde iria el titulo.
+     *
+     * Es un hueco, no una pieza: acepta un nodo o un componente. Lo tipico es
+     * una fila de pestañas —`tabs.listElement`, con `detachedList`— pero sirve
+     * para cualquier cosa que tenga que vivir en la barra.
+     *
+     * ⚠ NO ARRASTRA LA VENTANA. Lo que se pone aca son controles, y un control
+     * que ademas mueve la ventana al apretarlo no es un control.
+     */
+    leading: null,
+
+    /**
+     * El `leading` OCUPA la barra: pegado al borde y de alto completo, y el
+     * icono y el titulo no se dibujan.
+     *
+     * ⛔ ES PARA UNA BARRA CUYO CONTENIDO ES EL TITULO. Una fila de pestañas
+     * dice cual archivo se esta mirando mejor que cualquier rotulo, asi que el
+     * rotulo sobra — y el relleno de la izquierda y el centrado vertical, que
+     * son de una barra CON titulo, sobre algo que ocupa toda la barra dejan dos
+     * aires que se leen como un error de dibujo.
+     */
+    leadingFill: false,
     /** Contenido: string | Node | UIComponent | array. */
     content: null,
 
@@ -83,13 +107,27 @@ export class Window extends UIComponent {
 
     this.titleNode = el('span', { class: 'ui-window__title', text: o.title });
 
+    /* Con el `leading` ocupando la barra, el icono y el titulo no se dibujan:
+       lo que hay adentro ES el titulo. Dejarlos seria decir dos veces lo mismo
+       y, peor, robarle a las pestañas el ancho que necesitan. */
+    const leadingNode = o.leading
+      ? el('div', { class: 'ui-window__leading' }, this._track(o.leading))
+      : null;
+
     const bar = el('header', {
-      class: cx('ui-window__bar', o.draggable && 'is-draggable'),
-    }, [
-      o.icon ? this._renderIcon(o.icon) : null,
-      this.titleNode,
-      this._renderControls(),
-    ]);
+      class: cx(
+        'ui-window__bar',
+        o.draggable && 'is-draggable',
+        o.leadingFill && 'ui-window__bar--filled',
+      ),
+    }, o.leadingFill
+      ? [leadingNode, this._renderControls()]
+      : [
+        o.icon ? this._renderIcon(o.icon) : null,
+        this.titleNode,
+        leadingNode,
+        this._renderControls(),
+      ]);
 
     // El cuerpo scrollea con la barra del sistema de diseno, no la cruda.
     const body = el('div', { class: 'ui-window__body ui-scroll ui-scroll--y ui-scroll--thin' });
@@ -179,14 +217,24 @@ export class Window extends UIComponent {
     return el('div', { class: 'ui-window__controls' }, buttons);
   }
 
-  /** Normaliza `content` y adopta los subcomponentes. */
-  _contentNodes() {
-    const { content } = this.options;
-    if (content === null || content === undefined) return [];
-    return (Array.isArray(content) ? content : [content]).map((item) =>
+  /**
+   * Normaliza cualquier hueco de contenido y adopta los subcomponentes.
+   *
+   * Adoptar es lo que hace que el hijo se destruya con el padre: un componente
+   * puesto a mano en el arbol sobrevive a su ventana y sigue con sus escuchas
+   * colgadas de un nodo que ya no existe.
+   */
+  _track(value) {
+    if (value === null || value === undefined) return [];
+    return (Array.isArray(value) ? value : [value]).map((item) =>
       (item && typeof item === 'object' && typeof item.destroy === 'function')
         ? this.adopt(item)
         : item);
+  }
+
+  /** Normaliza `content` y adopta los subcomponentes. */
+  _contentNodes() {
+    return this._track(this.options.content);
   }
 
   _activate(name) {

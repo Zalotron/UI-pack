@@ -1,5 +1,6 @@
 import { UIComponent } from '../../core/UIComponent.js';
 import { el, cx, append } from '../../core/dom.js';
+import { sortable, sortableTree } from '../../core/reorder.js';
 
 /**
  * Container — la superficie donde se pone todo lo demas.
@@ -25,8 +26,8 @@ import { el, cx, append } from '../../core/dom.js';
 const SPACE_SIZES = ['none', 'xs', 'sm', 'md', 'lg', 'xl'];
 const RADIUS_SIZES = ['none', 'xs', 'sm', 'md', 'lg', 'xl', 'full', 'circle'];
 const ELEVATIONS = ['none', 'sm', 'md', 'lg'];
-const LAYOUTS = ['stack', 'row', 'grid', 'flow'];
-const VARIANTS = ['panel', 'solid', 'outline', 'ghost'];
+const LAYOUTS = ['stack', 'row', 'wrap', 'grid', 'flow'];
+const VARIANTS = ['panel', 'solid', 'outline', 'ghost', 'list'];
 const ALIGNMENTS = ['start', 'center', 'end'];
 
 export class Container extends UIComponent {
@@ -40,7 +41,19 @@ export class Container extends UIComponent {
     tag: 'div',
 
     // ------------------------------------------------------------ superficie
-    /** 'panel' (degrade + hairline) | 'solid' | 'outline' | 'ghost' */
+    /**
+     * 'panel' (degrade + hairline) | 'solid' | 'outline' | 'ghost' | 'list'
+     *
+     * ⛔ 'list' ES UNA FILA, NO UNA CAJA. Es el 'ghost' —sin fondo y sin
+     * borde— pero RESPONDE AL MOUSE: se prende al pasarle por encima y se queda
+     * prendida cuando esta elegida (`.is-selected`).
+     *
+     * Es lo que quiere una lista de verdad. Con filas que son cajas, cada una
+     * trae su borde y su superficie: veinte objetos de una escena se ven como
+     * veinte paneles apilados, el ojo cuenta bordes en vez de leer nombres, y
+     * el aire entre cajas hace que una lista de veinte no entre en la pantalla.
+     * Una fila no se dibuja: se dibuja la que estas mirando.
+     */
     variant: 'panel',
     /** Dibuja el borde. */
     border: true,
@@ -64,8 +77,20 @@ export class Container extends UIComponent {
     /**
      * 'stack' -> columna (default)
      * 'row'   -> fila, con wrap (ver `wrap`)
+     * 'wrap'  -> PANEL DE CONTENIDO: fila que deja renglones
      * 'grid'  -> grilla
      * 'flow'  -> display block, flujo normal del documento
+     *
+     * ⛔ 'wrap' NO ES `row` CON OTRO NOMBRE. Es `row` con el arranque a la
+     * izquierda, las piezas sin estirar y cada una con su propio alto — las
+     * tres cosas que hay que escribir a mano para que una fila de fichas se
+     * lea como una grilla, y que olvidarse de una no rompe nada: solo hace que
+     * el panel se vea mal sin que se sepa por que.
+     *
+     * ⚠ Y TAMPOCO ES `grid`. Una grilla reparte el ancho sobrante entre las
+     * columnas, asi que las fichas cambian de tamano con el panel. Un panel de
+     * contenido hace lo contrario: la ficha mide siempre lo mismo y lo que
+     * cambia es cuantas entran.
      */
     layout: 'stack',
     /** Separacion entre hijos. Misma escala que padding, o valor CSS. */
@@ -119,6 +144,42 @@ export class Container extends UIComponent {
     target: null,
     onClick: null,
 
+    // --------------------------------------------------- reordenar arrastrando
+    /**
+     * Las piezas de adentro se pueden arrastrar para cambiarlas de orden.
+     *
+     *   false     no (default)
+     *   true      lista PLANA. El eje sale de `layout`: una fila se ordena a lo
+     *             largo y una pila hacia abajo.
+     *   "tree"    lista cuyas filas CUELGAN unas de otras. Ademas del lugar se
+     *             elige DE QUIEN cuelga: tres zonas por fila —antes, adentro,
+     *             despues—. Avisa por `onMove`, no por `onReorder`.
+     *
+     * ⛔ ES UNA CAPACIDAD DEL CONTENEDOR, NO UN COMPONENTE "ListaOrdenable".
+     * Una lista que se reordena sigue siendo una lista: envolverla en otra caja
+     * le mete un layout ajeno a pelear con el que ya tenia. El motor vive en
+     * `core/reorder.js` y es el mismo que usan las pestañas.
+     *
+     * ⚠ CADA PIEZA DECLARA SU IDENTIDAD con `data-sort-id`. El contenedor no se
+     * la puede inventar: tiene que ser la misma con la que quien recibe el
+     * orden nuevo identifica sus datos. Lo que SI hace el contenedor es ponerle
+     * `draggable` a las que la declararon —olvidarselo no da ningun error, el
+     * arrastre simplemente no empieza y no hay nada que lo explique—.
+     */
+    reorderable: false,
+
+    /** Lista plana: `(ids) => ...` con el orden nuevo, completo. */
+    onReorder: null,
+
+    /** Arbol: `(id, lugar, destino) => ...` con lugar en before|inside|after. */
+    onMove: null,
+    /** Arbol: a que nivel se dibuja cada fila, para la sangria de la raya. */
+    depthOf: null,
+    /** Arbol: si ese movimiento se permite. Se pregunta ANTES de dibujar nada. */
+    canDrop: null,
+    /** Arbol: cuanto se corre cada nivel, en pixeles. */
+    indent: null,
+
     // ------------------------------------------------------------ accesorios
     /** Clases extra, para composicion desde afuera. */
     className: null,
@@ -166,6 +227,7 @@ export class Container extends UIComponent {
     });
 
     append(node, this._contentNodes());
+    if (o.reorderable) this._bindReorder(node);
 
     if (clickable) {
       this.listen(node, 'click', (event) => this._activate(event));
@@ -184,6 +246,47 @@ export class Container extends UIComponent {
   }
 
   // ------------------------------------------------------------------ interno
+
+  /**
+   * Engancha el motor de reordenamiento al contenedor.
+   *
+   * ⛔ EL EJE SALE DEL LAYOUT, NO DE UNA OPCION APARTE. El contenedor ya sabe si
+   * es una fila o una pila: preguntarlo de nuevo abre la puerta a que las dos
+   * respuestas no coincidan, y una lista que se ordena en el eje equivocado no
+   * falla — simplemente no se deja arrastrar, que es peor que fallar.
+   */
+  _bindReorder(node) {
+    const o = this.options;
+    this._releaseReorder?.();
+
+    /* Si declaro su identidad, es porque quiere moverse. Ponerselo aca evita el
+       olvido mas comun, que no da ningun error. */
+    for (const pieza of node.querySelectorAll("[data-sort-id]:not([draggable])")) {
+      pieza.setAttribute("draggable", "true");
+    }
+
+    if (o.reorderable === "tree") {
+      this._releaseReorder = sortableTree({
+        list: node,
+        depthOf: o.depthOf || undefined,
+        canDrop: o.canDrop || undefined,
+        onMove: (id, lugar, destino) => o.onMove?.(id, lugar, destino, this),
+        ...(o.indent != null ? { indent: o.indent } : {}),
+      });
+      return;
+    }
+
+    this._releaseReorder = sortable({
+      list: node,
+      axis: o.layout === "row" ? "x" : "y",
+      onReorder: (ids) => o.onReorder?.(ids, this),
+    });
+  }
+
+  onDestroy() {
+    this._releaseReorder?.();
+    this._releaseReorder = null;
+  }
 
   _activate(event) {
     this.options.onClick?.(event, this);

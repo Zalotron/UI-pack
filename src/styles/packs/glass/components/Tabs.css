@@ -15,3 +15,14 @@
 .ui-tabs__indicator {
   box-shadow: 0 0 var(--ui-glass-indicator-glow) rgb(from var(--ui-accent) r g b / 0.85);
 }
+
+/* -- La cruz de cerrar ------------------------------------------------------ */
+/* ⛔ TINTA RELATIVA Y NO UNA SUPERFICIE, por donde puede terminar viviendo esta
+   fila: con `detachedList` la barra de pestañas se monta adentro de la BARRA DE
+   TITULO de una ventana, que no es el fondo de la pagina. Un token de superficie
+   acierta en un caso y en el otro queda del mismo color que lo que tiene debajo.
+
+   Una capa de tinta se suma a lo que haya: funciona en los dos. */
+.ui-tabs {
+  --tabs-close-bg-hover: rgb(from var(--ui-text) r g b / 0.14);
+}

@@ -491,6 +491,21 @@
 
   --ui-tabs-indicator-h: 3px;
 
+  /* ⛔ EL ANCHO DE UNA FICHA DE PANEL, Y ES LO QUE HACE QUE EL PANEL FUNCIONE.
+     Las fichas se acomodan de izquierda a derecha y bajan de renglon cuando no
+     entran; con ancho automatico cada una mide lo que mide su nombre y lo que se
+     ve es un parrafo de cajas, no una grilla. Midiendo todas lo mismo, las
+     columnas aparecen solas. Ver components/Tile. */
+  --ui-tile-w-sm:  72px;
+  --ui-tile-w:     92px;
+  --ui-tile-w-lg: 116px;
+
+  /* Cuanto se despega lo que se esta arrastrando. Lo usan la ficha y el motor
+     de reordenamiento; ver base.css. */
+  --ui-drag-opacity: 0.5;
+  /* El blanco de la cruz de cerrar una pestaña. Ver components/Tabs. */
+  --ui-tabs-close-size: 16px;
+
   /* Aire arriba y abajo de la fila de pestañas, para que no le recorte las
 
      sombras a lo que tenga adentro. El canto comido es una MASCARA, no una sombra: no se sale

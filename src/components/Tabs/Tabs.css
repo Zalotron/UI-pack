@@ -13,6 +13,7 @@
   --tabs-bg-hover: transparent;
   --tabs-line: transparent;
   --tabs-indicator: transparent;
+  --tabs-close-bg-hover: transparent;
 
   display: flex;
   flex-direction: column;
@@ -126,6 +127,13 @@
 .ui-tabs--stretch .ui-tabs__tab { flex: 1; }
 
 .ui-tabs__tab {
+  /* Flex porque adentro puede haber hasta tres piezas: el icono, el rotulo y
+     la cruz de cerrar. Con el flujo de texto, la cruz se separaba del rotulo
+     por un espacio en blanco que cambiaba de ancho con la tipografia. */
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ui-control-gap-sm);
+
   flex: none;
   height: var(--tabs-h);
   padding: 0 var(--tabs-pad);
@@ -207,4 +215,91 @@
   --tabs-h: var(--ui-control-h-lg);
   --tabs-font: var(--ui-control-font-lg);
   --tabs-pad: var(--ui-control-pad-lg);
+}
+
+/* -- El rótulo y la cruz --------------------------------------------------- */
+
+.ui-tabs__label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ⛔ LA CRUZ VIVE ADENTRO DEL BOTÓN DE LA PESTAÑA, que es donde uno la busca.
+   No es un `<button>` —uno adentro de otro no es marcado válido ni navegable—
+   así que no se tabula: con el teclado se cierra con Supr sobre la pestaña.
+
+   Ocupa su lugar SIEMPRE, también cuando no se ve: apareciendo al pasar el
+   mouse, la pestaña se ensancharía bajo el cursor y empujaría a las de al lado.
+   Lo que cambia es la opacidad, no la caja. */
+.ui-tabs__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+
+  width: var(--ui-tabs-close-size);
+  height: var(--ui-tabs-close-size);
+  margin-inline-end: calc(var(--tabs-pad) * -0.5);
+  border-radius: var(--ui-radius-sm);
+
+  font-size: var(--ui-text-sm);
+  line-height: 1;
+
+  opacity: 0;
+  transition:
+    opacity var(--ui-duration-fast) var(--ui-ease),
+    background var(--ui-duration-fast) var(--ui-ease);
+}
+
+/* Se muestra en la que se está mirando, en la activa y al llegar con teclado:
+   los tres son "esta pestaña es de la que estoy hablando". */
+.ui-tabs__tab:hover .ui-tabs__close,
+.ui-tabs__tab.is-active .ui-tabs__close,
+.ui-tabs__tab:focus-visible .ui-tabs__close {
+  opacity: 1;
+}
+
+.ui-tabs__close:hover {
+  background: var(--tabs-close-bg-hover);
+}
+
+/* -- Reordenando ----------------------------------------------------------- */
+/* ⚠ LA RAYITA SE APAGA MIENTRAS SE ARRASTRA. Vive en el carril pero no es una
+   pestaña, así que el motor no la mueve con ellas: se quedaría marcando el
+   lugar donde la activa YA NO está. Y mientras uno reordena, cuál está activa
+   no es la pregunta. */
+.ui-tabs__list.is-reordering .ui-tabs__indicator {
+  opacity: 0;
+  transition: opacity var(--ui-duration-fast) var(--ui-ease);
+}
+
+/* -- La fila mudada -------------------------------------------------------- */
+/* ⛔ SON DOS MODIFICADORES, UNO POR NODO, y no uno solo: la fila se va a otro
+   lado y la raíz se queda sin ella. Cada nodo necesita lo suyo.
+
+   La fila mudada ocupa el alto de la barra que la recibe y NO crece a lo ancho:
+   su contenedor es una barra de título, no una columna. */
+.ui-tabs--detached-list {
+  display: flex;
+  min-width: 0;
+  height: 100%;
+}
+
+.ui-tabs--detached-list .ui-tabs__list {
+  flex: 1;
+  min-width: 0;
+  align-items: stretch;
+}
+
+.ui-tabs--detached-list .ui-tabs__tab {
+  height: 100%;
+}
+
+/* La raíz, sin su fila arriba, no tiene de qué separarse: ese aire existía para
+   despegar los paneles de las pestañas. Sin ellas queda una franja muerta entre
+   la barra de título y el contenido. */
+.ui-tabs--detached > .ui-tabs__panels {
+  padding-top: 0;
 }

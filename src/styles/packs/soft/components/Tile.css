@@ -1,0 +1,41 @@
+/* ------------------------------------------------- Tile — PIEL del pack SOFT */
+/* Interfaz: --tile-bg | --tile-bg-hover | --tile-bg-selected | --tile-fg
+             --tile-fg-muted | --tile-fg-selected | --tile-border
+             --tile-border-selected | --tile-shadow | --tile-radius        */
+
+/* ⛔ UNA FICHA NO SE DIBUJA EN REPOSO. Un panel de cincuenta fichas con caja
+   propia son cincuenta bordes compitiendo con lo unico que importa del panel,
+   que es el dibujo de cada cosa. Lo que se dibuja es la que estas mirando y la
+   que elegiste.
+
+   ⛔ Y EL RESALTADO ES TINTA RELATIVA, NO UNA SUPERFICIE. Un panel de contenido
+   puede vivir sobre la pagina, adentro de un panel o adentro de una caja: un
+   token de superficie acierta en uno de los tres y en los otros queda del color
+   de lo que tiene debajo. Una capa translucida se suma a lo que haya. Es el
+   mismo recurso que usa la fila de lista del Container. */
+
+.ui-tile {
+  --tile-bg: transparent;
+  --tile-border: transparent;
+  --tile-fg: var(--ui-text);
+  --tile-fg-muted: var(--ui-text-subtle);
+
+  --tile-bg-hover: rgb(from var(--ui-text) r g b / 0.06);
+  --tile-bg-selected: rgb(from var(--ui-accent) r g b / 0.22);
+  --tile-fg-selected: var(--ui-text);
+  --tile-border-selected: transparent;
+}
+
+/* ⛔ LA ELEGIDA SE HUNDE, NO SE LEVANTA. En este pack lo apretado es lo que
+   queda metido en la lamina, y una ficha elegida es exactamente eso: una que
+   quedo apretada. Levantarla diria "esta disponible", que es lo contrario.
+
+   ⚠ Y LA SOMBRA SE DECLARA SIEMPRE, apagada con `0 0 0`: CSS no interpola
+   entre una `inset` y una que no lo es, y la ficha saltaria en vez de hundirse. */
+.ui-tile {
+  box-shadow: 0 0 0 0 transparent, 0 0 0 0 transparent;
+}
+
+.ui-tile.is-selected {
+  box-shadow: var(--ui-soft-in-sm);
+}

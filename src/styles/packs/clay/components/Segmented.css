@@ -1,0 +1,55 @@
+/* --------------------------------------------- Segmented — PIEL del pack CLAY */
+/* Interfaz: --segmented-bg | --segmented-border | --segmented-divider
+             --segmented-item-bg-hover | --segmented-item-fg
+             --segmented-active-bg | --segmented-active-fg
+             --segmented-active-border | --segmented-active-shadow           */
+
+/* Una bandeja de plastilina con una ficha GORDA apoyada encima. La elegida es
+   la que tiene cuerpo: sobresale, tiene su propia sombra y es la única que se
+   ve maciza.
+
+   ⛔ LAS DIVISIONES NO EXISTEN ACÁ. Una línea de un píxel entre dos piezas de
+   un material de este grosor se pierde —y si se viera, sería lo único fino de
+   todo el pack—. Lo que separa es el AIRE y el volumen de la que está puesta.
+
+   El relleno de la bandeja es generoso por lo mismo: una ficha gorda pegada al
+   borde se lee como que no entra. */
+
+.ui-segmented {
+  --segmented-bg: var(--ui-bg-subtle);
+  --segmented-border: transparent;
+  --segmented-pad: var(--ui-space-2);
+  --segmented-radius: var(--ui-radius-lg);
+
+  --segmented-item-fg: var(--ui-text-muted);
+  --segmented-item-bg-hover: transparent;
+  --segmented-item-radius: var(--ui-radius-lg);
+
+  --segmented-active-bg: var(--ui-surface);
+  --segmented-active-fg: var(--ui-accent-text);
+  --segmented-active-border: transparent;
+  --segmented-active-shadow: var(--ui-clay-body);
+
+  --segmented-divider: transparent;
+}
+
+/* Gorda como todo en este pack, y con el rebote del sistema al cambiar: la
+   ficha nueva llega pasándose de largo antes de asentarse. */
+.ui-segmented__item {
+  font-weight: var(--ui-weight-semibold);
+  transition:
+    color var(--ui-duration-fast) var(--ui-ease),
+    box-shadow var(--ui-duration-base) var(--ui-ease-out),
+    scale var(--ui-duration-fast) var(--ui-ease-out);
+}
+
+/* Al apretarla se HUNDE antes de quedar puesta: es el mismo gesto del botón. */
+.ui-segmented__item:active:not(.is-disabled) {
+  scale: 0.97;
+}
+
+.ui-segmented--bare {
+  --segmented-pad: 0px;
+  --segmented-active-shadow: none;
+  --segmented-active-bg: var(--ui-surface-active);
+}

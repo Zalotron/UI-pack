@@ -1,0 +1,49 @@
+/* --------------------------------------------- Segmented — PIEL del pack RISO */
+/* Interfaz: --segmented-bg | --segmented-border | --segmented-divider
+             --segmented-item-bg-hover | --segmented-item-fg
+             --segmented-active-bg | --segmented-active-fg
+             --segmented-active-border | --segmented-active-shadow           */
+
+/* Un bloque de opciones impreso: marco de tinta, rótulos en versalitas y la
+   elegida IMPRESA EN MACIZO, con su plancha corrida.
+
+   ⛔ LO ELEGIDO SE IMPRIME, NO SE ILUMINA. En una risografía no hay luz: hay
+   tinta o no hay tinta. Un resaltado suave no existe como gesto —se vería como
+   una plancha mal entintada— así que la opción puesta va a tinta plena y el
+   rótulo sale en el color del papel.
+
+   ⚠ EL DESFASAJE NO LLEGA AL CONTENIDO. `--ui-misprint` es el corrimiento de
+   la plancha de la PIEZA; el rótulo y el icono que lleva adentro van derechos,
+   igual que adentro de un botón. */
+
+.ui-segmented {
+  --segmented-bg: transparent;
+  --segmented-border: var(--ui-border-strong);
+  --segmented-pad: 0px;
+
+  --segmented-item-fg: var(--ui-text-muted);
+  --segmented-item-bg-hover: var(--ui-accent-subtle);
+
+  --segmented-active-bg: var(--ui-accent);
+  --segmented-active-fg: var(--ui-on-accent);
+  --segmented-active-border: transparent;
+  --segmented-active-shadow: var(--ui-misprint);
+
+  --segmented-divider: var(--ui-border-strong);
+}
+
+.ui-segmented__item {
+  font-weight: var(--ui-weight-semibold);
+  letter-spacing: var(--ui-tracking-wide);
+  text-transform: uppercase;
+}
+
+/* El desfasaje es de la PIEZA. Lo que lleva adentro se imprime derecho. */
+.ui-segmented__item * {
+  --ui-riso-offset: 0px;
+}
+
+.ui-segmented--bare {
+  --segmented-border: transparent;
+  --segmented-divider: transparent;
+}

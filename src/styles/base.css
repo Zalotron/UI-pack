@@ -170,3 +170,52 @@ code, pre, kbd, samp {
     scroll-behavior: auto !important;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   REORDENAR ARRASTRANDO — LO QUE `core/reorder.js` NECESITA DIBUJADO
+
+   ⛔ VIVE ACA Y NO EN UN COMPONENTE PORQUE NO ES DE NINGUNO. Reordenar es una
+   capacidad que varias cosas tienen —una fila de pestañas, una lista de filas,
+   lo que venga—, y el motor que la da es uno solo. Declarado adentro de un
+   componente, el que sigue la vuelve a declarar, y a la tercera hay tres
+   duraciones distintas para el mismo gesto.
+   --------------------------------------------------------------------------- */
+
+/* ⛔ MOVER NO SE ANIMA POR DEFECTO EN NINGUN LADO: SE OPTA.
+   Una transicion de `transform` siempre prendida es una trampa — cualquiera que
+   mueva algo por JS (un visor que sigue al puntero, algo que se arrastra) pelea
+   contra una animacion que no pidio, y el sintoma no se parece a la causa: la
+   cosa va ATRAS del cursor, a destiempo, y al frenar pega un tiron para
+   alcanzarlo. El motor pone este atributo mientras corre las piezas y lo saca
+   al soltar, asi que solo esta animado el momento en que tiene que estarlo. */
+[data-ui-animating] {
+  transition: transform var(--ui-duration-base) var(--ui-ease);
+}
+
+/* La pieza que viaja. El motor la marca; el pack decide cuanto se despega. */
+.is-dragging {
+  opacity: var(--ui-drag-opacity, 0.5);
+}
+
+/* ⛔ LA RAYA DEL ARBOL SE DIBUJA DONDE VA A CAER LA FILA, CON SU SANGRIA.
+   La posicion la escribe el motor en linea —`top` y el arranque, que es la
+   profundidad del destino—; aca va nada mas la forma. Pegada al borde izquierdo
+   no distinguiria "hermana de la de arriba" de "hermana de su padre": las dos
+   caen en la misma juntura. */
+.ui-tree-drop {
+  position: absolute;
+  z-index: 2;
+  height: var(--ui-tree-drop-h, 2px);
+  margin-top: calc(var(--ui-tree-drop-h, 2px) / -2);
+  border-radius: var(--ui-radius-full);
+  background: var(--ui-accent-text);
+  pointer-events: none;
+}
+
+/* Lo que recibe algo ADENTRO. Es la otra mitad del vocabulario del arbol: la
+   raya dice "al lado de", esto dice "adentro de". */
+[data-ui-drop="inside"] {
+  outline: var(--ui-focus-width) solid var(--ui-accent-text);
+  outline-offset: calc(var(--ui-focus-width) * -1);
+  border-radius: var(--ui-radius-sm);
+}

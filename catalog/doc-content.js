@@ -360,6 +360,59 @@ export const SECTIONS = [
         "new Progress({ shape: 'linear', indeterminate: true })",
       ] },
 
+      { h: { es: 'Segmented', en: 'Segmented' } },
+      { p: {
+        es: 'Un grupo donde SIEMPRE hay exactamente uno puesto. No es un <code>RadioGroup</code> con otra piel: un radio es un formulario, esto es un control de barra — se aprieta y el efecto es inmediato.',
+        en: 'A group where exactly one is always on. Not a <code>RadioGroup</code> reskinned: a radio is a form, this is a toolbar control — you press it and the effect is immediate.',
+      } },
+      { code: [
+        'new Segmented({',
+        '  options: [',
+        "    { value: 'move', label: 'Mover', icon: 'arrow-right' },",
+        "    { value: 'scale', label: 'Escalar', icon: 'grid' },",
+        '  ],',
+        "  value: 'move', iconOnly: true,",
+        '  onChange: (v) => setModo(v),',
+        '})',
+      ] },
+
+      { h: { es: 'Tile y el panel de contenido', en: 'Tile and the content panel' } },
+      { p: {
+        es: 'Una ficha de catálogo: icono y nombre. Con <code>layout: "stack"</code> es la pieza de un panel de contenido; con <code>"row"</code> es el renglón de una lista. <b>Se activa con el teclado</b> — arrastrar no es accesible, así que Enter y Espacio hacen lo mismo que el click.',
+        en: 'A catalog card: icon and name. With <code>layout: "stack"</code> it is a content-panel item; with <code>"row"</code> it is a list row. <b>It activates from the keyboard</b> — dragging is not accessible, so Enter and Space do what the click does.',
+      } },
+      { p: {
+        es: 'El panel es un <code>Container</code> con <code>layout: "wrap"</code>: las fichas se acomodan desde la izquierda y bajan de renglón cuando no entran. <b>No es una grilla</b> — una grilla reparte el ancho sobrante y las fichas cambian de tamaño con el panel; acá la ficha mide siempre lo mismo y lo que cambia es cuántas entran.',
+        en: 'The panel is a <code>Container</code> with <code>layout: "wrap"</code>: cards flow from the left and wrap when they no longer fit. <b>It is not a grid</b> — a grid shares out the leftover width and the cards resize with the panel; here each card is always the same size and what changes is how many fit.',
+      } },
+      { code: [
+        'new Container({',
+        "  layout: 'wrap', gap: 'sm', variant: 'solid',",
+        '  content: cosas.map((c) => new Tile({',
+        "    label: c.nombre, icon: c.icono, layout: 'stack',",
+        '    draggable: true, dragValue: c.id,',
+        '  })),',
+        '})',
+      ] },
+
+      { h: { es: 'Reordenar arrastrando', en: 'Drag to reorder' } },
+      { p: {
+        es: '<b>Es una capacidad, no un componente.</b> Una lista que se reordena sigue siendo una lista y una fila de pestañas sigue siendo una fila de pestañas: se declara con <code>reorderable</code>. Cada pieza lleva su <code>data-sort-id</code>; el contenedor le pone el <code>draggable</code>. Ninguno de los dos reordena nada por su cuenta — avisan lo que se pidió y quien recibe decide.',
+        en: '<b>It is a capability, not a component.</b> A list that reorders is still a list, and a tab row is still a tab row: you declare it with <code>reorderable</code>. Each piece carries its own <code>data-sort-id</code>; the container adds <code>draggable</code>. Neither reorders anything by itself — they report what was asked and the owner decides.',
+      } },
+      { code: [
+        'new Tabs({ reorderable: true, onReorder: (ids) => guardar(ids) })',
+        '',
+        'new Container({ reorderable: true, onReorder: (ids) => guardar(ids) })',
+        '',
+        '// Un arbol: ademas del lugar, DE QUIEN cuelga.',
+        'new Container({',
+        "  reorderable: 'tree',",
+        '  depthOf: (id) => nivel(id),',
+        '  onMove: (id, lugar, destino) => mover(id, lugar, destino),',
+        '})',
+      ] },
+
       { h: { es: 'Tabs', en: 'Tabs' } },
       { p: {
         es: 'Cada pestaña es <code>{ id, label, content, disabled }</code>. El <code>id</code> es lo que viaja en <code>value</code> y en el callback.',

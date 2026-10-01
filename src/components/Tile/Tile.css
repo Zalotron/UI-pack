@@ -1,0 +1,205 @@
+/* -------------------------------------------------------- Tile — ESTRUCTURA */
+/* Mecánica del componente. Agnóstico al estilo: se comparte entre packs.
+   La estética (fondo, borde, cómo se marca la elegida) vive en:
+     src/styles/packs/<pack>/components/Tile.css                             */
+
+.ui-tile {
+  /* Interfaz del componente. La piel del pack pisa estas variables. */
+  --tile-bg: transparent;
+  --tile-bg-hover: transparent;
+  --tile-bg-selected: transparent;
+  --tile-fg: var(--ui-text);
+  --tile-fg-muted: var(--ui-text-subtle);
+  --tile-fg-selected: var(--ui-text);
+  --tile-border: transparent;
+  --tile-border-selected: transparent;
+  --tile-shadow: none;
+  --tile-radius: var(--ui-control-radius-md);
+
+  --tile-h: var(--ui-control-h-md);
+  --tile-pad: var(--ui-control-pad-sm);
+  --tile-font: var(--ui-control-font-sm);
+  --tile-icon: var(--ui-icon-md);
+  /* Cuánto mide una ficha de panel. Solo aplica al layout 'stack'. */
+  --tile-w: var(--ui-tile-w);
+
+  display: flex;
+  align-items: center;
+  gap: var(--ui-control-gap-sm);
+
+  box-sizing: border-box;
+  min-height: var(--tile-h);
+  padding: var(--ui-space-1) var(--tile-pad);
+
+  border: var(--ui-border-width) solid var(--tile-border);
+  border-radius: var(--tile-radius);
+  background: var(--tile-bg);
+  color: var(--tile-fg);
+  box-shadow: var(--tile-shadow);
+
+  font-family: var(--ui-font-sans);
+  font-size: var(--tile-font);
+  line-height: var(--ui-leading-tight);
+  text-align: start;
+
+  cursor: var(--ui-cursor-pointer, pointer);
+  transition:
+    background var(--ui-duration-fast) var(--ui-ease),
+    border-color var(--ui-duration-fast) var(--ui-ease),
+    color var(--ui-duration-fast) var(--ui-ease),
+    box-shadow var(--ui-duration-fast) var(--ui-ease);
+}
+
+.ui-tile:hover:not(.is-disabled):not(.is-selected) {
+  background: var(--tile-bg-hover);
+}
+
+.ui-tile.is-selected {
+  background: var(--tile-bg-selected);
+  border-color: var(--tile-border-selected);
+  color: var(--tile-fg-selected);
+}
+
+.ui-tile.is-disabled {
+  opacity: var(--ui-disabled-opacity);
+  cursor: var(--ui-cursor-disabled, not-allowed);
+}
+
+.ui-tile:focus-visible {
+  outline: var(--ui-focus-width) solid var(--ui-focus-ring);
+  outline-offset: var(--ui-focus-offset, 1px);
+}
+
+/* -- Las partes ------------------------------------------------------------ */
+
+.ui-tile__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  /* Cuadrado y del alto declarado: una grilla de fichas donde cada icono mide
+     distinto se lee como que las cosas son de tamaños distintos, y no lo son. */
+  width: var(--tile-icon);
+  height: var(--tile-icon);
+  line-height: 0;
+  overflow: hidden;
+  border-radius: var(--ui-radius-sm);
+}
+
+.ui-tile__icon img,
+.ui-tile__icon svg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.ui-tile__text {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--ui-space-1) / 2);
+  min-width: 0;
+}
+
+/* ⛔ EL NOMBRE SE CORTA, NO ENVUELVE. Una ficha que crece de alto porque su
+   nombre es largo rompe el renglón entero: las de al lado quedan con un hueco
+   abajo y la grilla deja de leerse como una grilla. El nombre completo está en
+   el `title`. */
+.ui-tile__label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ui-tile__description {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--tile-fg-muted);
+  font-size: var(--ui-text-xs);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* -- Fila ------------------------------------------------------------------ */
+/* El default: icono a la izquierda, nombre al lado, y ocupa todo el ancho que
+   le den. Es la ficha de una lista. */
+
+.ui-tile--row {
+  width: 100%;
+}
+
+.ui-tile--row .ui-tile__text {
+  flex: 1;
+}
+
+/* -- Ficha de panel -------------------------------------------------------- */
+/* ⛔ ANCHO FIJO, Y ES LO QUE HACE QUE EL PANEL FUNCIONE. Las fichas se acomodan
+   de izquierda a derecha y bajan de renglón cuando no entran; con ancho
+   automático cada una mide lo que mide su nombre, los renglones quedan con
+   piezas de tamaños distintos y lo que se ve es un párrafo de cajas, no una
+   grilla. Midiendo todas lo mismo, las columnas aparecen solas.
+
+   El alto NO es fijo: lo da el contenido, y como el nombre nunca envuelve,
+   todas terminan midiendo lo mismo igual. */
+
+.ui-tile--stack {
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: var(--ui-space-2);
+
+  width: var(--tile-w);
+  min-height: 0;
+  padding: var(--tile-pad);
+  text-align: center;
+}
+
+.ui-tile--stack .ui-tile__icon {
+  width: 100%;
+  /* Cuadrado: es la previa de la cosa, no un icono al lado de un texto. */
+  aspect-ratio: 1;
+  height: auto;
+}
+
+.ui-tile--stack .ui-tile__text {
+  width: 100%;
+  align-items: center;
+}
+
+/* -- Arrastre -------------------------------------------------------------- */
+
+.ui-tile--draggable {
+  cursor: var(--ui-cursor-grab, grab);
+}
+
+.ui-tile--draggable:active {
+  cursor: var(--ui-cursor-grabbing, grabbing);
+}
+
+/* La que viaja. El pack decide cuánto se despega: ver `--ui-drag-opacity`. */
+.ui-tile.is-dragging {
+  opacity: var(--ui-drag-opacity, 0.5);
+}
+
+/* -- Tamaños --------------------------------------------------------------- */
+
+.ui-tile--sm {
+  --tile-h: var(--ui-control-h-sm);
+  --tile-pad: var(--ui-space-2);
+  --tile-font: var(--ui-control-font-sm);
+  --tile-icon: var(--ui-icon-sm);
+  --tile-w: var(--ui-tile-w-sm);
+}
+.ui-tile--md {
+  --tile-h: var(--ui-control-h-md);
+  --tile-pad: var(--ui-control-pad-sm);
+  --tile-font: var(--ui-control-font-sm);
+  --tile-icon: var(--ui-icon-md);
+  --tile-w: var(--ui-tile-w);
+}
+.ui-tile--lg {
+  --tile-h: var(--ui-control-h-lg);
+  --tile-pad: var(--ui-control-pad-md);
+  --tile-font: var(--ui-control-font-md);
+  --tile-icon: var(--ui-icon-lg);
+  --tile-w: var(--ui-tile-w-lg);
+}

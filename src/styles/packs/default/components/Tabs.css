@@ -8,4 +8,10 @@
   --tabs-bg-hover: var(--ui-surface-hover);
   --tabs-line: var(--ui-line);
   --tabs-indicator: var(--ui-accent);
+  /* La cruz no se pinta hasta que se la toca: ya se distingue por estar sola a
+     la derecha del rotulo, y un fondo permanente mete un segundo boton dibujado
+     adentro de cada pestaña. Va en TINTA y no en una superficie: con
+     `detachedList` esta fila vive adentro de la barra de titulo de una ventana,
+     que no es el fondo de la pagina. */
+  --tabs-close-bg-hover: rgb(from var(--ui-text) r g b / 0.14);
 }

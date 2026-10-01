@@ -1,0 +1,51 @@
+/* ----------------------------------------- Segmented — PIEL del pack NOCTURNE */
+/* Interfaz: --segmented-bg | --segmented-border | --segmented-divider
+             --segmented-item-bg-hover | --segmented-item-fg
+             --segmented-active-bg | --segmented-active-fg
+             --segmented-active-border | --segmented-active-shadow           */
+
+/* El selector de modo de un tablero oscuro: un surco apagado y la opción puesta
+   ENCENDIDA con el degradé del pack.
+
+   ⛔ LO ACTIVO ESTÁ ILUMINADO, NO ENCERRADO. Es la misma lógica que la fila de
+   pestañas de este pack: sobre un fondo oscuro, lo que distingue a una pieza es
+   que EMITE. Un borde alrededor diría "esta está separada", que no es lo mismo
+   que "esta está puesta", y además devolvería al tablero el aspecto de
+   formulario que el pack se saca a propósito.
+
+   El degradé es la misma pieza que llena una barra de progreso y marca la
+   rayita de las pestañas: acá el degradé siempre significa lo mismo. */
+
+.ui-segmented {
+  --segmented-bg: var(--ui-bg-subtle);
+  --segmented-border: var(--ui-line);
+  --segmented-pad: var(--ui-space-1);
+
+  --segmented-item-fg: var(--ui-text-subtle);
+  --segmented-item-bg-hover: var(--ui-surface-hover);
+  --segmented-item-radius: var(--ui-radius-md);
+
+  --segmented-active-bg: var(--ui-nc-fill);
+  --segmented-active-fg: var(--ui-on-accent);
+  --segmented-active-border: transparent;
+  --segmented-active-shadow: 0 0 var(--ui-space-3) rgb(from var(--ui-accent) r g b / 0.30);
+
+  --segmented-divider: transparent;
+}
+
+.ui-segmented__item {
+  font-weight: var(--ui-weight-medium);
+}
+
+/* Pegado no hay lugar para el halo: las piezas se tocan y el derrame de una le
+   pasa por encima a la de al lado. Queda el degradé solo, que ya alcanza. */
+.ui-segmented--compact {
+  --segmented-pad: 0px;
+  --segmented-divider: var(--ui-line);
+  --segmented-active-shadow: none;
+}
+
+.ui-segmented--bare {
+  --segmented-divider: transparent;
+  --segmented-active-shadow: none;
+}

@@ -1,0 +1,48 @@
+/* ------------------------------------------ Segmented — PIEL del pack MINIMAL */
+/* Interfaz: --segmented-bg | --segmented-border | --segmented-divider
+             --segmented-item-bg-hover | --segmented-item-fg
+             --segmented-active-bg | --segmented-active-fg
+             --segmented-active-border | --segmented-active-shadow           */
+
+/* El selector de modo de una barra de editor. Plano, chico y pegado: lo que
+   dice cuál está puesta es UN ESCALÓN DE LUZ, igual que todo en este pack.
+
+   ⛔ NI SE LEVANTA NI SE HUNDE. El resto del pack no lo hace y este control no
+   es la excepción: `--ui-hover-lift` y `--ui-press-shift` están en cero, y una
+   sombra acá sería la única de toda la interfaz.
+
+   ⛔ Y EL ACENTO SOLO SEÑALA. Rellenar la pieza puesta de azul mete un bloque
+   saturado en una barra de controles grises y se lleva la mirada aunque no haya
+   pasado nada. El acento queda en la letra; el fondo es el escalón. */
+
+.ui-segmented {
+  --segmented-bg: var(--ui-bg-subtle);
+  --segmented-border: var(--ui-border);
+  --segmented-pad: 0px;
+
+  --segmented-item-fg: var(--ui-text-muted);
+  --segmented-item-bg-hover: var(--ui-surface-hover);
+
+  --segmented-active-bg: var(--ui-surface-active);
+  --segmented-active-fg: var(--ui-text);
+  --segmented-active-border: transparent;
+  --segmented-active-shadow: none;
+
+  --segmented-divider: var(--ui-border);
+}
+
+.ui-segmented__item {
+  font-weight: var(--ui-weight-regular);
+}
+
+/* Lo puesto lleva el acento en la letra: es lo que el pack usa para decir
+   "esto es lo que está pasando", y no para decorar. */
+.ui-segmented__item.is-active {
+  color: var(--ui-accent-text);
+}
+
+.ui-segmented--bare {
+  --segmented-bg: transparent;
+  --segmented-border: transparent;
+  --segmented-divider: transparent;
+}
