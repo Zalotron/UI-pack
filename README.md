@@ -10,6 +10,16 @@ librería de clases pensada para importar desde cualquier proyecto futuro.
 
 ---
 
+## ¿Venís a ponerle este pack a un proyecto que ya existe?
+
+**[`INSTALL.md`](INSTALL.md)** — está escrito para un AGENTE, y tiene todo:
+qué copiar, cómo elegir el estilo, el mapa de qué reemplaza a qué, qué borrar
+del proyecto viejo, y cómo verificar que quedó limpio.
+
+Alcanza con decirle a tu agente *"migrá la UI con INSTALL.md, estilo Grunge"*.
+
+---
+
 ## Ver el catálogo
 
 Los ES Modules no funcionan con `file://`, así que hace falta un servidor.

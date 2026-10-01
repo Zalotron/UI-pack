@@ -45,6 +45,10 @@ como parámetro de contenedor"*.
 
 ---
 
+> **¿Venís a INSTALAR este pack en otro proyecto?** Entonces este archivo no es
+> el que buscás: es [`INSTALL.md`](INSTALL.md). Lo de acá son las reglas para
+> trabajar SOBRE la librería.
+
 ## Reglas duras
 
 - **Vanilla JS, ES Modules, cero dependencias, cero build step.** No agregar
