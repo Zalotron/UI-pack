@@ -1,5 +1,6 @@
 import { UIComponent } from '../../core/UIComponent.js';
 import { el, cx, uniqueId } from '../../core/dom.js';
+import { isKey } from '../../keys.js';
 
 /**
  * Select — desplegable propio.
@@ -125,11 +126,11 @@ export class Select extends UIComponent {
       if (['ArrowDown', 'ArrowUp', 'Enter', ' '].includes(event.key)) {
         event.preventDefault();
         if (!this.open) this.show();
-        else if (event.key === 'Enter' || event.key === ' ') this._chooseActive();
+        else if (isKey(event, 'activate')) this._chooseActive();
         else this._move(event.key === 'ArrowDown' ? 1 : -1);
         return;
       }
-      if (event.key === 'Escape' && this.open) {
+      if (isKey(event, 'cancel') && this.open) {
         event.preventDefault();
         this.hide();
         return;

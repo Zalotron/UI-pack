@@ -2,6 +2,8 @@ import { UIComponent } from '../../core/UIComponent.js';
 import { el, cx, append } from '../../core/dom.js';
 import { sortable } from '../../core/reorder.js';
 import { Icon } from '../Icon/index.js';
+import { wireRename } from '../../core/rename.js';
+import { isKey } from '../../keys.js';
 
 /**
  * Tabs — pestañas.
@@ -21,7 +23,7 @@ import { Icon } from '../Icon/index.js';
 
 const SIZES = ['sm', 'md', 'lg'];
 
-/** Acepta { id, label, icon, content, disabled, closable }. `id` cae al indice. */
+/** Acepta { id, label, icon, content, disabled, closable, editable }. */
 const normalize = (tab, index) => ({
   id: tab.id ?? String(index),
   label: tab.label ?? String(tab.id ?? index),
@@ -29,13 +31,14 @@ const normalize = (tab, index) => ({
   content: tab.content ?? null,
   disabled: !!tab.disabled,
   closable: !!tab.closable,
+  editable: !!tab.editable,
 });
 
 export class Tabs extends UIComponent {
   static componentName = 'tabs';
 
   static defaults = {
-    /** [{ id, label, icon?, content, disabled?, closable? }] */
+    /** [{ id, label, icon?, content, disabled?, closable?, editable? }] */
     tabs: [],
     /** Pestaña activa. null = la primera que no este deshabilitada. */
     value: null,
@@ -57,6 +60,20 @@ export class Tabs extends UIComponent {
      * negarse. Este componente no saca nada por su cuenta.
      */
     onClose: null,
+
+    /**
+     * Se renombro una pestaña: `(id, nombre) => ...`
+     *
+     * ⚠ CUAL se puede renombrar se declara POR PESTAÑA, con `editable: true`,
+     * igual que `closable`. En una fila mezclada —archivos abiertos y un panel
+     * fijo— no todas son lo mismo, y un interruptor para toda la fila obligaria
+     * a elegir entre dejar renombrar lo que no corresponde o no dejar renombrar
+     * nada.
+     *
+     * Las dos vias de siempre: doble click SOBRE EL ROTULO, y la tecla de
+     * renombrar con la pestaña enfocada. Ver `src/keys.js`.
+     */
+    onRename: null,
 
     /**
      * Las pestañas se pueden arrastrar para cambiarlas de orden.
@@ -140,6 +157,7 @@ export class Tabs extends UIComponent {
     const items = this.items;
     this._releaseReorder?.();
     this._releaseReorder = null;
+    this._renombrar = new Map();
     this.buttons = [];
     this.panels = [];
 
@@ -186,6 +204,21 @@ export class Tabs extends UIComponent {
           this.options.onClose?.(tab.id, this);
         });
         button.append(cruz);
+      }
+
+      if (tab.editable && !tab.disabled) {
+        const rotulo = button.querySelector('.ui-tabs__label');
+        this._renombrar.set(tab.id, wireRename({
+          listen: (n, t, fn) => this.listen(n, t, fn),
+          host: button,
+          label: () => rotulo,
+          value: () => tab.label,
+          onCommit: (nombre) => {
+            rotulo.textContent = nombre;
+            this.options.onRename?.(tab.id, nombre, this);
+            this.emit('rename', { id: tab.id, label: nombre });
+          },
+        }));
       }
 
       this.buttons.push(button);
@@ -344,9 +377,9 @@ export class Tabs extends UIComponent {
     this.listen(list, 'keydown', (event) => {
       /* ⛔ LA CRUZ NO SE PUEDE TABULAR —vive adentro del boton de la pestaña, y
          un boton adentro de otro no es navegable—, asi que cerrar con el
-         teclado tiene que estar en algun lado: es Supr sobre la pestaña, como
-         en cualquier lista. */
-      if (event.key === 'Delete') {
+         teclado tiene que estar en algun lado: es Supr sobre la pestaña, como en
+         cualquier lista. CUAL tecla es lo decide `src/keys.js`. */
+      if (isKey(event, 'closeTab')) {
         const actual = this.items.find((tab) => tab.id === this.value);
         if (actual?.closable) {
           event.preventDefault();
@@ -429,6 +462,15 @@ export class Tabs extends UIComponent {
        —y es ESE el que arregla el caso del Tabs adoptado— pero se queda para
        los entornos que no lo tienen, donde vuelve a ser el unico camino. */
     this._placeIndicator();
+  }
+
+  /**
+   * Abre el campo de una pestaña a mano, para quien ate la tecla a su propia
+   * seleccion en vez de al foco.
+   */
+  startRename(id = this.value) {
+    this._renombrar?.get(id)?.();
+    return this;
   }
 
   get() { return this.value; }

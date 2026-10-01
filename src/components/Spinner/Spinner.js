@@ -1,5 +1,6 @@
 import { UIComponent } from '../../core/UIComponent.js';
 import { el, cx } from '../../core/dom.js';
+import { isKey } from '../../keys.js';
 import { decimalsOf, round, format, MAX_PRECISION } from '../../core/num.js';
 
 /**
@@ -285,11 +286,11 @@ export class Spinner extends UIComponent {
         if (document.activeElement === input) this._startEditing();
       };
 
-      if (event.key === 'Enter') {
+      if (isKey(event, 'commit')) {
         event.preventDefault();
         this._stopEditing(true);
         seguirEditando();
-      } else if (event.key === 'Escape') {
+      } else if (isKey(event, 'cancel')) {
         event.preventDefault();
         this._stopEditing(false);
         seguirEditando();

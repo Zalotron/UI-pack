@@ -11,6 +11,7 @@
     ".": "./src/index.js",
     "./core": "./src/core/index.js",
     "./config": "./src/config.js",
+    "./keys": "./src/keys.js",
     "./styles": "./src/styles/index.css",
     "./styles/base": "./src/styles/base.css",
     "./styles/structure": "./src/styles/structure.css",

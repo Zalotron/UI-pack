@@ -25,12 +25,12 @@ export default {
       /* Reordenar y cerrar son CAPACIDADES, no otro componente: las mismas
          pestañas con dos opciones más. El componente no mueve ni saca nada por
          su cuenta — avisa lo que se pidió, y acá el demo lo aplica. */
-      title: 'Reordenables',
+      title: 'Reordenables, renombrables y con cruz',
       render: () => {
         let tabs = [
-          { id: 'a', label: 'main.js', icon: 'file', closable: true },
-          { id: 'b', label: 'estilos.css', icon: 'file', closable: true },
-          { id: 'c', label: 'notas.md', icon: 'file', closable: true },
+          { id: 'a', label: 'main.js', icon: 'file', closable: true, editable: true },
+          { id: 'b', label: 'estilos.css', icon: 'file', closable: true, editable: true },
+          { id: 'c', label: 'notas.md', icon: 'file', closable: true, editable: true },
         ];
 
         const vista = new Tabs({
@@ -43,6 +43,11 @@ export default {
           onClose: (id) => {
             tabs = tabs.filter((t) => t.id !== id);
             vista.update({ tabs: tabs.map((t) => ({ ...t, content: panel(t.label) })) });
+          },
+          /* El componente no renombra nada por su cuenta: cambia lo que se ve y
+             avisa. Quien tiene los datos es el que decide. */
+          onRename: (id, nombre) => {
+            tabs = tabs.map((t) => (t.id === id ? { ...t, label: nombre } : t));
           },
         });
         return vista;

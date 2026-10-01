@@ -219,3 +219,43 @@ code, pre, kbd, samp {
   outline-offset: calc(var(--ui-focus-width) * -1);
   border-radius: var(--ui-radius-sm);
 }
+
+/* ---------------------------------------------------------------------------
+   RENOMBRAR EN EL LUGAR — el campo que `core/rename.js` pone donde el nombre
+
+   ⛔ VIVE ACA Y NO EN UN COMPONENTE, por lo mismo que el reordenamiento: lo
+   usan la ficha, la pestaña y el título de una ventana, y el campo es uno solo.
+   Declarado adentro de cada uno, el tercero lo escribe distinto y renombrar se
+   siente como tres cosas en vez de una.
+
+   ⛔ HEREDA LA TIPOGRAFIA DEL NOMBRE QUE REEMPLAZA. Un campo con la letra de
+   fábrica del navegador corre el texto de lugar y cambia de tamaño justo al
+   entrar a escribir: lo que uno está por editar deja de estar donde estaba. El
+   que escribe tiene que ver lo mismo que va a quedar.
+   --------------------------------------------------------------------------- */
+
+.ui-rename {
+  min-width: 0;
+  max-width: 100%;
+  padding: 0;
+  margin: 0;
+
+  border: 0;
+  border-radius: var(--ui-radius-sm);
+  background: var(--ui-rename-bg, var(--ui-surface));
+  color: inherit;
+
+  font: inherit;
+  letter-spacing: inherit;
+  text-align: inherit;
+  text-transform: inherit;
+
+  outline: var(--ui-focus-width) solid var(--ui-focus-ring);
+  outline-offset: 1px;
+}
+
+/* El campo se queda con el gesto: mientras se escribe, la pieza no se arrastra
+   ni se la puede elegir sin querer. */
+.is-renaming {
+  cursor: var(--ui-cursor-text, text);
+}

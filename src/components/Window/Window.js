@@ -1,5 +1,6 @@
 import { UIComponent } from '../../core/UIComponent.js';
 import { el, cx, append } from '../../core/dom.js';
+import { wireRename } from '../../core/rename.js';
 
 /**
  * Window — marco de ventana propio.
@@ -28,6 +29,26 @@ export class Window extends UIComponent {
     title: '',
     /** Marca a la izquierda del titulo: string, Node o UIComponent. */
     icon: null,
+
+    /**
+     * El titulo se puede cambiar en el lugar.
+     *
+     * Las dos vias de siempre: doble click SOBRE EL TITULO, y la tecla de
+     * renombrar con la ventana enfocada. Ver `src/keys.js`.
+     *
+     * ⚠ EL DOBLE CLICK ES SOLO DEL TITULO, Y FRENA AHI. Hoy la barra no hace
+     * nada con el doble click, pero es el lugar donde cualquiera le pone el
+     * "maximizar" tarde o temprano: si este subiera, querer cambiarle el nombre
+     * a una ventana la agrandaria a pantalla completa. Separarlos ahora cuesta
+     * nada; descubrirlo despues cuesta encontrar por que pasa.
+     *
+     * ⚠ Y NO TIENE SENTIDO CON `leadingFill`: ahi no hay titulo dibujado,
+     * porque lo que ocupa la barra ES el titulo.
+     */
+    editableTitle: false,
+
+    /** El titulo nuevo: `(titulo) => ...` */
+    onRename: null,
 
     /**
      * Algo propio al ARRANQUE de la barra de titulo, donde iria el titulo.
@@ -107,6 +128,10 @@ export class Window extends UIComponent {
 
     this.titleNode = el('span', { class: 'ui-window__title', text: o.title });
 
+    /* El titulo no se renombra cuando no se dibuja: con `leadingFill` lo que
+       ocupa la barra ES el titulo, y no hay rotulo que reemplazar. */
+    this._puedeRenombrar = o.editableTitle && !o.leadingFill;
+
     /* Con el `leading` ocupando la barra, el icono y el titulo no se dibujan:
        lo que hay adentro ES el titulo. Dejarlos seria decir dos veces lo mismo
        y, peor, robarle a las pestañas el ancho que necesitan. */
@@ -128,6 +153,21 @@ export class Window extends UIComponent {
         leadingNode,
         this._renderControls(),
       ]);
+
+    if (this._puedeRenombrar) {
+      this._startRename = wireRename({
+        listen: (n, t, fn) => this.listen(n, t, fn),
+        host: bar,
+        label: () => this.titleNode,
+        value: () => this.options.title,
+        onCommit: (titulo) => {
+          this.options.title = titulo;
+          this.titleNode.textContent = titulo;
+          o.onRename?.(titulo, this);
+          this.emit('rename', titulo);
+        },
+      });
+    }
 
     // El cuerpo scrollea con la barra del sistema de diseno, no la cruda.
     const body = el('div', { class: 'ui-window__body ui-scroll ui-scroll--y ui-scroll--thin' });
@@ -215,6 +255,12 @@ export class Window extends UIComponent {
       });
 
     return el('div', { class: 'ui-window__controls' }, buttons);
+  }
+
+  /** Abre el campo del titulo a mano. La misma puerta que usa el atajo. */
+  startRename() {
+    this._startRename?.();
+    return this;
   }
 
   /**

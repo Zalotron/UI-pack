@@ -1,6 +1,8 @@
 import { UIComponent } from '../../core/UIComponent.js';
 import { el, cx } from '../../core/dom.js';
 import { Icon } from '../Icon/index.js';
+import { wireRename } from '../../core/rename.js';
+import { isKey } from '../../keys.js';
 
 /**
  * Una ficha de catalogo: icono, nombre, y opcionalmente se arrastra.
@@ -54,6 +56,27 @@ export class Tile extends UIComponent {
     /** Marca la ficha como elegida. */
     selected: false,
     disabled: false,
+
+    /**
+     * El nombre se puede cambiar EN EL LUGAR.
+     *
+     * Dos vias, siempre las dos: doble click SOBRE EL NOMBRE, y la tecla de
+     * renombrar con la ficha enfocada —F2 de fabrica, y cual es lo decide
+     * `src/keys.js`—.
+     *
+     * ⛔ ES UN INTERRUPTOR PORQUE NO SIEMPRE CORRESPONDE. Una ficha de catalogo
+     * de cosas que se pueden traer al lienzo no se renombra: el nombre es de la
+     * clase, no de la ficha. Una fila de archivos del proyecto si. Quien arma
+     * la lista es el unico que sabe cual de las dos es.
+     *
+     * ⛔ Y EL DOBLE CLICK ES EN EL NOMBRE, NO EN LA FICHA. En un explorador el
+     * doble click sobre la fila ABRE y el del nombre RENOMBRA: los dos en el
+     * mismo lugar serian dos cosas distintas para el mismo gesto.
+     */
+    editableLabel: false,
+
+    /** El nombre nuevo, ya recortado y nunca vacio: `(nombre) => ...` */
+    onRename: null,
 
     /** Habilita el arrastre. */
     draggable: false,
@@ -135,9 +158,26 @@ export class Tile extends UIComponent {
       /* Lo que un `<button>` hacia solo. Espacio ademas scrollea la pagina si
          no se lo frena. */
       this.listen(node, 'keydown', (event) => {
-        if (event.key !== 'Enter' && event.key !== ' ') return;
+        /* Mientras se escribe un nombre, ninguna tecla significa "activar la
+           ficha": el campo esta adentro y se queda con todo. */
+        if (this.el?.classList.contains('is-renaming')) return;
+        if (!isKey(event, 'activate')) return;
         event.preventDefault();
         this._activate(event);
+      });
+    }
+
+    if (o.editableLabel && !o.disabled) {
+      this._startRename = wireRename({
+        listen: (n, t, fn) => this.listen(n, t, fn),
+        host: node,
+        label: () => this.labelNode,
+        value: () => this.options.label,
+        onCommit: (nombre) => {
+          this.setLabel(nombre);
+          o.onRename?.(nombre, this);
+          this.emit('rename', nombre);
+        },
       });
     }
 
@@ -211,6 +251,18 @@ export class Tile extends UIComponent {
     this.options.label = label;
     if (this.labelNode) this.labelNode.textContent = label;
     if (this.el) this.el.title = label || '';
+    return this;
+  }
+
+  /**
+   * Abre el campo a mano.
+   *
+   * Es para quien tenga su propia seleccion: un panel que resalta una fila sin
+   * darle el foco escucha la tecla donde pueda y llama a esto. Es la misma
+   * puerta que usa el atajo, no otra.
+   */
+  startRename() {
+    this._startRename?.();
     return this;
   }
 

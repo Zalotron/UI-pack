@@ -53,15 +53,20 @@ export default {
       },
     },
     {
-      // La misma ficha en fila: ahí es el renglón de una lista, con descripción.
-      title: 'En fila',
+      /* La misma ficha en fila: ahí es el renglón de una lista.
+
+         Y RENOMBRABLE: doble click sobre el NOMBRE, o la tecla de renombrar con
+         la fila enfocada —F2 de fábrica; cuál es lo decide src/keys.js—. Es un
+         interruptor por ficha porque no siempre corresponde: estos archivos se
+         renombran, el bloqueado no. */
+      title: 'En fila, renombrable',
       render: () =>
         new Container({
           variant: 'solid', layout: 'stack', gap: 'none', padding: 'none',
           fullWidth: true, items: 'stretch',
           content: [
-            new Tile({ label: 'escena.json', description: '2,4 kB', icon: 'file' }),
-            new Tile({ label: 'material.css', description: '8,1 kB', icon: 'file', selected: true }),
+            new Tile({ label: 'escena.json', description: '2,4 kB', icon: 'file', editableLabel: true }),
+            new Tile({ label: 'material.css', description: '8,1 kB', icon: 'file', editableLabel: true, selected: true }),
             new Tile({ label: 'Bloqueado', description: 'Sin permisos', icon: 'lock', disabled: true }),
           ],
         }),

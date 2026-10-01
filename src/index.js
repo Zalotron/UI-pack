@@ -24,6 +24,7 @@ export {
   readableOn,
   SETTING_KEYS,
 } from './config.js';
+export { configureKeys, currentKeys, resetKeys, isKey, KEY_ACTIONS } from './keys.js';
 
 // Registro de packs esteticos.
 export {

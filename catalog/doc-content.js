@@ -395,6 +395,44 @@ export const SECTIONS = [
         '})',
       ] },
 
+      { h: { es: 'Renombrar en el lugar', en: 'Rename in place' } },
+      { p: {
+        es: '<b>Dos vías, siempre las dos:</b> doble click sobre el <b>NOMBRE</b>, y la tecla de renombrar con la pieza enfocada (<code>F2</code> de fábrica). Media regla no sirve — el que aprendió el atajo en un panel lo aprieta en el de al lado, no pasa nada, y ahí deja de creerle. El doble click es en el nombre y no en la pieza: en un explorador el doble click sobre la fila ABRE y el del nombre RENOMBRA.',
+        en: '<b>Two ways, always both:</b> double click on the <b>NAME</b>, and the rename key with the item focused (<code>F2</code> by default). Half the rule is worthless — whoever learns the shortcut in one panel presses it in the next, nothing happens, and from then on they stop trusting it. The double click is on the name, not the item: in a file explorer, double-clicking the row OPENS and double-clicking the name RENAMES.',
+      } },
+      { p: {
+        es: 'Es <b>un interruptor</b>, porque no siempre corresponde: una ficha de catálogo de cosas que se traen al lienzo no se renombra —el nombre es de la clase, no de la ficha— y una fila de archivos sí. Ningún componente renombra nada por su cuenta: cambia lo que se ve y avisa.',
+        en: 'It is <b>a switch</b>, because it does not always apply: a catalog card for things you drag onto a canvas is not renamed —the name belongs to the class, not the card— while a file row is. No component renames anything on its own: it updates what is shown and reports it.',
+      } },
+      { code: [
+        "new Tile({ label: 'escena.json', editableLabel: true, onRename: (n) => guardar(n) })",
+        '',
+        'new Tabs({',
+        "  tabs: [{ id: 'a', label: 'main.js', editable: true }],",
+        '  onRename: (id, nombre) => guardar(id, nombre),',
+        '})',
+        '',
+        "new Window({ title: 'Documento', editableTitle: true, onRename: (t) => guardar(t) })",
+      ] },
+
+      { h: { es: 'Los atajos de teclado', en: 'Keyboard shortcuts' } },
+      { p: {
+        es: 'Están <b>todos en <code>src/keys.js</code></b>, y es el único lugar: ningún componente escribe una tecla por su cuenta. Si hay que cambiar una —o apagarla— ese es el archivo.',
+        en: 'They all live in <b><code>src/keys.js</code></b>, and that is the only place: no component writes a key on its own. To change one —or turn it off— that is the file.',
+      } },
+      { code: [
+        "import { configureKeys } from 'web-ui/keys';",
+        '',
+        'configureKeys({',
+        "  rename: ['F2', 'Ctrl+R'],   // las dos abren el campo",
+        '  closeTab: [],               // apagado: queda solo la cruz',
+        '})',
+      ] },
+      { p: {
+        es: 'Lo que <b>no</b> está ahí, y no es un olvido: las flechas, Home y End. Esas no son atajos de esta librería — son el contrato de los patrones de ARIA, y cambiarlas no personaliza nada: rompe lo que un lector de pantalla le prometió a quien lo usa.',
+        en: 'What is <b>not</b> there, and is not an oversight: arrows, Home and End. Those are not this library&rsquo;s shortcuts — they are the ARIA pattern contract, and changing them personalizes nothing: it breaks what a screen reader promised its user.',
+      } },
+
       { h: { es: 'Reordenar arrastrando', en: 'Drag to reorder' } },
       { p: {
         es: '<b>Es una capacidad, no un componente.</b> Una lista que se reordena sigue siendo una lista y una fila de pestañas sigue siendo una fila de pestañas: se declara con <code>reorderable</code>. Cada pieza lleva su <code>data-sort-id</code>; el contenedor le pone el <code>draggable</code>. Ninguno de los dos reordena nada por su cuenta — avisan lo que se pidió y quien recibe decide.',

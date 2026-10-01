@@ -1,5 +1,6 @@
 import { UIComponent } from '../../core/UIComponent.js';
 import { el, cx, append } from '../../core/dom.js';
+import { isKey } from '../../keys.js';
 import { sortable, sortableTree } from '../../core/reorder.js';
 
 /**
@@ -234,7 +235,7 @@ export class Container extends UIComponent {
 
       if (needsButtonSemantics) {
         this.listen(node, 'keydown', (event) => {
-          if (event.key === 'Enter' || event.key === ' ') {
+          if (isKey(event, 'activate')) {
             event.preventDefault();
             this._activate(event);
           }

@@ -130,6 +130,51 @@ como parámetro de contenedor"*.
     `leave()` es la versión con despedida, y devuelve una promesa.
   - Si un pack no define nada no se rompe: la espera resuelve enseguida. Por
     eso hace falta el guard — la falta no se nota hasta que alguien la mira.
+- **⛔ LOS ATAJOS DE TECLADO VIVEN TODOS EN [`src/keys.js`](src/keys.js).**
+  Ningún componente escribe `event.key === 'F2'` por su cuenta. Si hay que
+  cambiar una tecla —o apagarla— ese es el archivo, y es el único:
+
+  ```js
+  import { configureKeys } from 'web-ui/keys';
+  configureKeys({ rename: ['F2', 'Ctrl+R'], closeTab: [] });
+  ```
+
+  Un atajo escrito adentro del componente que lo usa es imposible de encontrar
+  sin leer el componente, y quien lo quiere cambiar no sabe cuál de los
+  dieciocho lo tiene. Peor: el día que dos componentes necesiten el mismo
+  gesto, cada uno escribe su tecla y se desincronizan sin que nadie lo note,
+  porque los dos "andan".
+
+  **Lo que NO está ahí, y no es un olvido:** las flechas, Home y End. Esas no
+  son atajos de esta librería — son el contrato de los patrones de ARIA.
+  Cambiarlas no personaliza nada: rompe lo que un lector de pantalla le
+  prometió a quien lo usa.
+
+- **⛔ LO QUE TIENE NOMBRE SE RENOMBRA CON LAS DOS VÍAS: doble click en el
+  NOMBRE y la tecla de renombrar con la pieza enfocada.** Media regla no
+  sirve: el que aprendió el atajo en un panel lo aprieta en el de al lado, no
+  pasa nada, y ahí deja de creerle — a partir de ese momento va al doble click
+  siempre, también donde el atajo andaba.
+
+  Es **un interruptor**, porque no siempre corresponde: una ficha de catálogo
+  de cosas que se traen al lienzo no se renombra (el nombre es de la clase, no
+  de la ficha); una fila de archivos del proyecto sí. Quien arma la lista es el
+  único que sabe cuál de las dos es.
+
+  | Componente | Cómo se prende |
+  |---|---|
+  | `Tile` | `editableLabel: true` + `onRename` |
+  | `Tabs` | `editable: true` **por pestaña** + `onRename` |
+  | `Window` | `editableTitle: true` + `onRename` |
+
+  El mecanismo es `core/rename.js` y ninguno renombra nada por su cuenta:
+  cambian lo que se ve y avisan. Quien tiene los datos decide. Para una
+  selección propia —un panel que resalta una fila sin darle el foco— está
+  `startRename()`, que es la misma puerta que usa el atajo.
+
+  ⛔ Y **el doble click es en el NOMBRE, no en la pieza**: en un explorador el
+  doble click sobre la fila ABRE y el del nombre RENOMBRA.
+
 - **⛔ UNA CAPACIDAD NO ES UN COMPONENTE.** Si algo que una pieza puede HACER
   no cambia lo que esa pieza ES, va como parámetro suyo y no como una clase
   nueva que la envuelva. Reordenar arrastrando es el caso: una fila de

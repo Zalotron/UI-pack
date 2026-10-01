@@ -1,5 +1,6 @@
 import { UIComponent } from '../../core/UIComponent.js';
 import { el, cx } from '../../core/dom.js';
+import { isKey } from '../../keys.js';
 
 /**
  * TextField — campo de texto.
@@ -91,7 +92,7 @@ export class TextField extends UIComponent {
       this.listen(field, 'change', () => this._commit(field.value));
       if (!o.multiline) {
         this.listen(field, 'keydown', (event) => {
-          if (event.key === 'Enter') this._commit(field.value);
+          if (isKey(event, 'commit')) this._commit(field.value);
         });
       }
     }

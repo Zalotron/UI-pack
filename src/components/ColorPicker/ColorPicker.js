@@ -1,5 +1,6 @@
 import { UIComponent } from '../../core/UIComponent.js';
 import { el, cx } from '../../core/dom.js';
+import { isKey } from '../../keys.js';
 import { clamp } from '../../core/num.js';
 import { normalizeHex, hexToHsv, hsvToHex } from '../../core/color.js';
 import { Slider } from '../Slider/Slider.js';
@@ -215,7 +216,7 @@ export class ColorPicker extends UIComponent {
 
     // --- cerrar ---
     this.listen(node, 'keydown', (event) => {
-      if (event.key === 'Escape' && this.open) {
+      if (isKey(event, 'cancel') && this.open) {
         event.preventDefault();
         this.hide();
         this.trigger.focus();
